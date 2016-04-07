@@ -1,0 +1,123 @@
+title: Dask+Yarn
+---
+pub_date: 2016-04-09
+---
+author: Benjamin Zaitlen
+---
+body:
+
+In the past few months we've seen a number of posts and mentions of Dask.
+For those unfamiliar, Dask is an out-of-core, parallel framework for data analysis.
+Some of the more recent examples () have demonstrated Dask's distributed capabilities -- leveraging
+not just multi-core, but multi-node clusters.  We need a way to launch Dask workers on many machines in
+our cluster.  In a small cluster we might do this by manually SSH-ing into many machines or using a job
+scheduler like SGE.  However for larger clusters this approach breaks down, especially when the cluster
+is simultaneously running many parallel frameworks like Hadoop, Spark, Impala, etc..  In this case we
+typically use a cluster resource manager like YARN to start and stop jobs on the cluster and to manage
+ their execution environments.  In this post, I demonstrate a toy example using the YARN resource manager.
+I really liked your phrasing and used it more or less verbatim
+
+[YARN](http://hadoop.apache.org/docs/current/hadoop-yarn/hadoop-yarn-site/index.html) is a common
+ resource manager for the Hadoop Ecosystem.  YARN is important when you have the following considerations
+  in mind: workload prioritization, security, multi-tenancy, and most importantly, an HDFS backed
+  distributed file system.  If we want to share computing resources between a traditional Map Reduce
+  job and Impala and Dask, YARN is a very capable framework for coordinating these varied applications
+  with constrained resources.
+
+
+## Knit
+
+Unfortunately, for the Python community YARN is a JVM based framework.  Fortunately,
+for the Python community we (special thanks to Neils...) wrote [Knit](http://knit.readthedocs.org/en/latest/).
+Knit is a Python/Scala based library which enables Python developers to request resources from YARN.
+As YARN is a container based resource manager, in addition to the job we wish to execute, the job pack
+ will also request: number of containers, amount of memory, number of cores, queues, etc.
+
+## Dask+Knit
+
+We start first by bootstrapping Anaconda and Dask on each node in the cluster.
+To accomplish this we'll use Anaconda Cluster and we'll remotely build a new conda env
+with the dependencies:
+
+> acluster conda create -n dask_env python=2 dask pandas distributed knit -c dask
+
+
+Next, we start the scheduler on one of nodes (typically the head/edge node):
+
+```python
+(dask_env)ubuntu@ip-172-31-62-166:~/$ dscheduler
+distributed.scheduler - INFO - Start Scheduler at:        172.31.62.166:8786
+distributed.scheduler - INFO -            http at:        172.31.62.166:9786
+```
+
+Dask is resilient to workers appearing and disappearing from the scheduler.
+With the scheduler up,  we can add `dworkers` and point them at the scheduler's IP and port by
+issuing the following command:
+
+> /opt/anaconda/envs/dask_env/bin/dworker 172.31.62.166:8786
+
+Using `Knit`, we'll use the same command above and start simply by asking for one container
+with YARN defaults for CPU and Memory:
+
+```python
+>>> from knit import Knit
+>>> k = Knit()
+>>> cmd = "/opt/anaconda/envs/dask_env/bin/dworker 172.31.62.166:8786"
+>>> appId = k.start(cmd, num_containers=1)
+6/04/06 15:58:16 INFO knit.Client$: Staring Application Master
+Attempting upload of /home/ubuntu/knit/knit/java_libs/knit-1.0-SNAPSHOT.jar
+Uploading resource file:/home/ubuntu/knit/knit/java_libs/knit-1.0-SNAPSHOT.jar -> hdfs://ip-172-31-62-166.ec2.internal:8020/user/ubuntu/.knitDeps/knit-1.0-SNAPSHOT.jarhdfs://ip-172-31-62-166.ec2.internal:8020/user/ubuntu/.knitDeps/knit-1.0-SNAPSHOT.jar
+16/04/06 15:58:20 INFO impl.TimelineClientImpl: Timeline service address: http://ip-172-31-62-167.ec2.internal:8188/ws/v1/timeline/
+16/04/06 15:58:20 INFO client.RMProxy: Connecting to ResourceManager at ip-172-31-62-167.ec2.internal/172.31.62.167:8050
+Security is enabled: true
+16/04/06 15:58:20 INFO hdfs.DFSClient: Created HDFS_DELEGATION_TOKEN token 162 for ubuntu on 172.31.62.166:8020
+[Lorg.apache.hadoop.security.token.Token;@5fdbded6
+Got dt for DFS[DFSClient[clientName=DFSClient_NONMAPREDUCE_-453042160_12, ugi=ubuntu@CONTINUUM (auth:KERBEROS)]].getUri() Kind: HDFS_DELEGATION_TOKEN, Service: 172.31.62.166:8020, Ident: (HDFS_DELEGATION_TOKEN token 162 for ubuntu)
+16/04/06 15:58:20 INFO knit.Client$: Submitting application application_1458491078518_0071
+16/04/06 15:58:21 INFO impl.YarnClientImpl: Submitted application application_1458491078518_0071
+```
+
+The scheduler will verify that a new worker has connected:
+
+```python
+distributed.core - INFO - Connection from 172.31.62.167:58512 to Scheduler
+distributed.scheduler - INFO - Register 172.31.62.167:42748
+```
+
+Let's kill the YARN application and now ask for 5 containers:
+
+```python
+>>> k.kill()
+16/04/06 16:51:00 INFO impl.YarnClientImpl: Killed application application_1458491078518_0071
+
+>>> appId = k.start(cmd, num_containers=5)
+
+```
+
+Again, the scheduler will also confirm we have new dworkers:
+
+```python
+distributed.core - INFO - Connection from 172.31.62.167:39885 to Scheduler
+distributed.scheduler - INFO - Register 172.31.62.167:43795
+distributed.core - INFO - Connection from 172.31.62.169:60726 to Scheduler
+distributed.scheduler - INFO - Register 172.31.62.169:52115
+distributed.core - INFO - Connection from 172.31.62.166:33672 to Scheduler
+distributed.scheduler - INFO - Register 172.31.62.166:37686
+distributed.core - INFO - Connection from 172.31.62.169:60727 to Scheduler
+distributed.scheduler - INFO - Register 172.31.62.169:51797
+distributed.core - INFO - Connection from 172.31.62.166:33673 to Scheduler
+distributed.scheduler - INFO - Register 172.31.62.166:33068
+```
+
+Five Dask workers are now running on in various YARN containers throughout our
+cluster -- we can now connect an Executor to the scheduler and begin our analytics
+processing with Dask.
+
+```python
+>>> from distributed import Executor
+>>> e = Executor('172.31.62.166:8786')
+
+....
+```
+---
+_hidden: yes

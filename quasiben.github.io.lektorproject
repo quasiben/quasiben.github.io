@@ -1,6 +1,6 @@
 [project]
 name = Benjamin Zaitlen
-description = Fearless Follower 
+description = Fearless Follower
 url = http://quasiben.github.io
 url_style = absolute
 language = en-US
@@ -9,3 +9,6 @@ author = Benjamin Zaitlen
 
 [servers.ghpages]
 target = ghpages+https://quasiben/quasiben.github.io
+
+[packages]
+lektor-markdown-highlighter = 0.1

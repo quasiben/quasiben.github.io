@@ -1,29 +1,49 @@
 <!doctype html>
 <meta charset="utf-8">
+<head>
+
+<link rel="stylesheet" href="{{ '/static/normalize.css'|url }}">
+<link rel="stylesheet" href="{{ '/static/skeleton.css'|url }}">
 <link rel="stylesheet" href="{{ '/static/style.css'|url }}">
+<link rel="stylesheet" href="{{ get_pygments_stylesheet()|url }}">
+
+<!-- Mobile Specific Metas
+–––––––––––––––––––––––––––––––––––––––––––––––––– -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- FONT
+–––––––––––––––––––––––––––––––––––––––––––––––––– -->
+<link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+
 <title>{% block title %}Welcome{% endblock %} — quasiben.github.io</title>
+</head>
 <body>
-  <header>
-    <h1>quasiben.github.io</h1>
-    <nav>
-      <ul class="nav navbar-nav">
-        <li{% if this._path == '/' %} class="active"{% endif
-          %}><a href="{{ '/'|url }}">Welcome</a></li>
-        {% for href, title in [
-          ['/blog', 'Blog'],
-          ['/projects', 'Projects'],
-          ['/about', 'About']
-        ] %}
-          <li{% if this.is_child_of(href) %} class="active"{% endif
-            %}><a href="{{ href|url }}">{{ title }}</a></li>
-        {% endfor %}
-      </ul>
-    </nav>
-  </header>
-  <div class="page">
-    {% block body %}{% endblock %}
-  </div>
-  <footer>
-    &copy; Copyright 2016 by Benjamin Zaitlen.
-  </footer>
+    <div class="container">
+
+        <div class="row">
+            <div class="three columns" style="margin-top: 5%">
+                <nav>
+                    <h3 id="logo">Benjamin Zaitlen</h3>
+                    <ul>
+                        <li{% if this._path == '/' %} class="active"{% endif
+                          %}><a href="{{ '/'|url }}">Index</a></li>
+                        {% for href, title in [
+                          ['/blog', 'Blog'],
+                        ] %}
+                          <li{% if this.is_child_of(href) %} class="active"{% endif
+                            %}><a href="{{ href|url }}">{{ title }}</a></li>
+                        {% endfor %}
+                        <li><a target="_blank" href="https://twitter.com/quasiben">Twitter</a>
+                        <li><a target="_blank" href="https://github.com/quasiben">Github</a>
+                    </ul>
+                </nav>
+                &nbsp;
+            </div>
+
+     <div class="nine columns"  style="margin-top: 5%">
+       {% block body %}{% endblock %}
+     </div>
+<!-- JS
+================================================== -->
+<script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
 </body>

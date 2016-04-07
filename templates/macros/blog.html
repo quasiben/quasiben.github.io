@@ -18,3 +18,8 @@
   {{ post.body }}
   </div>
 {% endmacro %}
+
+
+{% macro title_date_link(post, from_index=false) %}
+  <li><a href="{{ post|url }}">{{ post.title }}</a> -- {{ post.pub_date }} </li>
+{% endmacro %}
