@@ -12,3 +12,11 @@ pre code {
     background-color: #272822;
     color: #fff;
 }
+
+nav ul {
+   list-style: none;
+}
+
+nav a {
+   color: #222;
+}
