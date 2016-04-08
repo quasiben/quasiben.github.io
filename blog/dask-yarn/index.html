@@ -1,0 +1,176 @@
+<!doctype html>
+<meta charset="utf-8">
+<head>
+
+<link rel="stylesheet" href="/static/normalize.css">
+<link rel="stylesheet" href="/static/skeleton.css">
+<link rel="stylesheet" href="/static/style.css">
+<link rel="stylesheet" href="/static/pygments.css">
+
+<!-- Mobile Specific Metas
+–––––––––––––––––––––––––––––––––––––––––––––––––– -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- FONT
+–––––––––––––––––––––––––––––––––––––––––––––––––– -->
+<link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+
+<title>Dask + Yarn — quasiben.github.io</title>
+</head>
+<body>
+    <div class="container">
+
+        <div class="row">
+            <div class="three columns" style="margin-top: 5%">
+                <nav>
+                    <h3 id="logo">Benjamin Zaitlen</h3>
+                    <ul>
+                        <li><a href="/">Index</a></li>
+                        
+                          <li class="active"><a href="/blog/">Blog</a></li>
+                        
+                        <li><a target="_blank" href="https://twitter.com/quasiben">Twitter</a>
+                        <li><a target="_blank" href="https://github.com/quasiben">Github</a>
+                    </ul>
+                </nav>
+                &nbsp;
+            </div>
+
+     <div class="nine columns"  style="margin-top: 5%">
+       
+  
+  <div class="blog-post">
+  
+    <h2>Dask + Yarn</h2>
+  
+  <p class="meta">
+    written by
+    
+      Benjamin Zaitlen
+    
+    on 2016-04-08
+  </p>
+  <p>In the past few months we've seen a number of posts about Dask.  For those unfamiliar with it, Dask is an
+out-of-core parallel framework for data analysis.
+Some of the more recent examples (<a href="http://matthewrocklin.com/blog/work/2016/02/17/dask-distributed-part1">1</a>,
+<a href="http://matthewrocklin.com/blog/work/2016/02/22/dask-distributed-part-2">2</a>, <a href="http://matthewrocklin.com/blog/work/2016/02/26/dask-distributed-part-3">3</a>)
+have demonstrated Dask's distributed capabilities -- leveraging not just multi-core architectures,
+but also multi-node clusters.  We need a way to launch Dask workers on many machines in our cluster.
+In a small cluster we might do this by manually SSH-ing into many machines, using a job scheduler
+like SGE, or using the [dec2] tool to provision and bootstrap on ec2.  However, for larger clusters this
+approach breaks down, especially when the cluster is simultaneously running many parallel frameworks
+like Hadoop, Spark, Impala, etc.  In this case we typically use a cluster resource manager like
+YARN to start and stop jobs on the cluster and to manage their execution environments.
+In this post, I demonstrate a toy example using the YARN resource manager.</p>
+<h2>Knit</h2>
+<p>Unfortunately for the Python community, YARN is a JVM based framework.
+Fortunately for the Python community, we (with special thanks to <a href="https://github.com/NielsZeilemaker">Niels Zeilemaker</a>
+and support from <a href="https://www.continuum.io/">Continuum Analytics</a>) wrote <a href="http://knit.readthedocs.org/en/latest/">Knit</a>.
+Knit is a Python/Scala-based library which enables Python developers to request resources from YARN.
+As YARN is a container based resource manager, in addition to the job we wish to execute the job pack will
+also request container resources: number of containers, amount of memory, number of cores, queues, etc.</p>
+<h2>Dask+Knit</h2>
+<p>First, we start the scheduler on one of nodes -- typically, this will be an edge node or head node
+(a node where we can communicate with the YARN Resource Manager):</p>
+<pre><code>ubuntu@ip-172-31-62-166:~/$ dscheduler
+distributed.scheduler - INFO - Start Scheduler at:        172.31.62.166:8786
+distributed.scheduler - INFO -            http at:        172.31.62.166:9786
+</code></pre>
+<p>Dask is resilient to workers appearing and disappearing from the scheduler.
+With the scheduler up,  we can add <code>dworkers</code> and point them at the scheduler's IP
+and port by issuing the following command:</p>
+<pre><code>$ dworker 172.31.62.166:8786
+</code></pre>
+<p>Using <code>Knit</code>, we'll use the same command above and start simply by asking for one container with YARN
+defaults for CPU and Memory:</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">knit</span> <span class="kn">import</span> <span class="n">Knit</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">k</span> <span class="o">=</span> <span class="n">Knit</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">cmd</span> <span class="o">=</span> <span class="s2">&quot;dworker 172.31.62.166:8786&quot;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">appId</span> <span class="o">=</span> <span class="n">k</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">num_containers</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="mi">6</span><span class="o">/</span><span class="mo">04</span><span class="o">/</span><span class="mo">06</span> <span class="mi">15</span><span class="p">:</span><span class="mi">58</span><span class="p">:</span><span class="mi">16</span> <span class="n">INFO</span> <span class="n">knit</span><span class="o">.</span><span class="n">Client</span><span class="err">$</span><span class="p">:</span> <span class="n">Staring</span> <span class="n">Application</span> <span class="n">Master</span>
+<span class="n">Attempting</span> <span class="n">upload</span> <span class="n">of</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">ubuntu</span><span class="o">/</span><span class="n">knit</span><span class="o">/</span><span class="n">knit</span><span class="o">/</span><span class="n">java_libs</span><span class="o">/</span><span class="n">knit</span><span class="o">-</span><span class="mf">1.0</span><span class="o">-</span><span class="n">SNAPSHOT</span><span class="o">.</span><span class="n">jar</span>
+<span class="n">Uploading</span> <span class="n">resource</span> <span class="nb">file</span><span class="p">:</span><span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">ubuntu</span><span class="o">/</span><span class="n">knit</span><span class="o">/</span><span class="n">knit</span><span class="o">/</span><span class="n">java_libs</span><span class="o">/</span><span class="n">knit</span><span class="o">-</span><span class="mf">1.0</span><span class="o">-</span><span class="n">SNAPSHOT</span><span class="o">.</span><span class="n">jar</span> <span class="o">-&gt;</span> <span class="n">hdfs</span><span class="p">:</span><span class="o">//</span><span class="n">ip</span><span class="o">-</span><span class="mi">172</span><span class="o">-</span><span class="mi">31</span><span class="o">-</span><span class="mi">62</span><span class="o">-</span><span class="mf">166.</span><span class="n">ec2</span><span class="o">.</span><span class="n">internal</span><span class="p">:</span><span class="mi">8020</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="n">ubuntu</span><span class="o">/.</span><span class="n">knitDeps</span><span class="o">/</span><span class="n">knit</span><span class="o">-</span><span class="mf">1.0</span><span class="o">-</span><span class="n">SNAPSHOT</span><span class="o">.</span><span class="n">jarhdfs</span><span class="p">:</span><span class="o">//</span><span class="n">ip</span><span class="o">-</span><span class="mi">172</span><span class="o">-</span><span class="mi">31</span><span class="o">-</span><span class="mi">62</span><span class="o">-</span><span class="mf">166.</span><span class="n">ec2</span><span class="o">.</span><span class="n">internal</span><span class="p">:</span><span class="mi">8020</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="n">ubuntu</span><span class="o">/.</span><span class="n">knitDeps</span><span class="o">/</span><span class="n">knit</span><span class="o">-</span><span class="mf">1.0</span><span class="o">-</span><span class="n">SNAPSHOT</span><span class="o">.</span><span class="n">jar</span>
+<span class="mi">16</span><span class="o">/</span><span class="mo">04</span><span class="o">/</span><span class="mo">06</span> <span class="mi">15</span><span class="p">:</span><span class="mi">58</span><span class="p">:</span><span class="mi">20</span> <span class="n">INFO</span> <span class="n">impl</span><span class="o">.</span><span class="n">TimelineClientImpl</span><span class="p">:</span> <span class="n">Timeline</span> <span class="n">service</span> <span class="n">address</span><span class="p">:</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">ip</span><span class="o">-</span><span class="mi">172</span><span class="o">-</span><span class="mi">31</span><span class="o">-</span><span class="mi">62</span><span class="o">-</span><span class="mf">167.</span><span class="n">ec2</span><span class="o">.</span><span class="n">internal</span><span class="p">:</span><span class="mi">8188</span><span class="o">/</span><span class="n">ws</span><span class="o">/</span><span class="n">v1</span><span class="o">/</span><span class="n">timeline</span><span class="o">/</span>
+<span class="mi">16</span><span class="o">/</span><span class="mo">04</span><span class="o">/</span><span class="mo">06</span> <span class="mi">15</span><span class="p">:</span><span class="mi">58</span><span class="p">:</span><span class="mi">20</span> <span class="n">INFO</span> <span class="n">client</span><span class="o">.</span><span class="n">RMProxy</span><span class="p">:</span> <span class="n">Connecting</span> <span class="n">to</span> <span class="n">ResourceManager</span> <span class="n">at</span> <span class="n">ip</span><span class="o">-</span><span class="mi">172</span><span class="o">-</span><span class="mi">31</span><span class="o">-</span><span class="mi">62</span><span class="o">-</span><span class="mf">167.</span><span class="n">ec2</span><span class="o">.</span><span class="n">internal</span><span class="o">/</span><span class="mf">172.31</span><span class="o">.</span><span class="mf">62.167</span><span class="p">:</span><span class="mi">8050</span>
+<span class="n">Security</span> <span class="ow">is</span> <span class="n">enabled</span><span class="p">:</span> <span class="n">true</span>
+<span class="mi">16</span><span class="o">/</span><span class="mo">04</span><span class="o">/</span><span class="mo">06</span> <span class="mi">15</span><span class="p">:</span><span class="mi">58</span><span class="p">:</span><span class="mi">20</span> <span class="n">INFO</span> <span class="n">hdfs</span><span class="o">.</span><span class="n">DFSClient</span><span class="p">:</span> <span class="n">Created</span> <span class="n">HDFS_DELEGATION_TOKEN</span> <span class="n">token</span> <span class="mi">162</span> <span class="k">for</span> <span class="n">ubuntu</span> <span class="n">on</span> <span class="mf">172.31</span><span class="o">.</span><span class="mf">62.166</span><span class="p">:</span><span class="mi">8020</span>
+<span class="p">[</span><span class="n">Lorg</span><span class="o">.</span><span class="n">apache</span><span class="o">.</span><span class="n">hadoop</span><span class="o">.</span><span class="n">security</span><span class="o">.</span><span class="n">token</span><span class="o">.</span><span class="n">Token</span><span class="p">;</span><span class="nd">@5fdbded6</span>
+<span class="n">Got</span> <span class="n">dt</span> <span class="k">for</span> <span class="n">DFS</span><span class="p">[</span><span class="n">DFSClient</span><span class="p">[</span><span class="n">clientName</span><span class="o">=</span><span class="n">DFSClient_NONMAPREDUCE_</span><span class="o">-</span><span class="mi">453042160</span><span class="n">_12</span><span class="p">,</span> <span class="n">ugi</span><span class="o">=</span><span class="n">ubuntu</span><span class="nd">@CONTINUUM</span> <span class="p">(</span><span class="n">auth</span><span class="p">:</span><span class="n">KERBEROS</span><span class="p">)]]</span><span class="o">.</span><span class="n">getUri</span><span class="p">()</span> <span class="n">Kind</span><span class="p">:</span> <span class="n">HDFS_DELEGATION_TOKEN</span><span class="p">,</span> <span class="n">Service</span><span class="p">:</span> <span class="mf">172.31</span><span class="o">.</span><span class="mf">62.166</span><span class="p">:</span><span class="mi">8020</span><span class="p">,</span> <span class="n">Ident</span><span class="p">:</span> <span class="p">(</span><span class="n">HDFS_DELEGATION_TOKEN</span> <span class="n">token</span> <span class="mi">162</span> <span class="k">for</span> <span class="n">ubuntu</span><span class="p">)</span>
+<span class="mi">16</span><span class="o">/</span><span class="mo">04</span><span class="o">/</span><span class="mo">06</span> <span class="mi">15</span><span class="p">:</span><span class="mi">58</span><span class="p">:</span><span class="mi">20</span> <span class="n">INFO</span> <span class="n">knit</span><span class="o">.</span><span class="n">Client</span><span class="err">$</span><span class="p">:</span> <span class="n">Submitting</span> <span class="n">application</span> <span class="n">application_1458491078518_0071</span>
+<span class="mi">16</span><span class="o">/</span><span class="mo">04</span><span class="o">/</span><span class="mo">06</span> <span class="mi">15</span><span class="p">:</span><span class="mi">58</span><span class="p">:</span><span class="mi">21</span> <span class="n">INFO</span> <span class="n">impl</span><span class="o">.</span><span class="n">YarnClientImpl</span><span class="p">:</span> <span class="n">Submitted</span> <span class="n">application</span> <span class="n">application_1458491078518_0071</span>
+</pre></div>
+<p>The scheduler will verify that a new worker has connected:</p>
+<pre><code>distributed.core - INFO - Connection from 172.31.62.167:58512 to Scheduler
+distributed.scheduler - INFO - Register 172.31.62.167:42748
+</code></pre>
+<p>Let's kill the YARN application and now ask for 5 containers:</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="n">k</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+<span class="mi">16</span><span class="o">/</span><span class="mo">04</span><span class="o">/</span><span class="mo">06</span> <span class="mi">16</span><span class="p">:</span><span class="mi">51</span><span class="p">:</span><span class="mo">00</span> <span class="n">INFO</span> <span class="n">impl</span><span class="o">.</span><span class="n">YarnClientImpl</span><span class="p">:</span> <span class="n">Killed</span> <span class="n">application</span> <span class="n">application_1458491078518_0071</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">appId</span> <span class="o">=</span> <span class="n">k</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">num_containers</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+<p>Again, the scheduler will also confirm we have new dworkers:</p>
+<pre><code>distributed.core - INFO - Connection from 172.31.62.167:39885 to Scheduler
+distributed.scheduler - INFO - Register 172.31.62.167:43795
+distributed.core - INFO - Connection from 172.31.62.169:60726 to Scheduler
+distributed.scheduler - INFO - Register 172.31.62.169:52115
+distributed.core - INFO - Connection from 172.31.62.166:33672 to Scheduler
+distributed.scheduler - INFO - Register 172.31.62.166:37686
+distributed.core - INFO - Connection from 172.31.62.169:60727 to Scheduler
+distributed.scheduler - INFO - Register 172.31.62.169:51797
+distributed.core - INFO - Connection from 172.31.62.166:33673 to Scheduler
+distributed.scheduler - INFO - Register 172.31.62.166:33068
+</code></pre>
+<p>Five Dask workers are now running in various YARN containers throughout our cluster --
+we can now connect an Executor to the scheduler and begin our analytics processing with Dask.</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">distributed</span> <span class="kn">import</span> <span class="n">Executor</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">e</span> <span class="o">=</span> <span class="n">Executor</span><span class="p">(</span><span class="s1">&#39;172.31.62.166:8786&#39;</span><span class="p">)</span>
+
+<span class="o">....</span>
+</pre></div>
+<h2>Bootstrap-Fu</h2>
+<p>What wasn't mentioned in all of this is how we bootstrapped the cluster with Python, Dask, Knit, and all
+the other goodies.  In this particular case, I used
+<a href="https://docs.continuum.io/anaconda-cluster/index">Anaconda for cluster management</a>.
+This is an especially useful tool for both bootstrapping and managing Python (and R) remotely.</p>
+<p>I would recommend folks check out
+<a href="https://docs.continuum.io/anaconda-cluster/index">Anaconda for cluster management</a> --
+but still, there are times when we don't need a hammer when a chisel will do.  Within Knit, we have such a
+chisel.  Knit can create a small but complete Python environment -- with the dependencies
+you need -- and ship this env along with your command.  This is immeasurably valuable
+to those curious and excited about bringing the PyData stack to Hadoop.  For example,
+let's build and ship an env with Dask, Pandas, and Scikit-Learn and assume we are starting
+on a blank cluster.</p>
+<pre><code>$ conda/pip install knit
+$ python
+&gt;&gt;&gt; from knit import Knit
+&gt;&gt;&gt; k = Knit()
+&gt;&gt;&gt; env_zip = k.create_env(env_name='dev', packages=['python=3', 'distributed',
+...                                                  'dask', 'pandas', 'scikit-learn'])
+
+
+&gt;&gt;&gt; cmd = '$PYTHON_BIN $CONDA_PREFIX/bin/dworker 172.31.62.166:8786'
+&gt;&gt;&gt; appId = k.start(cmd=cmd, env=env_zip)
+...
+</code></pre>
+<p>And we're done! We've given the PyData community the space to leverage powerful
+tools we know and love in a previously non-friendly Python ecosystem.</p>
+<h2>Future Work</h2>
+<p>While we've demonstrated Dask on YARN, it's more cumbersome than I would like.  It would be better
+if the Scheduler talked directly to YARN and we have an
+<a href="https://github.com/dask/distributed/issues/128">open issue</a> discussing what that
+interface may look like.  We are also pursuing other tasks, namely:</p>
+<ul>
+<li>better logging</li>
+<li>dynamic container management</li>
+<li><a href="https://github.com/dask/knit/pull/52">Kerberos Authentication</a></li>
+</ul>
+
+  </div>
+
+
+     </div>
+<!-- JS
+================================================== -->
+<script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+</body>
