@@ -57,7 +57,7 @@ Some of the more recent examples (<a href="http://matthewrocklin.com/blog/work/2
 have demonstrated Dask's distributed capabilities -- leveraging not just multi-core architectures,
 but also multi-node clusters.  We need a way to launch Dask workers on many machines in our cluster.
 In a small cluster we might do this by manually SSH-ing into many machines, using a job scheduler
-like SGE, or using the [dec2] tool to provision and bootstrap on ec2.  However, for larger clusters this
+like SGE, or using the <a href="https://github.com/dask/dec2">dec2</a> tool to provision and bootstrap on ec2.  However, for larger clusters this
 approach breaks down, especially when the cluster is simultaneously running many parallel frameworks
 like Hadoop, Spark, Impala, etc.  In this case we typically use a cluster resource manager like
 YARN to start and stop jobs on the cluster and to manage their execution environments.
