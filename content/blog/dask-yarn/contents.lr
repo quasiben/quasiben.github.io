@@ -152,3 +152,4 @@ interface may look like.  We are also pursuing other tasks, namely:
  - better logging
  - dynamic container management
  - [Kerberos Authentication](https://github.com/dask/knit/pull/52)
+---
