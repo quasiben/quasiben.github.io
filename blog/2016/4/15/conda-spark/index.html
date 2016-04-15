@@ -51,52 +51,51 @@
     on 2016-04-15
   </p>
   <p>In my <a href="/blog/2016/4/8/dask-yarn/">previous post</a>, I described different scenarios for bootstrapping
-Python on a multi-node cluster.  There was a general solution using <a href="https://docs.continuum.io/anaconda-cluster/index">Anaconda for
-cluster management</a> and solution using a
-(custom conda env)[<a href="http://knit.readthedocs.org/en/latest/usage.html#zipped-conda-envs">http://knit.readthedocs.org/en/latest/usage.html#zipped-conda-envs</a>] deployed with
-<a href="/blog/2016/4/15/conda-spark/knit.readthedocs.org">Knit</a>.  I was asked if the machinery in Knit would also work for Spark.
-Sure, and, of course! In fact, much of Knit's design comes from Spark's
-<a href="https://github.com/apache/spark/tree/master/core/src/main/scala/org/apache/spark/deploy">deploy codebase</a>.</p>
-<p>I am going to demonstrate how we can ship a Python environment, complete with desired dependencies, as
+Python on a multi-node cluster.  I offered a general solution using <a href="https://docs.continuum.io/anaconda-cluster/index">Anaconda for
+cluster management</a> and solution using a <a href="http://knit.readthedocs.org/en/latest/usage.html#zipped-conda-envs">custom conda env</a> deployed with
+<a href="/blog/2016/4/15/conda-spark/knit.readthedocs.org">Knit</a>.</p>
+<p>In a follow-up to that post, I was asked if the machinery in Knit would also work for Spark.
+Sure--of course! In fact, much of Knit's design comes from Spark's
+<a href="https://github.com/apache/spark/tree/master/core/src/main/scala/org/apache/spark/deploy">deploy codebase</a>.  Here I am going to demonstrate how we can ship a Python environment, complete with desired dependencies, as
 part of a Spark job without installing Python on every node.</p>
 <h2>Spark YARN Deploy</h2>
-<p>I want to briefly describe key points in Spark's YARN deploy methodologies.
+<p>First I want to briefly describe key points in Spark's YARN deploy methodologies.
 After negotiating which resources to provision with YARN's Resource Manager, Spark
 asks for a directory to be constructed on HDFS: <code>/user/ubuntu/.sparkStaging/application_1460665326796_0065/</code>
 The directory will always be in the user's home, and the application ID issued by YARN is appended to the
-directory name.  (Thinking about this now, perhaps this obvious and straightforward to JAVA/JVM folks where
-bundling uber JARs has long been the practice in traditional Map-Reduce jobs.)  In any case,
-Spark then uploads itself :) to the <code>stagingDirectory</code> and when YARN provisions
+directory name.  (Thinking about this now, perhaps this is obvious and straightforward to JAVA/JVM folks where
+bundling Uber JARs has long been the practice in traditional Map-Reduce jobs.)  In any case,
+Spark then uploads itself :) to the <code>stagingDirectory</code>, and when YARN provisions
 a container, the contents of the directory are pulled down and the <em>spark-assembly jar</em> is executed.
-If you are using PySpark or sparkR a corresponding pyspark.zip and sparkr.zip will
+If you are using PySpark or sparkR, a corresponding pyspark.zip and sparkr.zip will
 be found in the staging directory as well.</p>
 <p>Occasionally, users see <a href="https://issues.apache.org/jira/browse/SPARK-10795">FileNotFoundException errors</a> --
-this can be caused because of incorrect: Spark Contexts, SPARK_HOME, and I have faint recollection
+this can be caused by a few things: incorrect Spark Contexts, incorrect SPARK_HOME, and I have faint recollection
 that there was a packaging problem once where pyspark.zip or sparkr.zip was missing? or could not
-be created do to permissions? Anyways...below is the output you will see when Spark works cleanly.</p>
+be created do to permissions? Anyway...below is the output you will see when Spark works cleanly.</p>
 <div class="highlight"><pre><span></span>16/04/15 13:01:03 INFO Client: Uploading resource file:/opt/anaconda/share/spark-1.6.0/lib/spark-assembly-1.6.0-hadoop2.6.0.jar -&gt; hdfs://ip-172-31-50-60:9000/user/ubuntu/.sparkStaging/application_1460665326796_0065/spark-assembly-1.6.0-hadoop2.6.0.jar
 16/04/15 13:01:07 INFO Client: Uploading resource file:/opt/anaconda/share/spark-1.6.0/python/lib/pyspark.zip -&gt; hdfs://ip-172-31-50-60:9000/user/ubuntu/.sparkStaging/application_1460665326796_0065/pyspark.zip
 </pre></div>
-<p>Not terribly exciting but positive confirmation that Spark is uploading local files to HDFS.</p>
+<p>Not terribly exciting, but positive confirmation that Spark is uploading local files to HDFS.</p>
 <h2>Bootstrap-Fu Redux</h2>
 <p>Mostly what I described above is what the YARN framework allows developers to do -- it's more
-that Spark implements a YARN application than Spark doing magical things (and Knit as well!).  If we
-were using Scala/Java, we package up everything in a jar and use spark-submit -- Done!  There's a little
-more work to be done for an Uber Python jar equivalent.</p>
+that Spark implements a YARN application than Spark doing magical things (and Knit as well!).  If I
+were using Scala/Java, I would package up everything in a jar and use spark-submit -- Done!</p>
+<p>Unfortunately, there's a little more work to be done for an Uber Python jar equivalent.</p>
 <h3>Hard-links won't travel</h3>
 <p>One of the killer features of <a href="http://conda.pydata.org/docs/">Conda</a> is <a href="http://conda.pydata.org/docs/using/envs.html#create-an-environment">environment management</a>.
-When conda creates a new environment it uses <a href="http://bencane.com/2013/10/10/symlinks-vs-hardlinks-and-how-to-create-them/">hard-links</a>
+When Conda creates a new environment, it uses <a href="http://bencane.com/2013/10/10/symlinks-vs-hardlinks-and-how-to-create-them/">hard-links</a>
 when possible.  Generally, this greatly reduces disk usage.  But, if we move the directory to another machine, we're
-probably just move a handful of hard-links and not the files themselves.  Fortunately, we can tell Conda: No!  Copy the files!</p>
+probably just moving a handful of hard-links and not the files themselves.  Fortunately, we can tell Conda: No!  Copy the files!</p>
 <p>For example:</p>
 <div class="highlight"><pre><span></span>conda create -p /home/ubuntu/dev --copy -y -q <span class="nv">python</span><span class="o">=</span><span class="m">3</span> pandas scikit-learn
 </pre></div>
 <p>By using the <code>--copy</code>, we "Install all packages using copies instead of hard- or soft-linking."  The headers
 in various files in the <code>bin/</code> directory may have lines like <code>#!/home/ubuntu/dev/bin/python</code>.  But we don't
-need to be concerned about that -- we're not going to be using: 2to3, idle, pip, etc. If we zipped up the
+need to be concerned about that -- we're not going to be using 2to3, idle, pip, etc. If we zipped up the
 environment, we could move this onto another machine of a similar OS type, execute Python, and we'd be able to load any
 library in the <code>lib/python3.45/site-packages</code> directory.</p>
-<p>Very close to our Uber Python jar -- with a zipped conda directory in mind, let's proceed.</p>
+<p>We're very close to our Uber Python jar -- now with a zipped Conda directory in mind, let's proceed.</p>
 <div class="highlight"><pre><span></span>zip -r dev.zip dev
 </pre></div>
 <h3>Death by ENV Vars</h3>
@@ -111,7 +110,7 @@ We'll be using:</p>
 <li><code>--archives</code>: include local tgz/jar/zip in <code>.sparkStaging</code> directory and pull down into temporary YARN container</li>
 </ul>
 <p>And we'll also need a test script.  The following is a reasonable test to prove
-which Python Spark is using -- we're writing a no-op function which return Python's various
+which Python Spark is using -- we're writing a no-op function which returns Python's various
 paths it is using to find libraries</p>
 <div class="highlight"><pre><span></span><span class="c1"># test_spark.py</span>
 <span class="kn">import</span> <span class="nn">os</span>
@@ -190,11 +189,11 @@ packages ...'</p>
 <blockquote><p>.../container_1460665326796_0070_01_000002/ANACONDA/dev/lib/python3.5/site-
 packages</p>
 </blockquote>
-<p>This is demonstrating that Spark is using the unzipped directory in the YARN container.  Tad da!</p>
+<p>This is demonstrating that Spark is using the unzipped directory in the YARN container.  Ta-da!</p>
 <h2>Thoughts</h2>
-<p>A little lackluster, so let's zoom out again:</p>
+<p>Okay, perhaps that's not super exciting, so let's zoom out again:</p>
 <ol>
-<li>We create a zipped conda environment with dependencies: pandas, python=3,...</li>
+<li>We create a zipped Conda environment with dependencies: pandas, python=3,...</li>
 <li>We successfully launched a Python Spark job without any Python binaries or libraries
 previously installed on the nodes.</li>
 </ol>
@@ -207,17 +206,17 @@ in use with <a href="https://streamparse.readthedocs.org/">streamparse</a>.
 Similarly to the implementation in JIRA ticket, <a href="/blog/2016/4/15/conda-spark/[streamparse](https://streamparse.readthedocs.org/en/stable/quickstart.html#disabling-configuring-virtualenv-creation">streamparse can ship a Python <code>requirements.txt</code></a>
  and construct a Python environment as part of a Streamparse Storm job!</p>
 <h2>Rrrrrrrrrrrrrr</h2>
-<p>Oh, and R conda environments work as well...but it's more involved:</p>
+<p>Oh, and R Conda environments work as well...but it's more involved:</p>
 <h3>Create/Munge R Env</h3>
 <p>First, it's pretty cool that Conda can install and manage R environments.
-Again, we create a conda environment with R binaries and libraries</p>
+Again, we create a Conda environment with R binaries and libraries</p>
 <div class="highlight"><pre><span></span>conda create -p /home/ubuntu/r_env --copy -y -q r-essentials -c r
 </pre></div>
 <p>R is not exactly relocatable so we need to munge a bit:</p>
 <div class="highlight"><pre><span></span>sed -i <span class="s2">&quot;s/home\/ubuntu/.r_env.zip/g&quot;</span> /home/ubuntu/r_env/bin/R
 zip -r r_env.zip r_env
 </pre></div>
-<p>My R skills are at a below novice level so the following test script could probably
+<p>My R skills are at a below-novice level, so the following test script could probably
 be improved</p>
 <div class="highlight"><pre><span></span><span class="c1"># /home/ubuntu/test_spark.R</span>
 <span class="kn">library</span><span class="p">(</span>SparkR<span class="p">)</span>
