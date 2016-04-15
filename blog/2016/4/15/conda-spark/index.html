@@ -57,6 +57,8 @@ cluster management</a> and solution using a
 <a href="/blog/2016/4/15/conda-spark/knit.readthedocs.org">Knit</a>.  I was asked if the machinery in Knit would also work for Spark.
 Sure, and, of course! In fact, much of Knit's design comes from Spark's
 <a href="https://github.com/apache/spark/tree/master/core/src/main/scala/org/apache/spark/deploy">deploy codebase</a>.</p>
+<p>I am going to demonstrate how we can ship a Python environment, complete with desired dependencies, as
+part of a Spark job without installing Python on every node.</p>
 <h2>Spark YARN Deploy</h2>
 <p>I want to briefly describe key points in Spark's YARN deploy methodologies.
 After negotiating which resources to provision with YARN's Resource Manager, Spark
@@ -198,9 +200,11 @@ previously installed on the nodes.</li>
 </ol>
 <p>There is an <a href="https://issues.apache.org/jira/browse/SPARK-13587">open JIRA ticket</a> discussing
 the option of having Spark ingest a <code>requirements.txt</code> and building the Python environment
-as a preamble to a Spark job.  This is also a fairly novel approach the same end.  I first saw this strategy
+as a preamble to a Spark job.  This is also a fairly novel approach to the same end -- using Spark
+to bootstrap a runtime environment.  It's even
+a bit more general, since the method described above relies on YARN. I first saw this strategy
 in use with <a href="https://streamparse.readthedocs.org/">streamparse</a>.
-Similarly to the JIRA, <a href="/blog/2016/4/15/conda-spark/[streamparse](https://streamparse.readthedocs.org/en/stable/quickstart.html#disabling-configuring-virtualenv-creation">streamparse can ship a Python <code>requirements.txt</code></a>
+Similarly to the implementation in JIRA ticket, <a href="/blog/2016/4/15/conda-spark/[streamparse](https://streamparse.readthedocs.org/en/stable/quickstart.html#disabling-configuring-virtualenv-creation">streamparse can ship a Python <code>requirements.txt</code></a>
  and construct a Python environment as part of a Streamparse Storm job!</p>
 <h2>Rrrrrrrrrrrrrr</h2>
 <p>Oh, and R conda environments work as well...but it's more involved:</p>
@@ -248,11 +252,11 @@ out <span class="o">&lt;-</span> SparkR<span class="o">:::</span>collect<span cl
 /home/ubuntu/test_spark.R
 </pre></div>
 <p>Example output:</p>
-<div class="highlight"><pre><span></span><span class="o">[[</span>1<span class="o">]]</span>
-<span class="o">[</span>1<span class="o">]</span> <span class="s2">&quot;ip-172-31-50-59, /var/lib/hadoop-yarn/data/1/yarn/local/usercache/ubuntu/filecache/230/sparkr.zip, /var/lib/hadoop-yarn/data/1/yarn/local/usercache/ubuntu/filecache/229/r_env.zip/r_env/lib64/R/library&quot;</span>
+<div class="highlight"><pre><span></span>[[1]]
+[1] &quot;ip-172-31-50-59, /var/lib/hadoop-yarn/data/1/yarn/local/usercache/ubuntu/filecache/230/sparkr.zip, /var/lib/hadoop-yarn/data/1/yarn/local/usercache/ubuntu/filecache/229/r_env.zip/r_env/lib64/R/library&quot;
 
-<span class="o">[[</span>2<span class="o">]]</span>
-<span class="o">[</span>1<span class="o">]</span> <span class="s2">&quot;ip-172-31-50-61, /var/lib/hadoop-yarn/data/1/yarn/local/usercache/ubuntu/filecache/183/sparkr.zip, /var/lib/hadoop-yarn/data/1/yarn/local/usercache/ubuntu/filecache/182/r_env.zip/r_env/lib64/R/library&quot;</span>
+[[2]]
+[1] &quot;ip-172-31-50-61, /var/lib/hadoop-yarn/data/1/yarn/local/usercache/ubuntu/filecache/183/sparkr.zip, /var/lib/hadoop-yarn/data/1/yarn/local/usercache/ubuntu/filecache/182/r_env.zip/r_env/lib64/R/library&quot;
 </pre></div>
 
   </div>
