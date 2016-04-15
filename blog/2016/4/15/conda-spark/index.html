@@ -1,0 +1,277 @@
+<!doctype html>
+<meta charset="utf-8">
+<head>
+
+<link rel="stylesheet" href="/static/normalize.css">
+<link rel="stylesheet" href="/static/skeleton.css">
+<link rel="stylesheet" href="/static/style.css">
+<link rel="stylesheet" href="/static/pygments.css">
+
+<!-- Mobile Specific Metas
+–––––––––––––––––––––––––––––––––––––––––––––––––– -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- FONT
+–––––––––––––––––––––––––––––––––––––––––––––––––– -->
+<link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+
+<title>Conda + Spark — quasiben.github.io</title>
+</head>
+<body>
+    <div class="container">
+
+        <div class="row">
+            <div class="three columns" style="margin-top: 5%">
+                <nav>
+                    <h3 id="logo">Benjamin Zaitlen</h3>
+                    <ul>
+                        <li><a href="/">Index</a></li>
+                        
+                          <li class="active"><a href="/blog/">Blog</a></li>
+                        
+                        <li><a target="_blank" href="https://twitter.com/quasiben">Twitter</a>
+                        <li><a target="_blank" href="https://github.com/quasiben">Github</a>
+                    </ul>
+                </nav>
+                &nbsp;
+            </div>
+
+     <div class="nine columns"  style="margin-top: 5%">
+       
+  
+  <div class="blog-post">
+  
+    <h2>Conda + Spark</h2>
+  
+  <p class="meta">
+    written by
+    
+      Benjamin Zaitlen
+    
+    on 2016-04-15
+  </p>
+  <p>In my <a href="/blog/2016/4/8/dask-yarn/">previous post</a>, I described different scenarios for bootstrapping
+Python on a multi-node cluster.  There was a general solution using <a href="https://docs.continuum.io/anaconda-cluster/index">Anaconda for
+cluster management</a> and solution using a
+(custom conda env)[<a href="http://knit.readthedocs.org/en/latest/usage.html#zipped-conda-envs">http://knit.readthedocs.org/en/latest/usage.html#zipped-conda-envs</a>] deployed with
+<a href="/blog/2016/4/15/conda-spark/knit.readthedocs.org">Knit</a>.  I was asked if the machinery in Knit would also work for Spark.
+Sure, and, of course! In fact, much of Knit's design comes from Spark's
+<a href="https://github.com/apache/spark/tree/master/core/src/main/scala/org/apache/spark/deploy">deploy codebase</a>.</p>
+<h2>Spark YARN Deploy</h2>
+<p>I want to briefly describe key points in Spark's YARN deploy methodologies.
+After negotiating which resources to provision with YARN's Resource Manager, Spark
+asks for a directory to be constructed on HDFS: <code>/user/ubuntu/.sparkStaging/application_1460665326796_0065/</code>
+The directory will always be in the user's home, and the application ID issued by YARN is appended to the
+directory name.  (Thinking about this now, perhaps this obvious and straightforward to JAVA/JVM folks where
+bundling uber JARs has long been the practice in traditional Map-Reduce jobs.)  In any case,
+Spark then uploads itself :) to the <code>stagingDirectory</code> and when YARN provisions
+a container, the contents of the directory are pulled down and the <em>spark-assembly jar</em> is executed.
+If you are using PySpark or sparkR a corresponding pyspark.zip and sparkr.zip will
+be found in the staging directory as well.</p>
+<p>Occasionally, users see <a href="https://issues.apache.org/jira/browse/SPARK-10795">FileNotFoundException errors</a> --
+this can be caused because of incorrect: Spark Contexts, SPARK_HOME, and I have faint recollection
+that there was a packaging problem once where pyspark.zip or sparkr.zip was missing? or could not
+be created do to permissions? Anyways...below is the output you will see when Spark works cleanly.</p>
+<div class="highlight"><pre><span></span>16/04/15 13:01:03 INFO Client: Uploading resource file:/opt/anaconda/share/spark-1.6.0/lib/spark-assembly-1.6.0-hadoop2.6.0.jar -&gt; hdfs://ip-172-31-50-60:9000/user/ubuntu/.sparkStaging/application_1460665326796_0065/spark-assembly-1.6.0-hadoop2.6.0.jar
+16/04/15 13:01:07 INFO Client: Uploading resource file:/opt/anaconda/share/spark-1.6.0/python/lib/pyspark.zip -&gt; hdfs://ip-172-31-50-60:9000/user/ubuntu/.sparkStaging/application_1460665326796_0065/pyspark.zip
+</pre></div>
+<p>Not terribly exciting but positive confirmation that Spark is uploading local files to HDFS.</p>
+<h2>Bootstrap-Fu Redux</h2>
+<p>Mostly what I described above is what the YARN framework allows developers to do -- it's more
+that Spark implements a YARN application than Spark doing magical things (and Knit as well!).  If we
+were using Scala/Java, we package up everything in a jar and use spark-submit -- Done!  There's a little
+more work to be done for an Uber Python jar equivalent.</p>
+<h3>Hard-links won't travel</h3>
+<p>One of the killer features of <a href="http://conda.pydata.org/docs/">Conda</a> is <a href="http://conda.pydata.org/docs/using/envs.html#create-an-environment">environment management</a>.
+When conda creates a new environment it uses <a href="http://bencane.com/2013/10/10/symlinks-vs-hardlinks-and-how-to-create-them/">hard-links</a>
+when possible.  Generally, this greatly reduces disk usage.  But, if we move the directory to another machine, we're
+probably just move a handful of hard-links and not the files themselves.  Fortunately, we can tell Conda: No!  Copy the files!</p>
+<p>For example:</p>
+<div class="highlight"><pre><span></span>conda create -p /home/ubuntu/dev --copy -y -q <span class="nv">python</span><span class="o">=</span><span class="m">3</span> pandas scikit-learn
+</pre></div>
+<p>By using the <code>--copy</code>, we "Install all packages using copies instead of hard- or soft-linking."  The headers
+in various files in the <code>bin/</code> directory may have lines like <code>#!/home/ubuntu/dev/bin/python</code>.  But we don't
+need to be concerned about that -- we're not going to be using: 2to3, idle, pip, etc. If we zipped up the
+environment, we could move this onto another machine of a similar OS type, execute Python, and we'd be able to load any
+library in the <code>lib/python3.45/site-packages</code> directory.</p>
+<p>Very close to our Uber Python jar -- with a zipped conda directory in mind, let's proceed.</p>
+<div class="highlight"><pre><span></span>zip -r dev.zip dev
+</pre></div>
+<h3>Death by ENV Vars</h3>
+<p>We are going to need a handful of specific command line
+options and environment variables:
+<a href="http://spark.apache.org/docs/latest/running-on-yarn.html">Spark Yarn Configuration</a> and
+<a href="http://spark.apache.org/docs/latest/configuration.html#environment-variables">Spark Environment Variables</a>.
+We'll be using:</p>
+<ul>
+<li><code>PYSPARK_PYTHON</code>: The Python binary Spark should use</li>
+<li><code>spark.yarn.appMasterEnv.PYSPARK_PYTHON</code> (though this one could be wrong/unnecessary/only used for --master yarn-cluster)</li>
+<li><code>--archives</code>: include local tgz/jar/zip in <code>.sparkStaging</code> directory and pull down into temporary YARN container</li>
+</ul>
+<p>And we'll also need a test script.  The following is a reasonable test to prove
+which Python Spark is using -- we're writing a no-op function which return Python's various
+paths it is using to find libraries</p>
+<div class="highlight"><pre><span></span><span class="c1"># test_spark.py</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">pyspark</span> <span class="kn">import</span> <span class="n">SparkContext</span>
+<span class="kn">from</span> <span class="nn">pyspark</span> <span class="kn">import</span> <span class="n">SparkConf</span>
+
+<span class="n">conf</span> <span class="o">=</span> <span class="n">SparkConf</span><span class="p">()</span>
+<span class="n">conf</span><span class="o">.</span><span class="n">setAppName</span><span class="p">(</span><span class="s2">&quot;get-hosts&quot;</span><span class="p">)</span>
+
+<span class="n">sc</span> <span class="o">=</span> <span class="n">SparkContext</span><span class="p">(</span><span class="n">conf</span><span class="o">=</span><span class="n">conf</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">noop</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">socket</span>
+    <span class="kn">import</span> <span class="nn">sys</span>
+    <span class="k">return</span> <span class="n">socket</span><span class="o">.</span><span class="n">gethostname</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">)</span>
+
+<span class="n">rdd</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">parallelize</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">),</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">hosts</span> <span class="o">=</span> <span class="n">rdd</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">noop</span><span class="p">)</span><span class="o">.</span><span class="n">distinct</span><span class="p">()</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+<span class="k">print</span><span class="p">(</span><span class="n">hosts</span><span class="p">)</span>
+</pre></div>
+<p>And executing everything together:</p>
+<div class="highlight"><pre><span></span> <span class="nv">PYSPARK_PYTHON</span><span class="o">=</span>./ANACONDA/dev/bin/python spark-submit <span class="se">\</span>
+ --conf spark.yarn.appMasterEnv.PYSPARK_PYTHON<span class="o">=</span>./ANACONDA/dev/bin/python <span class="se">\</span>
+ --master yarn-cluster <span class="se">\</span>
+ --archives /home/ubuntu/dev.zip#ANACONDA <span class="se">\</span>
+ /home/ubuntu/test_spark.py
+</pre></div>
+<p>We'll get the following output in the yarn logs:</p>
+<blockquote><p>'ip-172-31-50-61 . /var/lib/hadoop-
+yarn/data/1/yarn/local/usercache/ubuntu/filecache/207/spark-assembly-1.6.0-
+hadoop2.6.0.jar /var/lib/hadoop-yarn/data/1/yarn/local/usercache/ubuntu/appcach
+e/application_1460665326796_0070/container_1460665326796_0070_01_000003/{{PWD}}
+/pyspark.zip<CPS>{{PWD}}/py4j-0.9-src.zip /var/lib/hadoop-yarn/data/1/yarn/loca
+l/usercache/ubuntu/appcache/application_1460665326796_0070/container_1460665326
+796_0070_01_000003/pyspark.zip /var/lib/hadoop-yarn/data/1/yarn/local/usercache
+/ubuntu/appcache/application_1460665326796_0070/container_1460665326796_0070_01
+_000003/py4j-0.9-src.zip /var/lib/hadoop-yarn/data/1/yarn/local/usercache/ubunt
+u/appcache/application_1460665326796_0070/container_1460665326796_0070_01_00000
+3/ANACONDA/dev/lib/python35.zip /var/lib/hadoop-yarn/data/1/yarn/local/usercach
+e/ubuntu/appcache/application_1460665326796_0070/container_1460665326796_0070_0
+1_000003/ANACONDA/dev/lib/python3.5 /var/lib/hadoop-yarn/data/1/yarn/local/user
+cache/ubuntu/appcache/application_1460665326796_0070/container_1460665326796_00
+70_01_000003/ANACONDA/dev/lib/python3.5/plat-linux /var/lib/hadoop-yarn/data/1/
+yarn/local/usercache/ubuntu/appcache/application_1460665326796_0070/container_1
+460665326796_0070_01_000003/ANACONDA/dev/lib/python3.5/lib-dynload
+/var/lib/hadoop-yarn/data/1/yarn/local/usercache/ubuntu/filecache/208/dev.
+zip/dev/lib/python3.5/site-packages/setuptools-20.6.7-py3.5.egg /var/lib/hadoop
+-yarn/data/1/yarn/local/usercache/ubuntu/appcache/application_1460665326796_007
+0/container_1460665326796_0070_01_000003/ANACONDA/dev/lib/python3.5/site-
+packages ...',
+'ip-172-31-50-62 . /var/lib/hadoop-
+yarn/data/1/yarn/local/usercache/ubuntu/filecache/209/spark-assembly-1.6.0-
+hadoop2.6.0.jar /var/lib/hadoop-yarn/data/1/yarn/local/usercache/ubuntu/appcach
+e/application_1460665326796_0070/container_1460665326796_0070_01_000002/{{PWD}}
+/pyspark.zip<CPS>{{PWD}}/py4j-0.9-src.zip /var/lib/hadoop-yarn/data/1/yarn/loca
+l/usercache/ubuntu/appcache/application_1460665326796_0070/container_1460665326
+796_0070_01_000002/pyspark.zip /var/lib/hadoop-yarn/data/1/yarn/local/usercache
+/ubuntu/appcache/application_1460665326796_0070/container_1460665326796_0070_01
+_000002/py4j-0.9-src.zip /var/lib/hadoop-yarn/data/1/yarn/local/usercache/ubunt
+u/appcache/application_1460665326796_0070/container_1460665326796_0070_01_00000
+2/ANACONDA/dev/lib/python35.zip /var/lib/hadoop-yarn/data/1/yarn/local/usercach
+e/ubuntu/appcache/application_1460665326796_0070/container_1460665326796_0070_0
+1_000002/ANACONDA/dev/lib/python3.5 /var/lib/hadoop-yarn/data/1/yarn/local/user
+cache/ubuntu/appcache/application_1460665326796_0070/container_1460665326796_00
+70_01_000002/ANACONDA/dev/lib/python3.5/plat-linux /var/lib/hadoop-yarn/data/1/
+yarn/local/usercache/ubuntu/appcache/application_1460665326796_0070/container_1
+460665326796_0070_01_000002/ANACONDA/dev/lib/python3.5/lib-dynload
+/var/lib/hadoop-yarn/data/1/yarn/local/usercache/ubuntu/filecache/211/dev.
+zip/dev/lib/python3.5/site-packages/setuptools-20.6.7-py3.5.egg /var/lib/hadoop
+-yarn/data/1/yarn/local/usercache/ubuntu/appcache/application_1460665326796_007
+0/container_1460665326796_0070_01_000002/ANACONDA/dev/lib/python3.5/site-
+packages ...'</p>
+</blockquote>
+<p>It's a little hard to parse -- what should be noted are file paths like:</p>
+<blockquote><p>.../container_1460665326796_0070_01_000002/ANACONDA/dev/lib/python3.5/site-
+packages</p>
+</blockquote>
+<p>This is demonstrating that Spark is using the unzipped directory in the YARN container.  Tad da!</p>
+<h2>Thoughts</h2>
+<p>A little lackluster, so let's zoom out again:</p>
+<ol>
+<li>We create a zipped conda environment with dependencies: pandas, python=3,...</li>
+<li>We successfully launched a Python Spark job without any Python binaries or libraries
+previously installed on the nodes.</li>
+</ol>
+<p>There is an <a href="https://issues.apache.org/jira/browse/SPARK-13587">open JIRA ticket</a> discussing
+the option of having Spark ingest a <code>requirements.txt</code> and building the Python environment
+as a preamble to a Spark job.  This is also a fairly novel approach the same end.  I first saw this strategy
+in use with <a href="https://streamparse.readthedocs.org/">streamparse</a>.
+Similarly to the JIRA, <a href="/blog/2016/4/15/conda-spark/[streamparse](https://streamparse.readthedocs.org/en/stable/quickstart.html#disabling-configuring-virtualenv-creation">streamparse can ship a Python <code>requirements.txt</code></a>
+ and construct a Python environment as part of a Streamparse Storm job!</p>
+<h2>Rrrrrrrrrrrrrr</h2>
+<p>Oh, and R conda environments work as well...but it's more involved:</p>
+<h3>Create/Munge R Env</h3>
+<p>First, it's pretty cool that Conda can install and manage R environments.
+Again, we create a conda environment with R binaries and libraries</p>
+<div class="highlight"><pre><span></span>conda create -p /home/ubuntu/r_env --copy -y -q r-essentials -c r
+</pre></div>
+<p>R is not exactly relocatable so we need to munge a bit:</p>
+<div class="highlight"><pre><span></span>sed -i <span class="s2">&quot;s/home\/ubuntu/.r_env.zip/g&quot;</span> /home/ubuntu/r_env/bin/R
+zip -r r_env.zip r_env
+</pre></div>
+<p>My R skills are at a below novice level so the following test script could probably
+be improved</p>
+<div class="highlight"><pre><span></span><span class="c1"># /home/ubuntu/test_spark.R</span>
+<span class="kn">library</span><span class="p">(</span>SparkR<span class="p">)</span>
+sc <span class="o">&lt;-</span> sparkR.init<span class="p">(</span>appName<span class="o">=</span><span class="s">&quot;get-hosts-R&quot;</span><span class="p">)</span>
+
+noop <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> <span class="p">{</span>
+  path <span class="o">&lt;-</span> <span class="kp">toString</span><span class="p">(</span><span class="m">.</span>libPaths<span class="p">())</span>
+  host <span class="o">&lt;-</span> <span class="kp">toString</span><span class="p">(</span><span class="kp">Sys.info</span><span class="p">()[</span><span class="s">&#39;nodename&#39;</span><span class="p">])</span>
+  host_path <span class="o">&lt;-</span> <span class="kp">toString</span><span class="p">(</span><span class="kp">cbind</span><span class="p">(</span>host<span class="p">,</span>path<span class="p">))</span>
+  host_path
+<span class="p">}</span>
+
+
+rdd <span class="o">&lt;-</span> SparkR<span class="o">:::</span>parallelize<span class="p">(</span>sc<span class="p">,</span> <span class="m">1</span><span class="o">:</span><span class="m">1000</span><span class="p">,</span> <span class="m">100</span><span class="p">)</span>
+hosts <span class="o">&lt;-</span> SparkR<span class="o">:::</span>map<span class="p">(</span>rdd<span class="p">,</span> noop<span class="p">)</span>
+d_hosts <span class="o">&lt;-</span> SparkR<span class="o">:::</span>distinct<span class="p">(</span>hosts<span class="p">)</span>
+out <span class="o">&lt;-</span> SparkR<span class="o">:::</span>collect<span class="p">(</span>d_hosts<span class="p">)</span>
+<span class="kp">print</span><span class="p">(</span>out<span class="p">)</span>
+</pre></div>
+<p>Execute (and the real death by options):</p>
+<div class="highlight"><pre><span></span><span class="nv">SPARKR_DRIVER_R</span><span class="o">=</span>./r_env.zip/r_env/lib/R spark-submit --master yarn-cluster <span class="se">\</span>
+--conf spark.yarn.appMasterEnv.R_HOME<span class="o">=</span>./r_env.zip/r_env/lib64/R <span class="se">\</span>
+--conf spark.yarn.appMasterEnv.RHOME<span class="o">=</span>./r_env.zip/r_env <span class="se">\</span>
+--conf spark.yarn.appMasterEnv.R_SHARE_DIR<span class="o">=</span>./r_env.zip/r_env/lib/R/share <span class="se">\</span>
+--conf spark.yarn.appMasterEnv.R_INCLUDE_DIR<span class="o">=</span>./r_env.zip/r_env/lib/R/include <span class="se">\</span>
+--conf spark.executorEnv.R_HOME<span class="o">=</span>./r_env.zip/r_env/lib64/R <span class="se">\</span>
+--conf spark.executorEnv.RHOME<span class="o">=</span>./r_env.zip/r_env <span class="se">\</span>
+--conf spark.executorEnv.R_SHARE_DIR<span class="o">=</span>./r_env.zip/r_env/lib/R/share <span class="se">\</span>
+--conf spark.executorEnv.R_INCLUDE_DIR<span class="o">=</span>./r_env.zip/r_env/lib/R/include <span class="se">\</span>
+--conf  spark.r.command<span class="o">=</span>./r_env.zip/r_env/bin/Rscript <span class="se">\</span>
+--archives r_env.zip <span class="se">\</span>
+/home/ubuntu/test_spark.R
+</pre></div>
+<p>Example output:</p>
+<div class="highlight"><pre><span></span><span class="o">[[</span>1<span class="o">]]</span>
+<span class="o">[</span>1<span class="o">]</span> <span class="s2">&quot;ip-172-31-50-59, /var/lib/hadoop-yarn/data/1/yarn/local/usercache/ubuntu/filecache/230/sparkr.zip, /var/lib/hadoop-yarn/data/1/yarn/local/usercache/ubuntu/filecache/229/r_env.zip/r_env/lib64/R/library&quot;</span>
+
+<span class="o">[[</span>2<span class="o">]]</span>
+<span class="o">[</span>1<span class="o">]</span> <span class="s2">&quot;ip-172-31-50-61, /var/lib/hadoop-yarn/data/1/yarn/local/usercache/ubuntu/filecache/183/sparkr.zip, /var/lib/hadoop-yarn/data/1/yarn/local/usercache/ubuntu/filecache/182/r_env.zip/r_env/lib64/R/library&quot;</span>
+</pre></div>
+
+  </div>
+
+
+     </div>
+
+<!-- JS
+================================================== -->
+<script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-76136990-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</body>
