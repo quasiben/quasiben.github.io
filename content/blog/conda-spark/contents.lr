@@ -9,7 +9,7 @@ body:
 In my [previous post](/blog/2016/4/8/dask-yarn/), I described different scenarios for bootstrapping
 Python on a multi-node cluster.  I offered a general solution using [Anaconda for
 cluster management](https://docs.continuum.io/anaconda-cluster/index) and solution using a [custom conda env](http://knit.readthedocs.org/en/latest/usage.html#zipped-conda-envs) deployed with
-[Knit](knit.readthedocs.org).  
+[Knit](http://knit.readthedocs.org).
 
 In a follow-up to that post, I was asked if the machinery in Knit would also work for Spark.
 Sure--of course! In fact, much of Knit's design comes from Spark's
@@ -46,7 +46,7 @@ Not terribly exciting, but positive confirmation that Spark is uploading local f
 
 Mostly what I described above is what the YARN framework allows developers to do -- it's more
 that Spark implements a YARN application than Spark doing magical things (and Knit as well!).  If I
-were using Scala/Java, I would package up everything in a jar and use spark-submit -- Done!  
+were using Scala/Java, I would package up everything in a jar and use spark-submit -- Done!
 
 Unfortunately, there's a little more work to be done for an Uber Python jar equivalent.
 
@@ -192,7 +192,7 @@ as a preamble to a Spark job.  This is also a fairly novel approach to the same 
 to bootstrap a runtime environment.  It's even
 a bit more general, since the method described above relies on YARN. I first saw this strategy
 in use with [streamparse](https://streamparse.readthedocs.org/).
-Similarly to the implementation in JIRA ticket, [streamparse can ship a Python `requirements.txt`]([streamparse](https://streamparse.readthedocs.org/en/stable/quickstart.html#disabling-configuring-virtualenv-creation)
+Similarly to the implementation in JIRA ticket, [streamparse can ship a Python `requirements.txt`](https://streamparse.readthedocs.org/en/stable/quickstart.html#disabling-configuring-virtualenv-creation)
  and construct a Python environment as part of a Streamparse Storm job!
 
  ## Rrrrrrrrrrrrrr
