@@ -53,7 +53,7 @@
   <p>In my <a href="/blog/2016/4/8/dask-yarn/">previous post</a>, I described different scenarios for bootstrapping
 Python on a multi-node cluster.  I offered a general solution using <a href="https://docs.continuum.io/anaconda-cluster/index">Anaconda for
 cluster management</a> and solution using a <a href="http://knit.readthedocs.org/en/latest/usage.html#zipped-conda-envs">custom conda env</a> deployed with
-<a href="/blog/2016/4/15/conda-spark/knit.readthedocs.org">Knit</a>.</p>
+<a href="http://knit.readthedocs.org">Knit</a>.</p>
 <p>In a follow-up to that post, I was asked if the machinery in Knit would also work for Spark.
 Sure--of course! In fact, much of Knit's design comes from Spark's
 <a href="https://github.com/apache/spark/tree/master/core/src/main/scala/org/apache/spark/deploy">deploy codebase</a>.  Here I am going to demonstrate how we can ship a Python environment, complete with desired dependencies, as
