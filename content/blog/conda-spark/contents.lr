@@ -264,4 +264,3 @@ Example output:
 [1] "ip-172-31-50-61, /var/lib/hadoop-yarn/data/1/yarn/local/usercache/ubuntu/filecache/183/sparkr.zip, /var/lib/hadoop-yarn/data/1/yarn/local/usercache/ubuntu/filecache/182/r_env.zip/r_env/lib64/R/library"
 ```
 ---
-_discoverable: no
