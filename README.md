@@ -1,4 +1,6 @@
 quasiben.github.io
 ==================
 
-Website
+```bash
+lektor server
+```
