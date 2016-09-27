@@ -83,6 +83,7 @@ in detail, our solution.  We drew on our previous experiences running tutorials/
 <li><a href="http://kubernetes.io/docs/user-guide/namespaces/">namespaces</a>: named and isolated clusters</li>
 <li><a href="http://kubernetes.io/docs/user-guide/replication-controller/">replication controller</a>: a scalable Pod.</li>
 </ul>
+<p>At a high level the web application launches a specific image within a unique namespace, expose ports, requests resources, and set environment variables.  And all of this is running in containers managed by Kubernetes.  The web app is a docker container, the proxy app is another docker container, the namespaced clusters are a collection of docker containers (the workers are replication controllers).  It's Dockers as far as the eye can see!.</p>
 <h2>Architecture</h2>
 <p>Much of our architecture is inspired by <a href="https://github.com/jupyter/tmpnb">tmpnb</a> which launches temporary Jupyter notebooks using Docker.  <em>I should also note that my friend and colleague, Daniel Rodriguez, contributed significantly to this effort and he worked out much of architecture and implementation with Kubernetes.</em></p>
 <p>We want a single page web application to launch an isolated N-node cluster, where each cluster is running a variety of distributed computing engines, a Jupyter notebook, and can scale the number workers in the cluster.</p>
@@ -161,9 +162,6 @@ swagger-codegen generate -i v1.json -l python
 </li>
 </ul>
 <p>By declaring the workers as replicationControllers we can scale up and down the workers in a given cluster. This is done in a <a href="https://github.com/quasiben/kubernetes-scipy-2016/blob/8c4a04bd7730d92086c00eb3e2b3b7e14efddf7c/app/core/app/handlers.py#L124">single tunable parameter</a>.  During the tutorial we also used the feature to show off the flexibility of Dask; with a running cluster executing a Dask job, we scaled the number of workers to 100 and Dask happily added 92 more workers to the job!</p>
-<h2>The Sea of Containers</h2>
-<p><center><img src="/static/images/sea_of_containers.jpg" alt="An image" width="500" height="300"></center></p><p>credit: <a href="http://panalpina.com/www/global/en/home/newsroom.html#/news/a-sea-of-containers-148839">http://panalpina.com/www/global/en/home/newsroom.html#/news/a-sea-of-containers-148839</a></p>
-<p>At a high level the web application launches a specific image within a unique namespace, expose ports, requests resources, and set environment variables.  And all of this is running in containers managed by Kubernetes.  The web app is a docker container, the proxy app is another docker container, the namespaced clusters are a collection of docker containers (the workers are replication controllers).  It's Dockers as far as the eye can see!.</p>
 <h2>Outcomes</h2>
 <p>We ran the tutorial for a class size of 100+ students and additionally during Matt Rocklin's and Jim Crists <a href="https://www.youtube.com/watch?v=PAGjm4BMKlk">Dask Talk</a>.  I often worry and expect things to crash spectacularly and, in our case, everything went surprisingly well!  The first part of the tutorial was designed to be executed on personal machines and, as I said mentioned before, machines were all varieties of OSes -- including surface and samsung tablets!  We designed the cluster to clone all of our tutorial materials from Github so students, should install problems arise, could continue following along without a prolonged time resolving setup issues.</p>
 
