@@ -149,7 +149,8 @@ swagger-codegen generate -i v1.json -l python
 <p><em>Note: normally the recommendation is to run one service per docker image -- in our case, we're going to run up to four.  This is ok here mostly because the intended usage is to only work with one service at a time.  The various schedulers and workers are idling and not consuming many resources (mem/cpu)</em></p>
 <p>The modes of the same image are differentiated by the command executed when launching</p>
 <ul>
-<li><a href="https://github.com/quasiben/kubernetes-scipy-2016/blob/8c4a04bd7730d92086c00eb3e2b3b7e14efddf7c/images/all_services/start-scheduler.sh">scheduler command</a><ul>
+<li><p><a href="https://github.com/quasiben/kubernetes-scipy-2016/blob/8c4a04bd7730d92086c00eb3e2b3b7e14efddf7c/images/all_services/start-scheduler.sh">scheduler command</a></p>
+<ul>
 <li><a href="https://github.com/quasiben/kubernetes-scipy-2016/blob/8c4a04bd7730d92086c00eb3e2b3b7e14efddf7c/app/core/pod.py#L64">setting scheduler command</a></li>
 </ul>
 </li>
