@@ -15,7 +15,7 @@
 –––––––––––––––––––––––––––––––––––––––––––––––––– -->
 <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
 
-<title>Scipy Setup — quasiben.github.io</title>
+<title>SciPy Tutorial Setup On Kubernetes — quasiben.github.io</title>
 </head>
 <body>
     <div class="container">
@@ -41,7 +41,7 @@
   
   <div class="blog-post">
   
-    <h2>Scipy Setup</h2>
+    <h2>SciPy Tutorial Setup On Kubernetes</h2>
   
   <p class="meta">
     written by
@@ -51,7 +51,7 @@
     on 2016-09-24
   </p>
   <p>This past summer I had the opportunity to work with Min Ragan-Kelley and Matthew Rocklin
-on delivering a tutorial at the scientific computing conference, [Scipy 2016] (<a href="https://scipy2016.scipy.org/">https://scipy2016.scipy.org/</a>), in Austin, Texas.  We set out to teach folks generally about parallel computing in the context of data analysis and not necessarily about anyone one tool.  That is, focusing on core concepts rather than a specific framework.  There is something strangely visceral when you are first learning about distributed computation and different hostnames pop up when executing a simple map across the cluster; and to that end, we wanted to give students access to a cluster capable of doing significant work -- something more than a toy
+on delivering a tutorial at the scientific computing conference, <a href="https://scipy2016.scipy.org/">SciPy 2016</a>, in Austin, Texas.  We set out to teach folks generally about parallel computing in the context of data analysis and not necessarily about anyone one tool.  That is, focusing on core concepts rather than a specific framework.  There is something strangely visceral when you are first learning about distributed computation and different hostnames pop up when executing a simple map across the cluster; and to that end, we wanted to give students access to a cluster capable of doing significant work -- something more than a toy
 The tutorial was well received and all the content is publicly
 available:</p>
 <ul>
@@ -66,8 +66,8 @@ in detail, our solution.  We drew on our previous experiences running tutorials/
 <p>In graduate school, I helped with summer workshops teaching students, postdocs, and professors about Python in the context of biophysics and complex systems.  Attendees showed up with a variety of machines and OSes: Linux, Windows, and OSX (both Intel and PPC).  At least a collective day was spent getting our software and materials installed on all the machines so students could get hands on experience.  Often our issues were handling multiple versions of Python but also odd bugs which invariably arise during trainings: permission errors, hard drive size limits, VPN blocking...</p>
 <p>More recently, I helped build and run a tutorial at SciPy 2013: <a href="https://conference.scipy.org/scipy2013/tutorial_detail.php?id=102">Data Processing with  Python</a>.  Each student was given access to an individual clusters preconfigured with: Hadoop MapReduce, Disco, and IPython Parallel. It was a tremendous effort to stand this up and involved piles of bash, Python, and the magic of <a href="http://star.mit.edu/cluster/">StarCluster</a> -- and it all had to be setup before the class started with the caveat that total provisioning took ~5 hours.  Still, it worked -- though, I was exhausted.</p>
 <h2>Hello Kubernetes</h2>
-<p>Not wanting to repeat the mistakes of the past and hearing great things about <a href="https://cloud.google.com/compute/">GCE</a> and <a href="/blog/2016/9/24/scipy-setup/kubernetes.io/">Kubernetes</a> we committed early on to the Google Platform.  Generously, Google donated resources for us to build out and iterate on our tutorial cluster platform.  We are extremely appreciative of their support!</p>
-<p>"Kubernetes is an open-source system for automating deployment, scaling, and management of containerized applications."  What this means, is that if you have a service wrapped up in docker image, Kubernetes can help you do a number of things: deploy the image to a machine, scale the services and load balance between N containers, and handle things like auto-restarting, rolling upgrades, and generally the management that is often involved with running larger scale web services.  Additionally, the Kubernetes cluster itself is fungible -- with a few button clicks, Kubernetes can manage a single medium-sized instance to dozens of extremely large instances.</p>
+<p>Not wanting to repeat the mistakes of the past and hearing great things about <a href="https://cloud.google.com/compute/">GCE</a> and <a href="/blog/2016/9/24/scipy-setup/kubernetes.io/">Kubernetes</a> we committed early on to the Google Cloud Platform.  Generously, Google donated resources for us to build out and iterate on our tutorial cluster platform.  We are extremely appreciative of their support!</p>
+<p>"Kubernetes is an open-source system for automating deployment, scaling, and management of containerized applications."  What this means, is that if you have a service wrapped up in docker image, Kubernetes can help you do a number of things: deploy the image to a machine, scale the services and load balance between N containers, and handle things like auto-restarting, rolling upgrades, and generally the management that is often involved with running larger scale web services.  Additionally, the Kubernetes cluster itself is fungible -- with a few button clicks, GKE can manage Kubernetes installed on a single medium-sized instance to dozens of extremely large instances.  This is especially helpful when needing to scale computing resources as demand increases.</p>
 <p>It's worth repeating that using Kubernetes does mean buying into the container ecosystem -- in our case that means Docker.</p>
 <h3>The Sea of Containers</h3>
 <p><center><img src="/static/images/sea_of_containers.jpg" alt="An image" width="500" height="300"></center></p><p>credit: <a href="http://panalpina.com/www/global/en/home/newsroom.html#/news/a-sea-of-containers-148839">http://panalpina.com/www/global/en/home/newsroom.html#/news/a-sea-of-containers-148839</a></p>
