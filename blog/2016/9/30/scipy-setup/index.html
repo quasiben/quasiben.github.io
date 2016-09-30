@@ -1,0 +1,188 @@
+<!doctype html>
+<meta charset="utf-8">
+<head>
+
+<link rel="stylesheet" href="/static/normalize.css">
+<link rel="stylesheet" href="/static/skeleton.css">
+<link rel="stylesheet" href="/static/style.css">
+<link rel="stylesheet" href="/static/pygments.css">
+
+<!-- Mobile Specific Metas
+–––––––––––––––––––––––––––––––––––––––––––––––––– -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- FONT
+–––––––––––––––––––––––––––––––––––––––––––––––––– -->
+<link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+
+<title>SciPy Tutorial Setup On Kubernetes — quasiben.github.io</title>
+</head>
+<body>
+    <div class="container">
+
+        <div class="row">
+            <div class="three columns" style="margin-top: 5%">
+                <nav>
+                    <h3 id="logo">Benjamin Zaitlen</h3>
+                    <ul>
+                        <li><a href="/">Index</a></li>
+                        
+                          <li class="active"><a href="/blog/">Blog</a></li>
+                        
+                        <li><a target="_blank" href="https://twitter.com/quasiben">Twitter</a>
+                        <li><a target="_blank" href="https://github.com/quasiben">Github</a>
+                    </ul>
+                </nav>
+                &nbsp;
+            </div>
+
+     <div class="nine columns"  style="margin-top: 5%">
+       
+  
+  <div class="blog-post">
+  
+    <h2>SciPy Tutorial Setup On Kubernetes</h2>
+  
+  <p class="meta">
+    written by
+    
+      Benjamin Zaitlen
+    
+    on 2016-09-30
+  </p>
+  <p>This past summer I had the opportunity to work with Min Ragan-Kelley and Matthew Rocklin
+on delivering a tutorial at the scientific computing conference, <a href="https://scipy2016.scipy.org/">SciPy 2016</a>, in Austin, Texas.  We set out to teach folks generally about parallel computing in the context of data analysis and not necessarily about any one tool.  That is, focusing on core concepts rather than a specific framework.  There is something strangely visceral when you are first learning about distributed computation and different hostnames pop up when executing a simple map across the cluster; and to that end, we wanted to give students access to a cluster capable of doing significant work -- something more than a toy.  The tutorial was well received and all the content is publicly
+available:</p>
+<ul>
+<li><a href="http://bigfatintegral.net/">Live Setup</a></li>
+<li><a href="https://github.com/mrocklin/scipy-2016-parallel">Tutorial Materials</a></li>
+<li><a href="https://github.com/quasiben/kubernetes-scipy-2016">Cluster Setup</a></li>
+</ul>
+<p><em>Note: these materials will also be reused in an upcoming <a href="http://pydata.org/dc2016/schedule/presentation/8/">PyData Tutorial in Washington, DC</a></em></p>
+<p>Many tutorials can get stuck (and sometimes fail) on setup and in the post I want to describe,
+in detail, our solution.  We drew on our previous experiences running tutorials/trainings/lectures/etc. Our goal was to give students access to a preconfigured cluster with zero entry requirements: <em>push a button get a cluster with all tools installed</em>.</p>
+<h2>History</h2>
+<p>In graduate school, I helped with summer workshops teaching students, postdocs, and professors about Python in the context of biophysics and complex systems.  Attendees showed up with a variety of machines and OSes: Linux, Windows, and OSX (both Intel and PPC).  At least a collective day was spent getting our software and materials installed on all the machines so students could get hands on experience.  Often our issues were handling multiple versions of Python but also odd bugs which invariably arise during trainings: permission errors, hard drive size limits, VPN blocking...</p>
+<p>More recently, I helped build and run a tutorial at SciPy 2013: <a href="https://conference.scipy.org/scipy2013/tutorial_detail.php?id=102">Data Processing with  Python</a>.  Each student was given access to an individual clusters preconfigured with: Hadoop MapReduce, Disco, and IPython Parallel. It was a tremendous effort to stand this up and involved piles of bash, Python, and the magic of <a href="http://star.mit.edu/cluster/">StarCluster</a> -- and it all had to be setup before the class started with the caveat that total provisioning took ~5 hours.  Still, it worked -- though, I was exhausted.</p>
+<h2>Hello Kubernetes</h2>
+<p>Not wanting to repeat the mistakes of the past and hearing great things about <a href="https://cloud.google.com/compute/">GCE</a> and <a href="/blog/2016/9/30/scipy-setup/kubernetes.io/">Kubernetes</a> we committed early on to the Google Cloud Platform.  Generously, Google donated resources for us to build out and iterate on our tutorial cluster platform.  We are extremely appreciative of their support!</p>
+<p>"Kubernetes is an open-source system for automating deployment, scaling, and management of containerized applications."  What this means, is that if you have a service wrapped up in docker image, Kubernetes can help you do a number of things: deploy the image to a machine, scale the services and load balance between N containers, and handle things like auto-restarting, rolling upgrades, and generally the management that is often involved with running larger scale web services.  Additionally, the Kubernetes cluster itself is fungible -- with a few button clicks, GKE can manage Kubernetes installed on a single medium-sized instance to dozens of extremely large instances.  This is especially helpful when needing to scale computing resources as demand increases.</p>
+<p>It's worth repeating that using Kubernetes does mean buying into the container ecosystem -- in our case that means Docker.</p>
+<h3>The Sea of Containers</h3>
+<p><center><img src="/static/images/sea_of_containers.jpg" alt="An image" width="500" height="300"></center></p><p>credit: <a href="http://panalpina.com/www/global/en/home/newsroom.html#/news/a-sea-of-containers-148839">http://panalpina.com/www/global/en/home/newsroom.html#/news/a-sea-of-containers-148839</a></p>
+<p>Our goal was to give students access to a preconfigured cluster with zero entry requirements: <em>push a button get a cluster with all tools installed</em>.  To accomplish this we need a handful of docker images:</p>
+<ul>
+<li>Web application: button and info</li>
+<li>Jupyter notebook</li>
+<li>proxy app (more on this later)</li>
+<li>cluster technologies: Spark, Dask, IPython Parallel</li>
+</ul>
+<p>And a handful of Kubernetes concepts:</p>
+<ul>
+<li><a href="http://kubernetes.io/docs/user-guide/pods/">Pods</a>: collection of containers (similar to docker-compose)</li>
+<li><a href="http://kubernetes.io/docs/user-guide/namespaces/">namespaces</a>: named and isolated clusters</li>
+<li><a href="http://kubernetes.io/docs/user-guide/replication-controller/">replication controller</a>: a scalable Pod.</li>
+</ul>
+<p>At a high level the web application launches a specific image within a unique namespace with requested resources, expose ports on the running containers, replicates some containers, and sets environment variables.  And all of this, both the hardware resouces and the containers is being managed by Kubernetes.  The web app is a Docker container, the proxy app is another Docker container, the namespaced clusters are a collection of Docker containers (the workers are replication controllers).  It's Dockers as far as the eye can see!.</p>
+<h2>Architecture</h2>
+<p><em>I should also note that my friend and colleague, Daniel Rodriguez, contributed significantly to this effort and he worked out much of architecture and implementation with Kubernetes.</em></p>
+<p>In building out this service we looked at previous work: <a href="http://mybinder.org/">mybinder</a> and <a href="https://github.com/jupyter/tmpnb">tmpnb</a>.  Both of these services launch temporary Jupyter notebooks using Docker.  Similarly, we want a single page web application to launch a temporary Jupyter notebook connected to an isolated N-node cluster, where each cluster is running a variety of distributed computing engines -- also, we'd like to scale the number workers in the cluster.</p>
+<p><center><img src="/static/images/SciPy_GKE_Architecture.png" alt="An image" width="500" height="250"></center></p><p>The button is pushed, a cluster+notebook is produced and the user is redirected to the running Jupyter notebook.</p>
+<h3>The Proxy</h3>
+<p>When we launch a container (Pod in Kubernetes) each Pod has an internal ip but it can optionally expose a publicly available ip and set of ports.  If we want to support unique clusters for each button click, we either have to generate unique public IPs and hand them back to the user or proxy to the private IPs.  Since we'd like to keep everyone on the same domain, we proxy to private IPs (see diagram above). Simply, this means that when a user goes to a running notebook at <a href="https://cluster.bigfatintegral.net/cluster-678343">https://cluster.bigfatintegral.net/cluster-678343</a>, for example, the proxy routes to the internal container. Below is an example of routing in the proxy:</p>
+<pre><code>"/cluster-678343":{"target":"http://10.20.1.17:8080","last_activity":"2016-08-23T19:51:43.091Z"},
+"/cluster-678343_9000":{"target":"http://10.20.1.17:9000","last_activity":"2016-08-23T18:58:26.184Z"},
+"/cluster-678343_9001":{"target":"http://10.20.1.17:9001","last_activity":"2016-08-23T19:03:14.741Z"},
+"/cluster-678343_9002":{"target":"http://10.20.1.17:9002","last_activity":"2016-08-23T18:58:26.191Z"}
+</code></pre>
+<p>Note, that we proxy to four different PORTs with four URL endpoints:</p>
+<ul>
+<li>/cluster-678343 -&gt; 10.20.1.17:8080</li>
+<li>/cluster-678343_9000 -&gt; 10.20.1.17:9000</li>
+<li>/cluster-678343_9001 -&gt; 10.20.1.17:9001</li>
+<li>/cluster-678343_9002 -&gt; 10.20.1.17:9002</li>
+</ul>
+<p>Where port <code>8080</code> routes to the Jupyter notebook, port <code>9000</code> routes to the Dask scheduler, and ports <code>9001</code> and <code>9002</code> route to the Dask's web interface.  All the routes can be found here: <a href="http://173.255.119.91/api/routes">http://173.255.119.91/api/routes</a>.</p>
+<p>Again, much of this architecture is heavily influenced by <a href="https://github.com/jupyter/tmpnb">tmpnb</a> and uses the same proxy app -- a small NodeJS app also built by the good folks from the Jupyter team: <a href="https://github.com/jupyterhub/configurable-http-proxy">https://github.com/jupyterhub/configurable-http-proxy</a> .</p>
+<p>You may be wondering how the route was registered.  Service discovery/auto-registration is a bit of magic and there are handful of tools to help with this problem.  Consul/etcd/Zookeeper seem to be the popular choices -- however, in our case, we opted for something small and hand built;  when a Pod is launched, the startup process includes a <a href="https://github.com/quasiben/kubernetes-scipy-2016/blob/8c4a04bd7730d92086c00eb3e2b3b7e14efddf7c/app/register.py">registration script</a> which sends a POST containing the IP and the exposed PORT of the Pod to the proxy app.  The proxy app holds the data in memory and waits for an incoming request to route to.</p>
+<h3>The App</h3>
+<p>The <a href="http://kubernetes.io/docs/hellonode/">intro to Kubernetes</a> has the user build out a small NodeJS Docker image and a YAML file. When used with the <code>kubectl</code> command, the YAML file instructs Kubernetes which kind of thing it is: a replicationController, a Service, a bare Pod, what ports to expose, etc.  If you are familiar with docker-compose files many of the ideas map nicely.  Instead of building these files and using the command line to build a cluster we want to use the <a href="http://kubernetes.io/docs/api/">Kubernetes API</a>.  Kubernetes does not provide a language based API.  Instead, they provide a <a href="http://kubernetes.io/kubernetes/third_party/swagger-ui/">swagger spec</a> and from this, <a href="http://swagger.io/">swagger</a> can generate valid Python (or any other language) objects and functions to properly interact with Kubernetes.</p>
+<pre><code># how to generate a python swagger client
+wget https://raw.githubusercontent.com/kubernetes/kubernetes/master/api/swagger-spec/v1.json
+brew install swagger-codegen
+swagger-codegen generate -i v1.json -l python
+</code></pre>
+<p>While this code generation is a good starting point, there are no docs provided to instruct you on how to use the API.  Daniel is fantastic and started the process of trial and error, eventually building up an intuition for how to navigate the code.  Below is an example of how we started to understand the namespace API.  We want to use <a href="http://kubernetes.io/docs/user-guide/namespaces/">namespaces</a> for each cluster launched because we want isolate virtual clusters.</p>
+<blockquote><p>We first noted two directories: <a href="https://github.com/quasiben/kubernetes-scipy-2016/tree/8c4a04bd7730d92086c00eb3e2b3b7e14efddf7c/app/core/swagger_client/models">swagger_client/models</a> and <a href="https://github.com/quasiben/kubernetes-scipy-2016/tree/8c4a04bd7730d92086c00eb3e2b3b7e14efddf7c/app/core/swagger_client/apis">swagger_client/apis</a>.  <code>swagger_client/apis/apiv_api.py</code> has many of the actions we want to perform with Kubernetes has and <code>swagger_client/models</code> has what looks like every model/spec for the Kubernetes universe of things. Let's look in swagger_client/models for something called <code>namespace</code>.  Ah! <a href="https://github.com/quasiben/kubernetes-scipy-2016/blob/8c4a04bd7730d92086c00eb3e2b3b7e14efddf7c/app/core/swagger_client/models/v1_namespace.py">v1_namespace.py</a> seems like a good place to start. <code>swagger_types</code> looks like the spec in a YAML file:  <code>kind: Namespace</code>.  Look at the <a href="http://kubernetes.io/docs/admin/namespaces/">spec in the docs</a> --  Ok, now we'll fail our way to success -- wait! How do we create namespace? Grep in <code>swagger_client/apis/apiv_api.py</code> for <code>create</code> and <code>namespace</code> and there are a bunch of functions.  <a href="https://github.com/quasiben/kubernetes-scipy-2016/blob/8c4a04bd7730d92086c00eb3e2b3b7e14efddf7c/app/core/swagger_client/apis/apiv_api.py#L658">create_namespaced_namespace</a> seems like a good place to start.  The docstring says the <code>body</code> param is a <code>V1Namespace</code> object so let's start building an object</p>
+</blockquote>
+<div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">NameSpace</span><span class="p">(</span><span class="n">V1Namespace</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">proxy</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">NameSpace</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;Namespace&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api_version</span> <span class="o">=</span> <span class="s2">&quot;v1&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+</pre></div>
+<blockquote><p>And we test:</p>
+</blockquote>
+<div class="highlight"><pre><span></span><span class="n">ipdb</span><span class="o">&gt;</span> <span class="kn">from</span> <span class="nn">.namespaces</span> <span class="kn">import</span> <span class="n">NameSpace</span>
+<span class="n">ipdb</span><span class="o">&gt;</span> <span class="n">ns</span> <span class="o">=</span> <span class="n">NameSpace</span><span class="p">(</span><span class="s1">&#39;hello&#39;</span><span class="p">)</span>
+<span class="n">ipdb</span><span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">create_namespaced_namespace</span><span class="p">(</span><span class="n">ns</span><span class="p">)</span>
+<span class="o">***</span> <span class="n">core</span><span class="o">.</span><span class="n">swagger_client</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">ApiException</span><span class="p">:</span> <span class="p">(</span><span class="mi">400</span><span class="p">)</span>
+<span class="n">Reason</span><span class="p">:</span> <span class="n">Bad</span> <span class="n">Request</span>
+<span class="n">HTTP</span> <span class="n">response</span> <span class="n">headers</span><span class="p">:</span> <span class="n">HTTPHeaderDict</span><span class="p">({</span><span class="s1">&#39;Content-Length&#39;</span><span class="p">:</span> <span class="s1">&#39;405&#39;</span><span class="p">,</span> <span class="s1">&#39;Date&#39;</span><span class="p">:</span> <span class="s1">&#39;Fri, 23 Sep 2016 17:30:04 GMT&#39;</span><span class="p">,</span> <span class="s1">&#39;Content-Type&#39;</span><span class="p">:</span> <span class="s1">&#39;application/json&#39;</span><span class="p">})</span>
+<span class="n">HTTP</span> <span class="n">response</span> <span class="n">body</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;kind&quot;</span><span class="p">:</span><span class="s2">&quot;Status&quot;</span><span class="p">,</span><span class="s2">&quot;apiVersion&quot;</span><span class="p">:</span><span class="s2">&quot;v1&quot;</span><span class="p">,</span><span class="s2">&quot;metadata&quot;</span><span class="p">:{},</span><span class="s2">&quot;status&quot;</span><span class="p">:</span><span class="s2">&quot;Failure&quot;</span><span class="p">,</span><span class="s2">&quot;message&quot;</span><span class="p">:</span><span class="s2">&quot;the object provided is unrecognized (must be of type Namespace): couldn&#39;t get version/kind; json parse error: json: cannot unmarshal string into Go value of type struct { APIVersion string </span><span class="se">\&quot;</span><span class="s2">json:</span><span class="se">\\\&quot;</span><span class="s2">apiVersion,omitempty</span><span class="se">\\\&quot;\&quot;</span><span class="s2">; Kind string </span><span class="se">\&quot;</span><span class="s2">json:</span><span class="se">\\\&quot;</span><span class="s2">kind,omitempty</span><span class="se">\\\&quot;\&quot;</span><span class="s2"> } (2268656c6c6f22)&quot;</span><span class="p">,</span><span class="s2">&quot;reason&quot;</span><span class="p">:</span><span class="s2">&quot;BadRequest&quot;</span><span class="p">,</span><span class="s2">&quot;code&quot;</span><span class="p">:</span><span class="mi">400</span><span class="p">}</span>
+</pre></div>
+<blockquote><p>It's not the most helpful of error messages -- but we keep hammering away at it until we've got the correct body contents.  It goes like this until we get the <code>NameSpace</code> object <a href="https://github.com/quasiben/kubernetes-scipy-2016/blob/8c4a04bd7730d92086c00eb3e2b3b7e14efddf7c/app/core/namespaces.py#L9">correctly setup</a></p>
+</blockquote>
+<p>With a functional API we can wrap various can now dynamically construct models and build namespaces as part of a web application.  Using <a href="/blog/2016/9/30/scipy-setup/www.tornadoweb.org">tornado</a> seems like a good choice here since the app is mostly idling.  Let's dig in a bit to what the cluster Docker setup is made of.</p>
+<h3>The Image</h3>
+<p>Not just any ordinary docker image, this <a href="https://github.com/quasiben/kubernetes-scipy-2016/tree/8c4a04bd7730d92086c00eb3e2b3b7e14efddf7c/images/all_services">image has it all</a>!</p>
+<ul>
+<li>Anaconda</li>
+<li>Dask</li>
+<li>Spark 2.0</li>
+<li>IPython Parallel</li>
+</ul>
+<p>This image is the core of the cluster; responsible for running all of the distributed computing engines and environment setup.  When launched as a <a href="http://kubernetes.io/docs/user-guide/replication-controller/">replication controller</a> we can scale the workers to N containers.  Notice that we only have one image -- we use the same image in two modes: scheduler and worker.</p>
+<p><em>Note: normally the recommendation is to run one service per docker image -- in our case, we're going to run up to four.  This is ok here mostly because the intended usage is to only work with one service at a time.  The various schedulers and workers are idling and not consuming many resources (mem/cpu)</em></p>
+<p>The modes of the same image are differentiated by the command executed when launching</p>
+<ul>
+<li><p><a href="https://github.com/quasiben/kubernetes-scipy-2016/blob/8c4a04bd7730d92086c00eb3e2b3b7e14efddf7c/images/all_services/start-scheduler.sh">scheduler command</a></p>
+<ul>
+<li><a href="https://github.com/quasiben/kubernetes-scipy-2016/blob/8c4a04bd7730d92086c00eb3e2b3b7e14efddf7c/app/core/pod.py#L64">setting scheduler command</a></li>
+</ul>
+</li>
+<li><p><a href="https://github.com/quasiben/kubernetes-scipy-2016/blob/8c4a04bd7730d92086c00eb3e2b3b7e14efddf7c/images/all_services/start-worker.sh">worker command</a></p>
+<ul>
+<li><a href="https://github.com/quasiben/kubernetes-scipy-2016/blob/8c4a04bd7730d92086c00eb3e2b3b7e14efddf7c/app/core/pod.py#L91">setting worker command</a></li>
+</ul>
+<p>The scheduler command registers the container with the proxy, starts a notebook server, and starts all the schedulers for Dask, Spark, and IPython Parallel.  The worker command simply starts the workers for Dask, Spark, and IPython Parallel.</p>
+</li>
+</ul>
+<p>By declaring the workers as replicationControllers we can scale up and down the workers in a given cluster. This is done in a <a href="https://github.com/quasiben/kubernetes-scipy-2016/blob/8c4a04bd7730d92086c00eb3e2b3b7e14efddf7c/app/core/app/handlers.py#L124">single tunable parameter</a>.  During the tutorial we also used the feature to show off the flexibility of Dask; with a running cluster executing a Dask job, we scaled the number of workers to 100 and Dask happily added 92 more workers to the job to the initial 8.</p>
+<h2>Outcomes</h2>
+<p>We ran the tutorial for a class size of 100+ students and additionally during Matt Rocklin's and Jim Crist's <a href="https://www.youtube.com/watch?v=PAGjm4BMKlk">Dask Talk</a>.  I often worry and expect things to crash spectacularly and, in our case, everything went surprisingly well!  The first part of the tutorial was designed to be executed on personal machines and, as I said mentioned before, personal machines come in all varieties of OSes and platforms -- and now, including tablets!  We designed the cluster to clone all of our tutorial materials from Github so students, should install problems arise, could continue following along without a prolonged time resolving setup issues.</p>
+<p>The cluster could run cheaply with a single medium sized instance and a few minutes before students arrived we provisioned additional resources.  In total, each machine could have up to 2.0 vCPUs and 8GBs of RAM or a cluster with 16 vCPUs and 64 GBs of RAM.</p>
+<p>Kubernetes more than lived up to the hype and again, we are very grateful to the generous support from Google in helping us build and share this with the PyData and SciPy communities.</p>
+
+  </div>
+
+
+     </div>
+
+<!-- JS
+================================================== -->
+<script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-76136990-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</body>
