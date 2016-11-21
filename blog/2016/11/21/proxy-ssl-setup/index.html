@@ -56,15 +56,15 @@ about operations and IT.  Each enterprise/organization has their own idea
 on how networking, security, authentication, and authorization are implemented;
 the variety can throw a big wrench in the <em>reasonable assumptions</em> made in the
 code.  They can be challenging to generalize even with experiential knowledge
-(painful scars) and they can be difficult to test.  In this post, I want to
+(painful scars) and they can be difficult to test.</p>
+<p>In this post, I want to
 tell you about a testing harness I made specifically for testing operational
 environments more commonly deployed by enterprise customers.  As a motivating
 example I am going to test and validate that the package manager
 <a href="http://conda.pydata.org/">conda</a> can correctly use
 <a href="http://conda.pydata.org/docs/config.html#configure-conda-for-use-behin
 d-a-proxy-server-proxy-servers">proxies</a> and <a href="http://conda.pydata.org/docs/install/central.html#ssl-verification">self-signed
-certs</a> the
-testing proxies and self-signed certs.</p>
+certs</a>.</p>
 <h2>The Problem</h2>
 <h3>Proxies</h3>
 <p>If your tool/service needs to talk to the internet or generally be accessible
