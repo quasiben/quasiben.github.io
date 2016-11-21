@@ -48,22 +48,10 @@
     
       Benjamin Zaitlen
     
-    on 2016-11-21
+    on 2016-11-20
   </p>
-  <p>Building software for enterprises does not just mean more error checking
-(though it definitely does include that!), it means understanding a bit more
-about operations and IT.  Each enterprise/organization has their own idea
-on how networking, security, authentication, and authorization are implemented;
-the variety can throw a big wrench in the <em>reasonable assumptions</em> often made in software tools deployed in those environments.  It can be challenging to generalize these environments even with experiential knowledge
-(painful scars) and they can be even more challenging to test.</p>
-<p>In this post, I want to
-tell you about a testing harness I made specifically for testing operational
-environments more commonly deployed by enterprise customers.  As a motivating
-example I am going to test and validate that the package manager
-<a href="http://conda.pydata.org/">conda</a> can correctly use
-<a href="http://conda.pydata.org/docs/config.html#configure-conda-for-use-behin
-d-a-proxy-server-proxy-servers">proxies</a> and <a href="http://conda.pydata.org/docs/install/central.html#ssl-verification">self-signed
-certs</a>.</p>
+  <p>Building software for enterprises does not just mean more error checking (though it definitely does include that!), it means understanding a bit more about operations and IT.  In this post, I want to tell you about a testing harness I made specifically for testing code paths more commonly used by
+enterprise customers.  As a motivating example I am going to test and validate that the package manager <a href="http://conda.pydata.org/">conda</a> can correctly use <a href="http://conda.pydata.org/docs/config.html#configure-conda-for-use-behind-a-proxy-server-proxy-servers">proxies</a> and <a href="http://conda.pydata.org/docs/install/central.html#ssl-verification">self-signed certs</a> the testing proxies and self-signed certs.</p>
 <h2>The Problem</h2>
 <h3>Proxies</h3>
 <p>If your tool/service needs to talk to the internet or generally be accessible
