@@ -1,0 +1,12 @@
+[project]
+name = "quasiben-github-io"
+version = "0.1.0"
+description = "Lektor source for quasiben.github.io"
+requires-python = ">=3.14"
+dependencies = [
+    "lektor",
+    "lektor-markdown-highlighter==0.1",
+]
+
+[tool.uv]
+package = false

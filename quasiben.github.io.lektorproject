@@ -10,5 +10,3 @@ author = Benjamin Zaitlen
 [servers.ghpages]
 target = ghpages+https://quasiben/quasiben.github.io
 
-[packages]
-lektor-markdown-highlighter = 0.1
