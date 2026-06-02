@@ -1,12 +1,19 @@
-name: Build
+name: Build and Deploy
 
 on:
   pull_request:
   push:
     branches:
-      - main
-      - master
       - source
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -30,4 +37,27 @@ jobs:
         run: uv sync --locked
 
       - name: Build site
-        run: uv run lektor build
+        run: uv run lektor build --output-path _site
+
+      - name: Configure Pages
+        if: github.event_name == 'push' && github.ref == 'refs/heads/source'
+        uses: actions/configure-pages@v6
+
+      - name: Upload Pages artifact
+        if: github.event_name == 'push' && github.ref == 'refs/heads/source'
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+
+  deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/source'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
