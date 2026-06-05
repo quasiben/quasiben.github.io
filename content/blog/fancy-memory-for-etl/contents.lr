@@ -1,4 +1,4 @@
-title: Fancy Memory for ETL
+title: Fancy Memory for ETL pt. 1
 ---
 _hidden: no
 ---
@@ -8,7 +8,7 @@ pub_date: 2026-06-04
 ---
 body:
 
-cuDF-Polars 26.06 was recently released, and there are several intermediate and advanced features I want to highlight over the next few weeks and months. Let’s start with a longstanding challenge for GPU  analytics: running beyond available GPU memory.  In the following example , we generate data larger than the GPU memory available and force the engine into a spilling path. Spilling means moving data from device memory to host memory when the operations would otherwise exceed available VRAM and cause an OOM.
+cuDF-Polars 26.06 was recently released, and there are several intermediate and advanced features I want to highlight over the next few weeks and months. Let’s start with a longstanding challenge for GPU  analytics: running beyond available GPU memory.  In the following example, we generate data larger than the GPU memory available and force the engine into a spilling path. Spilling means moving data from device memory to host memory when the operations would otherwise exceed available VRAM and cause an OOM.
 
 > The lesson: spilling makes larger-than-VRAM GPU analytics possible, but memory movement is not free. For longer-running workflows or repeated queries using pinned host memory can materially reduce transfer overhead and decrease overall execution time. 
 
@@ -124,5 +124,3 @@ Engine initialization took ~16 seconds but now total execution time is ~23s.  As
 | Pinned host spilling | 67.47 GB | 5.79 s |  | Pinned transfers reduced copy time by 52.2%. |
 
 Spilling is a necessary and critical component to building accelerated engines for both CPU and for GPU where memory is further constrained.  Pinned memory changes the cost of that movement.  I expect this feature to be more widely but users should be cognizant of the one time initialization and an opt-in policy helps maintain expectations of why startup time may be slower but how to achieve greater performance with simple configuration changes.
-
-

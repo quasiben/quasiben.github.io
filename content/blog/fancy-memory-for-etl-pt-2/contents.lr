@@ -1,0 +1,25 @@
+title: Fancy Memory for ETL pt. 2
+---
+_hidden: yes
+---
+author: Benjamin Zaitlen
+---
+body:
+
+
+<image with pinned memory>
+
+<image without pinned memory>
+
+
+
+Parallelism 
+Host to Device is faster in pinned because it's already allocated
+Device to host 
+
+If you move datat from device to host at rate X (10 ms).  Memory pressurse is Y
+if you move 10x faster you can reduce memory pressure just by moving data device
+
+With pageable data the OS can always decide to migrate data.  With pinned memory, we avoid the OS and get a direct pointer to the memory.  
+Pageable -- GPU has to go through the OS .  With pinned it can do DMA
+
