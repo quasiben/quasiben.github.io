@@ -37,7 +37,7 @@ jobs:
         run: uv sync --locked
 
       - name: Build site
-        run: uv run lektor build --output-path _site
+        run: uv run mkdocs build --strict --site-dir _site
 
       - name: Configure Pages
         if: github.event_name == 'push' && github.ref == 'refs/heads/source'

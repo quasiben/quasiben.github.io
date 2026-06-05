@@ -1,0 +1,44 @@
+<input class="site-drawer-toggle" type="checkbox" id="site-drawer-toggle" aria-hidden="true">
+<label class="site-drawer-button" for="site-drawer-toggle" aria-label="Open navigation">
+  <span></span>
+  <span></span>
+  <span></span>
+</label>
+<label class="site-drawer-backdrop" for="site-drawer-toggle" aria-label="Close navigation"></label>
+
+<nav class="site-sidebar" aria-label="Site navigation">
+  <div class="site-sidebar-header">
+    <a class="site-title" href="{{ nav.homepage.url|url }}">{{ config.site_name }}</a>
+    <label class="site-drawer-close" for="site-drawer-toggle" aria-label="Close navigation">×</label>
+  </div>
+  <ul class="site-nav">
+    {% for nav_item in nav.items %}
+      {% if nav_item.url %}
+        <li class="site-nav-item">
+          <a
+            class="site-nav-link{% if nav_item.active %} is-active{% endif %}"
+            href="{{ nav_item.url|url }}"
+          >
+            {{ nav_item.title }}
+          </a>
+        </li>
+      {% elif nav_item.children %}
+        <li class="site-nav-section">
+          <span class="site-nav-section-title">{{ nav_item.title }}</span>
+          <ul class="site-nav site-nav-nested">
+            {% for child in nav_item.children %}
+              <li class="site-nav-item">
+                <a
+                  class="site-nav-link{% if child.active %} is-active{% endif %}"
+                  href="{{ child.url|url }}"
+                >
+                  {{ child.title }}
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        </li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+</nav>

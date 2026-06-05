@@ -1,0 +1,51 @@
+site_name: Benjamin Zaitlen
+site_description: Fearless Follower
+site_url: https://quasiben.github.io/
+site_author: Benjamin Zaitlen
+
+docs_dir: docs
+site_dir: _site
+use_directory_urls: true
+
+theme:
+  name: material
+  custom_dir: overrides
+  font:
+    text: Raleway
+    code: Roboto Mono
+  palette:
+    scheme: default
+  features:
+    - navigation.sections
+    - navigation.expand
+    - navigation.tracking
+
+extra_css:
+  - stylesheets/extra.css
+
+nav:
+  - Index: index.md
+  - Blog: blog/index.md
+  - Projects: projects.md
+  - About: about.md
+  - LinkedIn: https://www.linkedin.com/in/benjamin-zaitlen
+  - Github: https://github.com/quasiben
+
+plugins:
+  - search
+  - glightbox
+  - blog:
+      blog_dir: blog
+      post_dir: "{blog}/posts"
+      post_url_format: "{slug}"
+      archive: true
+      categories: false
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+  - tables

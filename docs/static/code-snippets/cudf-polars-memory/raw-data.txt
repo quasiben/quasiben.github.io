@@ -1,0 +1,45 @@
+(rapids-26.06) local-bzaitlen@ipp2-2198:~/quasiben.github.io/assets/static/code-snippets/cudf-polars-memory$ nsys profile     -o pinned-spill     -f true     --wait=primary     -t cuda,ucx,nvtx     --stats=false     python cudf-join-gpu-pinned-spill.py
+WARNING: CPU IP/backtrace sampling not supported, disabling.
+Try the 'nsys status --environment' command to learn more.
+
+WARNING: CPU context switch tracing not supported, disabling.
+Try the 'nsys status --environment' command to learn more.
+
+Collecting data...
+{'alloc-device-bytes': {'count': 23, 'value': 67474800000.0, 'max': 3578400000.0}, 'alloc-device-stream-delay': {'count': 23, 'value': 0.0278158, 'max': 0.0186334}, 'alloc-device-time': {'count': 23, 'value': 0.0218596, 'max': 0.00621748}, 'alloc-host-bytes': {'count': 1, 'value': 152, 'max': 152}, 'alloc-host-stream-delay': {'count': 1, 'value': 0.000316143, 'max': 0.000316143}, 'alloc-host-time': {'count': 1, 'value': 1.0252e-05, 'max': 1.0252e-05}, 'alloc-pinned_host-bytes': {'count': 23, 'value': 67474800000.0, 'max': 3578400000.0}, 'alloc-pinned_host-stream-delay': {'count': 23, 'value': 0.0260031, 'max': 0.021667}, 'alloc-pinned_host-time': {'count': 23, 'value': 0.0247736, 'max': 0.0244293}, 'copy-device-to-pinned_host-bytes': {'count': 23, 'value': 67474800000.0, 'max': 3578400000.0}, 'copy-device-to-pinned_host-stream-delay': {'count': 23, 'value': 0.0500188, 'max': 0.0244648}, 'copy-device-to-pinned_host-time': {'count': 23, 'value': 2.63955, 'max': 0.155761}, 'copy-pinned_host-to-device-bytes': {'count': 23, 'value': 67474800000.0, 'max': 3578400000.0}, 'copy-pinned_host-to-device-stream-delay': {'count': 23, 'value': 0.0212748, 'max': 0.0186164}, 'copy-pinned_host-to-device-time': {'count': 23, 'value': 3.14984, 'max': 0.245317}}
+Engine initialization took 16.03 seconds
+Spill device limit: 80%
+Pinned initial pool size: 100.00 GiB
+Pinned-memory GPU query write took 23.40 seconds
+Total pinned-memory GPU path took 39.42 seconds
+Device-to-pinned-host copies: 62.84 GiB
+Pinned-host-to-device copies: 62.84 GiB
+Device-to-pinned-host copy time: 2.64 seconds
+Pinned-host-to-device copy time: 3.15 seconds
+Total spill copy time: 5.79 seconds
+Generating '/tmp/nsys-report-b1a2.qdstrm'
+[1/1] [========================100%] pinned-spill.nsys-rep
+Generated:
+        /localhome/local-bzaitlen/quasiben.github.io/assets/static/code-snippets/cudf-polars-memory/pinned-spill.nsys-rep
+(rapids-26.06) local-bzaitlen@ipp2-2198:~/quasiben.github.io/assets/static/code-snippets/cudf-polars-memory$ nsys profile     -o spill     -f true     --wait=primary     -t cuda,ucx,nvtx     --stats=false     python cudf-join-gpu-spill.py
+WARNING: CPU IP/backtrace sampling not supported, disabling.
+Try the 'nsys status --environment' command to learn more.
+
+WARNING: CPU context switch tracing not supported, disabling.
+Try the 'nsys status --environment' command to learn more.
+
+Collecting data...
+{'alloc-device-bytes': {'count': 24, 'value': 70338000000.0, 'max': 3578400000.0}, 'alloc-device-stream-delay': {'count': 24, 'value': 0.0131495, 'max': 0.00961614}, 'alloc-device-time': {'count': 24, 'value': 0.0244145, 'max': 0.00966167}, 'alloc-host-bytes': {'count': 25, 'value': 70338000000.0, 'max': 3578400000.0}, 'alloc-host-stream-delay': {'count': 25, 'value': 0.00389838, 'max': 0.000607729}, 'alloc-host-time': {'count': 25, 'value': 0.000751495, 'max': 0.000114679}, 'copy-device-to-host-bytes': {'count': 24, 'value': 70338000000.0, 'max': 3578400000.0}, 'copy-device-to-host-stream-delay': {'count': 24, 'value': 0.00224543, 'max': 0.000517845}, 'copy-device-to-host-time': {'count': 24, 'value': 8.05691, 'max': 0.500215}, 'copy-host-to-device-bytes': {'count': 24, 'value': 70338000000.0, 'max': 3578400000.0}, 'copy-host-to-device-stream-delay': {'count': 24, 'value': 0.00319362, 'max': 0.00184512}, 'copy-host-to-device-time': {'count': 24, 'value': 4.05551, 'max': 0.336025}}
+Engine initialization took 0.37 seconds
+Spill device limit: 80%
+GPU query write took 26.57 seconds
+Total GPU path took 26.94 seconds
+Device-to-host copies: 65.51 GiB
+host-to-device copies: 65.51 GiB
+Device-to-host copy time: 8.06 seconds
+host-to-device copy time: 4.06 seconds
+Total spill copy time: 12.11 seconds
+Generating '/tmp/nsys-report-c9ea.qdstrm'
+[1/1] [========================100%] spill.nsys-rep
+Generated:
+        /localhome/local-bzaitlen/quasiben.github.io/assets/static/code-snippets/cudf-polars-memory/spill.nsys-rep
