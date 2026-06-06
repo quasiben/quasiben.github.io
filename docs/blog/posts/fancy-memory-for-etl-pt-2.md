@@ -8,9 +8,9 @@ draft: true
 
 # Fancy Memory for ETL pt. 2
 
-> TLDR: Pinned memory changes both the cost of each transfer and the behavior of the pipeline. It pays an upfront allocation cost, but can reduce spill overhead, lower memory pressure, and improve end-to-end runtime.
+**Pinned memory changes both the cost of each transfer and the behavior of the pipeline. It pays an upfront allocation cost, but can reduce spill overhead, lower memory pressure, and improve end-to-end runtime**
 
-Let's dive a little deeper into what's happening with pinned and pageable memory from the previous post.  I took some [Nsight Systems](https://developer.nvidia.com/nsight-systems) (nsys) profiles with data and scripts we developed in pt 1.  
+In the previous post, I explored generally how spilling can enable larger than VRAM workloads to run on a GPU but comes with a cost AND how to reduce that cost with different memory.  In this post, I want to dive a little deeper into what's happening with pinned and pageable memory.  To do that exploration, we'll use [Nsight Systems](https://developer.nvidia.com/nsight-systems) (nsys) which can give us detailed profiling information on the workflow I developed in pt 1.  
 
 > nsys profile -o pageable-spill -f true  -t cuda,nvtx --stats=false python script.py
 
@@ -24,14 +24,13 @@ As a reminder, I measured the same join workflow which requires more VRAM than a
 *Fig 2. Nsight Systems timeline showing the pinned-memory cudf-polars join workflow.*
 
 
-Having these two images laid out together we can visually see similarities and differences:
+With these two images laid out together, we can visually see similarities and differences:
 
 1. Both have multiple cudf_polars streams (blue bars) though Fig 1. has 6 and Fig 2. has 5 -- let's come back to that
 1. With pageable memory (fig 1) we see a load of red and green bars and it starts near the 2sec mark
 1. With pinned memory (fig 2), we have some different colors but the bars aren't nearly as wide. Also, the time starts near the 18sec mark. This 18s is time to allocate all that pinned memory
 
-Again, from the previous post we also have how long we spent spilling (device-to-host) and unspilling (host-to-device) for both memory types.
-
+As a reminder, here's the aggregate time spent spilling (device-to-host) and unspilling (host-to-device) for both memory types:
 
 | Mode | Direction | Time |
 | --- | --- | ---: |
@@ -40,13 +39,13 @@ Again, from the previous post we also have how long we spent spilling (device-to
 | Pinned host spilling | Device -> pinned host | 2.64 s |
 | Pinned host spilling | Pinned host -> device | 3.15 s |
 
-It's interesting: pageable host spilling is slower when moving data Device->Host compared with Host->Device. However, when using pinned memory, the throughput in both directions is nearly the same. Why? Zooming into a region where the workflow is spilling can help inform our understanding.
+It's interesting: pageable host spilling is slower when moving data Device->Host compared with Host->Device. However, when using pinned memory, the throughput in both directions is nearly the same. Why? Zooming into a region where the workflow is spilling can help us see why:
 
 | Pageable device -> host | Pageable host -> device |
 | --- | --- |
 | ![Pageable device to host transfer detail](fancy-memory-for-etl-pt-2/page-DtoH.png) | ![Pageable host to device transfer detail](fancy-memory-for-etl-pt-2/page-HtoD.png) |
 
-nsys lets us easily see not just how much time was spent spilling, but also how much data was transferred, and data/time gives us a throughput measurement. The following images are samples, each transfer will have some noise (a few may have spikes), but these are representative. In the zoomed-in images, Device->Host is 8.6GiB/s and Host->Device is ~17 GiB/s. When transferring data using regular pageable memory, the host has to first allocate memory before the device can spill and it's apparently quite costly to do this. When moving data *back* to the device, there is no paging in host memory so it's significantly faster.
+nsys lets us easily see not just how much time was spent spilling, but also how much data was transferred, and data/time gives us a throughput measurement. The following images are samples, each transfer will have some noise (a few may have spikes), but these are representative. In the zoomed-in images, Device->Host is 8.6GiB/s and Host->Device is ~17 GiB/s. When transferring data using regular pageable memory, the host has to first allocate memory before the device can spill and it's apparently quite costly to do this. When moving data *back* to the device, there is no allocation cost so it's significantly faster.
 
 > cudf-polars and RapidsMPF use stream ordered memory as a default: [cudaMallocAsync](https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__MEMORY__POOLS.html#group__CUDART__MEMORY__POOLS_1gbbf70065888d61853c047513baa14081) but let's not get into this now
 
@@ -63,7 +62,7 @@ Why though is Host->Device faster for pinned memory compared with pageable memor
 When the host allocates pageable memory, the operating system is still largely in control of that memory and still responsible for running the entire machine! The OS *can* move the memory to another physical location or even swap it to disk. This means the host, the OS, is responsible for moving the data and safeguarding the memory from corruption during the process. It's safe but slow, and one of the primary reasons why [Direct Memory Access (DMA)](https://en.wikipedia.org/wiki/Direct_memory_access) was created -- DMA dates back to [computing in the 50s](https://www.computerhistory.org/storageengine/storage-subsystems-emerge/) when everything was built by standards committees and when collectively, we started exploring the ideas of pipelining and overlapping execution.
 
 
-With nsys we can start to see why pinned memory and DMA can be so impactful -- we may explore RDMA/GPUDirect RDMA in a later post.
+With nsys we can start to see why pinned memory and DMA can be so impactful. (We may explore RDMA/GPUDirect RDMA in a later post.)
 
 ## More questions
 

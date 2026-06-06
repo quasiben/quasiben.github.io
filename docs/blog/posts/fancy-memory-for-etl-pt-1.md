@@ -2,14 +2,17 @@
 title: Fancy Memory for ETL pt. 1
 date: 2026-06-04
 author: Benjamin Zaitlen
-slug: fancy-memory-for-etl
+slug: fancy-memory-for-etl-pt-1
 ---
 
 # Fancy Memory for ETL pt. 1
 
-cuDF-Polars 26.06 was recently released, and there are several intermediate and advanced features I want to highlight over the next few weeks and months. Let’s start with a longstanding challenge for GPU  analytics: running beyond available GPU memory.  In the following example, we generate data larger than the GPU memory available and force the engine into a spilling path. Spilling means moving data from device memory to host memory when the operations would otherwise exceed available VRAM and cause an OOM.
+**Spilling makes larger-than-VRAM GPU analytics possible, but memory movement is not free. For longer-running workflows or repeated queries, using pinned host memory can materially reduce transfer overhead and decrease overall execution time.**
 
-> TLDR: Spilling makes larger-than-VRAM GPU analytics possible, but memory movement is not free. For longer-running workflows or repeated queries using pinned host memory can materially reduce transfer overhead and decrease overall execution time. 
+My team recently released cuDF-Polars 26.06 which brings significant performance improvements over the previous versions, leveraging a new execution backend: [RapdisMPF](https://docs.rapids.ai/api/rapidsmpf/stable/).  Over the coming weeks and months I want to spend time highlighting some of the more advanced features and get into general ideas of how to build accelerated ETL engines. 
+
+Let’s start with a longstanding challenge for GPU analytics: running beyond available GPU memory.  In the following example, we generate data larger than the GPU memory available and force the engine into a spilling path. Spilling means moving data from device memory to host memory when the operations would otherwise exceed available VRAM and cause an OOM.
+
 
 For this example I found some time on an [L40 GPU](https://www.nvidia.com/en-us/data-center/l40/) which you can easily rent on [aws](https://instances.vantage.sh/?id=34b8d04c6b05a2a46cc2548776a6d96b63172156) or any other major CSP.  The machine also comes with a considerable amount of CPU resources: 128 GB of RAM and an AMD EPYC 7313P 16-Core Processor.
 
@@ -25,7 +28,7 @@ Data generation took 39.80 seconds
 
 *As an aside, using AI agents to quickly generate data is handy. For synthetic examples like this where I'm more interested in showcasing a feature than a specific use case, it’s just a faster way to get to the actual code and start benchmarking.*
 
-Great! We've got some data, how about a query?  Let's go after a more complex query, not too long -- something with joins and some zest -- we can to stress memory:
+Great! We've got some data, how about a query?  Let's go after a more complex query, not too long -- something with joins and some zest -- large enough to stress memory:
 
 *[Full working example](/static/code-snippets/cudf-polars-memory/cudf-join-gpu-pinned-spill.py)*
 
