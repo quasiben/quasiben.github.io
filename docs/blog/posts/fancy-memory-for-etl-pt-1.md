@@ -13,6 +13,7 @@ My team recently released cuDF-Polars 26.06 which brings significant performance
 
 Let’s start with a longstanding challenge for GPU analytics: running beyond available GPU memory.  In the following example, we generate data larger than the GPU memory available and force the engine into a spilling path. Spilling means moving data from device memory to host memory when the operations would otherwise exceed available VRAM and cause an OOM.
 
+## Setting Up A Larger-Than-VRAM Query
 
 For this example I found some time on an [L40 GPU](https://www.nvidia.com/en-us/data-center/l40/) which you can easily rent on [aws](https://instances.vantage.sh/?id=34b8d04c6b05a2a46cc2548776a6d96b63172156) or any other major CSP.  The machine also comes with a considerable amount of CPU resources: 128 GB of RAM and an AMD EPYC 7313P 16-Core Processor.
 
@@ -101,7 +102,11 @@ After running, calling `engine.global_statistics(clear=True).to_dict()` gives us
 | Pageable host spilling | Device -> host | `copy-device-to-host-bytes` | 24 | 70.34 GB | 3.58 GB | 8.06 s |
 | Pageable host spilling | Host -> device | `copy-host-to-device-bytes` | 24 | 70.34 GB | 3.58 GB | 4.06 s |
 
-Of the ~27s of execution, the workflow spends ~12s just copying spilled data between host and device.  It moves about 70GB in each direction, so roughly 140GB crosses the PCIe boundary.  That movement is expensive because of transfer bandwidth, allocating pageable memory on the host, and device synchronization points that can briefly pause streaming execution.  If we use pinned memory and [optimize data transfer between device and host](https://developer.nvidia.com/blog/how-optimize-data-transfers-cuda-cc/) we can speed up our execution BUT it comes with an initialization charge.  It does take time for the OS to pre-allocate this memory upfront:
+Of the ~27s of execution, the workflow spends ~12s just copying spilled data between host and device.  It moves about 70GB in each direction, so roughly 140GB crosses the PCIe boundary.  That movement is expensive because of transfer bandwidth, allocating pageable memory on the host, and device synchronization points that can briefly pause streaming execution.  
+
+## Pinned Memory Cuts The Copy Cost
+
+If we use pinned memory and [optimize data transfer between device and host](https://developer.nvidia.com/blog/how-optimize-data-transfers-cuda-cc/) we can speed up our execution BUT it comes with an initialization charge.  It does take time for the OS to pre-allocate this memory upfront:
 
 ```python
 options = StreamingOptions(

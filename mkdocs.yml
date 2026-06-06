@@ -26,8 +26,6 @@ extra_css:
 nav:
   - Index: index.md
   - Blog: blog/index.md
-  - Projects: projects.md
-  - About: about.md
   - LinkedIn: https://www.linkedin.com/in/benjamin-zaitlen
   - Github: https://github.com/quasiben
 
@@ -45,6 +43,8 @@ markdown_extensions:
   - admonition
   - attr_list
   - md_in_html
+  - toc:
+      permalink: true
   - pymdownx.highlight:
       anchor_linenums: true
   - pymdownx.superfences

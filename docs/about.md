@@ -1,9 +1,9 @@
 ---
-title: About this Website
+title: About
 ---
 
-# About this Website
+# About
 
-This website is built with MkDocs Material.
+This is my personal site: a place for notes, experiments, and occasional posts about software, data systems, Python, GPUs, and whatever else I’m working through.
 
-And it does not contain a lot of information.
+Some posts are old, some are newer, and most are here because writing things down helps me understand them better.

@@ -64,9 +64,9 @@ When the host allocates pageable memory, the operating system is still largely i
 
 With nsys we can start to see why pinned memory and DMA can be so impactful. (We may explore RDMA/GPUDirect RDMA in a later post.)
 
-## More questions
+## Why Copy Time Is Not Wall-Clock Time
 
-So far we have looked at individual transfer costs; now let's connect that back to the full query timeline.  Why, if we spend 12 seconds spilling with pageable memory and only 5 seconds spilling with pinned memory, do we not see an overall time reduction of 7 seconds?  
+So far we have looked at individual transfer costs; now let's connect that back to the full query timeline.  Why, if we spend 12 seconds spilling with pageable memory and only 5 seconds spilling with pinned memory, do we not see an wll-clock time reduced by 7 seconds?  
 
 
 It's understandably confusing because cuDF-Polars and RapidsMPF are doing work *concurrently* and, when the hardware allows it, *in parallel*. Spilling is not a single serial phase that blocks the whole query. Different chunks of the query can be in different stages at the same time: one chunk may be spilling to host, another may be unspilling back to the device, while another is running libcudf kernels. 
