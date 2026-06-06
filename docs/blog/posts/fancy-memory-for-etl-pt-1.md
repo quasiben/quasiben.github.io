@@ -9,7 +9,7 @@ slug: fancy-memory-for-etl
 
 cuDF-Polars 26.06 was recently released, and there are several intermediate and advanced features I want to highlight over the next few weeks and months. Let’s start with a longstanding challenge for GPU  analytics: running beyond available GPU memory.  In the following example, we generate data larger than the GPU memory available and force the engine into a spilling path. Spilling means moving data from device memory to host memory when the operations would otherwise exceed available VRAM and cause an OOM.
 
-> The lesson: spilling makes larger-than-VRAM GPU analytics possible, but memory movement is not free. For longer-running workflows or repeated queries using pinned host memory can materially reduce transfer overhead and decrease overall execution time. 
+> TLDR: Spilling makes larger-than-VRAM GPU analytics possible, but memory movement is not free. For longer-running workflows or repeated queries using pinned host memory can materially reduce transfer overhead and decrease overall execution time. 
 
 For this example I found some time on an [L40 GPU](https://www.nvidia.com/en-us/data-center/l40/) which you can easily rent on [aws](https://instances.vantage.sh/?id=34b8d04c6b05a2a46cc2548776a6d96b63172156) or any other major CSP.  The machine also comes with a considerable amount of CPU resources: 128 GB of RAM and an AMD EPYC 7313P 16-Core Processor.
 
@@ -123,3 +123,5 @@ Engine initialization took ~16 seconds but now total execution time is ~23s.  As
 | Pinned host spilling | 67.47 GB | 5.79 s |  | Pinned transfers reduced copy time by 52.2%. |
 
 Spilling is a necessary and critical component to building accelerated engines for both CPU and for GPU where memory is further constrained.  Pinned memory changes the cost of that movement.  I expect this feature to be more widely but users should be cognizant of the one time initialization and an opt-in policy helps maintain expectations of why startup time may be slower but how to achieve greater performance with simple configuration changes.
+
+The stats tell us pinned memory cuts transfer time substantially, but they do not show how that work overlaps with the rest of the query. In part 2, we’ll open Nsight Systems traces and look at what the pipeline is actually doing.

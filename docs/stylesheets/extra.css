@@ -24,9 +24,9 @@
 
 .md-main__inner {
   display: grid;
-  grid-template-columns: 13rem minmax(0, 44rem);
-  gap: 2.25rem;
-  max-width: 62rem;
+  grid-template-columns: 10rem minmax(0, 50rem);
+  gap: 1.25rem;
+  max-width: 64rem;
   min-height: 100vh;
   margin: 0 auto;
   padding: 2rem 1.25rem 4rem;
@@ -114,7 +114,11 @@
   grid-row: 1;
   background: var(--paper-bg);
   box-shadow: 0 1px 4px var(--shadow);
-  padding: 1.8rem 2rem 3rem;
+  padding: 1.6rem 1.75rem 3rem;
+}
+
+.md-content--post .md-sidebar--post {
+  display: none !important;
 }
 
 .md-content__inner {
