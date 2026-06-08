@@ -10,7 +10,7 @@ draft: true
 
 **Pinned memory changes both the cost of each transfer and the behavior of the pipeline. It pays an upfront allocation cost, but can reduce spill overhead, lower memory pressure, and improve end-to-end runtime**
 
-In the previous post, I explored generally how spilling can enable larger than VRAM workloads to run on a GPU but comes with a cost AND how to reduce that cost with different memory.  In this post, I want to dive a little deeper into what's happening with pinned and pageable memory.  To do that exploration, we'll use [Nsight Systems](https://developer.nvidia.com/nsight-systems) (nsys) which can give us detailed profiling information on the workflow I developed in pt 1.  
+In the previous post, I explored generally how spilling can enable larger than VRAM workloads to run on a GPU but comes with a cost AND how to reduce that performance bottleneck with different memory.  In this post, I want to dive a little deeper into what's happening with pinned and pageable memory.  To do that exploration, we'll use [Nsight Systems](https://developer.nvidia.com/nsight-systems) (nsys) which can give us detailed profiling information on the workflow I developed in pt 1.  
 
 > nsys profile -o pageable-spill -f true  -t cuda,nvtx --stats=false python script.py
 

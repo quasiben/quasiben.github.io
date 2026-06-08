@@ -118,7 +118,7 @@ options = StreamingOptions(
 )
 ```
 
-Engine initialization took ~16 seconds but now total execution time is ~23s.  As execution time goes up, this one time initialization cost matters less and less.  The spill volume is about the same, but the transfer portion is much faster in both directions
+Engine initialization took ~16 seconds but now total execution time is ~23s.  As execution time goes up, this one time initialization cost matters less and less.  The phrase the more you buy the more you save comes to mind -- here, you are reusing the same pinned memory resource as you run more and more queries (or bigger queries) so all engine initialization cost is *upfront and once*.  The spill volume is about the same, but the transfer portion is much faster in both directions
 
 | Mode | Direction | Bytes counter | Count | Total bytes | Max transfer | Time |
 | --- | --- | --- | ---: | ---: | ---: | ---: |
@@ -130,6 +130,6 @@ Engine initialization took ~16 seconds but now total execution time is ~23s.  As
 | Pageable host spilling | 70.34 GB | 12.11 s |  | Regular host spilling copies through pageable host memory. |
 | Pinned host spilling | 67.47 GB | 5.79 s |  | Pinned transfers reduced copy time by 52.2%. |
 
-Spilling is a necessary and critical component to building accelerated engines for both CPU and for GPU where memory is further constrained.  Pinned memory changes the cost of that movement.  I expect this feature to be more widely but users should be cognizant of the one time initialization and an opt-in policy helps maintain expectations of why startup time may be slower but how to achieve greater performance with simple configuration changes.
+Spilling is a necessary and critical component to building accelerated engines for both CPU and for GPU where memory is further constrained.  Pinned memory changes the cost of that movement.  I expect this feature to be more widely used but users should be cognizant of the one time initialization and an opt-in policy helps maintain expectations of why startup time may be slower but how to achieve greater performance with simple configuration changes.
 
 The stats tell us pinned memory cuts transfer time substantially, but they do not show how that work overlaps with the rest of the query. In part 2, we’ll open Nsight Systems traces and look at what the pipeline is actually doing.
