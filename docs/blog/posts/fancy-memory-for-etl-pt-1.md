@@ -7,15 +7,15 @@ slug: fancy-memory-for-etl-pt-1
 
 # Fancy Memory for ETL pt. 1
 
-**Spilling makes larger-than-VRAM GPU analytics possible, but memory movement is not free. For longer-running workflows or repeated queries, using pinned host memory can materially reduce transfer overhead and decrease overall execution time.**
+**Spilling makes larger-than-VRAM GPU analytics possible, but memory movement is not free. For longer-running workflows or repeated queries, using pinned host memory can materially reduce memory movement overhead and decrease overall execution time.**
 
-My team recently released cuDF-Polars 26.06 which brings significant performance improvements over the previous versions, leveraging a new execution backend: [RapdisMPF](https://docs.rapids.ai/api/rapidsmpf/stable/).  Over the coming weeks and months I want to spend time highlighting some of the more advanced features and get into general ideas of how to build accelerated ETL engines. 
+My team recently released cuDF-Polars 26.06 which brings significant performance improvements over the previous versions, leveraging a new execution backend: [RapidsMPF](https://docs.rapids.ai/api/rapidsmpf/stable/).  Over the coming weeks and months I want to spend time highlighting some of the more advanced features and get into general ideas of how to build accelerated ETL engines. 
 
 Let’s start with a longstanding challenge for GPU analytics: running beyond available GPU memory.  In the following example, we generate data larger than the GPU memory available and force the engine into a spilling path. Spilling means moving data from device memory to host memory when the operations would otherwise exceed available VRAM and cause an OOM.
 
 ## Setting Up A Larger-Than-VRAM Query
 
-For this example I found some time on an [L40 GPU](https://www.nvidia.com/en-us/data-center/l40/) which you can easily rent on [aws](https://instances.vantage.sh/?id=34b8d04c6b05a2a46cc2548776a6d96b63172156) or any other major CSP.  The machine also comes with a considerable amount of CPU resources: 128 GB of RAM and an AMD EPYC 7313P 16-Core Processor.
+For this example I found some time on an [L40 GPU](https://www.nvidia.com/en-us/data-center/l40/) which you can easily rent on [aws](https://instances.vantage.sh/?id=34b8d04c6b05a2a46cc2548776a6d96b63172156) or any other major CSP. An L40 has 48 GB of GPU memory (VRAM), and this machine also comes with a considerable amount of CPU resources: 128 GB of RAM and an AMD EPYC 7313P 16-Core Processor.
 
 Let's first start by generating some data.  I had an agent build me some wholesale order like data with tables: lineitem, orders, customers, and suppliers.
 
@@ -57,13 +57,15 @@ def build_query(data_dir: Path = DATA_DIR) -> pl.LazyFrame:
     )
 ```
 
-Uncompressed the data is ~50GB, so we'd expect some spilling.  With cudf-polars 26.06, we have a new backend to execute and manage memory: [RapidsMPF](https://github.com/rapidsai/rapidsmpf).  Let's see what happens when we naively run the query and write the results back to disk:
+Uncompressed the data is ~50GB, so we'd expect some spilling.  With cuDF-Polars 26.06, we have a new backend to execute and manage memory: [RapidsMPF](https://github.com/rapidsai/rapidsmpf).  Let's see what happens when we naively run the query and write the results back to disk:
 
 ```python
 build_query(data_dir).sink_parquet(output_path, engine='gpu')
 ```
 
-On this L40, the query runs in ~27s.  You may or may not know this, but cuDF-polars is doing something on your behalf.  It's spilling and seems like it has a reasonable default.  By default,  at 80% of the device memory,  cuDF-Polars will start spilling from device-to-host.   Let's turn off spilling and see what happens.  For this we are going to explicitly configure the GPU engine and options for cuDF-polars:
+## Spilling Saves The Query
+
+On this L40, the query runs in ~27s.  By default, at 80% of the device memory,  cuDF-Polars will start spilling from device-to-host.  Let's turn off spilling and see what happens.  For this we are going to explicitly configure the GPU engine and options for cuDF-Polars:
 
 ```python
 
@@ -118,18 +120,22 @@ options = StreamingOptions(
 )
 ```
 
-Engine initialization took ~16 seconds but now total execution time is ~23s.  As execution time goes up, this one time initialization cost matters less and less.  The phrase the more you buy the more you save comes to mind -- here, you are reusing the same pinned memory resource as you run more and more queries (or bigger queries) so all engine initialization cost is *upfront and once*.  The spill volume is about the same, but the transfer portion is much faster in both directions
+Engine initialization took ~16 seconds, but total execution time is now ~23s. For repeated or larger workloads, that upfront cost gets amortized: the engine pays the allocation cost once, then reuses the same pinned memory resource as more data moves through the pipeline. The spill volume is about the same, but the transfer portion is much faster in both directions.
+
 
 | Mode | Direction | Bytes counter | Count | Total bytes | Max transfer | Time |
 | --- | --- | --- | ---: | ---: | ---: | ---: |
 | Pinned host spilling | Device -> pinned host | `copy-device-to-pinned_host-bytes` | 23 | 67.47 GB | 3.58 GB | 2.64 s |
 | Pinned host spilling | Pinned host -> device | `copy-pinned_host-to-device-bytes` | 23 | 67.47 GB | 3.58 GB | 3.15 s |
 
-| Mode | Bytes copied each direction | Total copy time | Query time | Notes |
-| --- | ---: | ---: | ---: | --- |
-| Pageable host spilling | 70.34 GB | 12.11 s |  | Regular host spilling copies through pageable host memory. |
-| Pinned host spilling | 67.47 GB | 5.79 s |  | Pinned transfers reduced copy time by 52.2%. |
+| Mode | Bytes copied each direction | Total copy time | Notes |
+| --- | ---: | ---: | --- |
+| Pageable host spilling | 70.34 GB | 12.11 s | Regular host spilling copies through pageable host memory. |
+| Pinned host spilling | 67.47 GB | 5.79 s | Pinned transfers reduced copy time by 52.2%. |
 
-Spilling is a necessary and critical component to building accelerated engines for both CPU and for GPU where memory is further constrained.  Pinned memory changes the cost of that movement.  I expect this feature to be more widely used but users should be cognizant of the one time initialization and an opt-in policy helps maintain expectations of why startup time may be slower but how to achieve greater performance with simple configuration changes.
+Spilling is a necessary component of accelerated analytics engines, especially on GPUs where memory is more constrained than system RAM. Pinned memory changes the cost of spilling by making the transfers much faster. 
 
-The stats tell us pinned memory cuts transfer time substantially, but they do not show how that work overlaps with the rest of the query. In part 2, we’ll open Nsight Systems traces and look at what the pipeline is actually doing.
+I expect this feature to become more widely used, but users should be aware of the one-time initialization cost. Making this policy opt-in keeps the tradeoff clear: startup may be slower, but larger or repeated workloads can achieve better performance with a simple configuration change.
+
+While the stats tell us pinned memory substantially reduces transfer time, they do not show how that work overlaps with the rest of the query.  In part 2, we’ll open Nsight Systems traces and look at what the pipeline is actually doing.
+
