@@ -1,6 +1,6 @@
 ---
 title: Fancy Memory for ETL pt. 2
-date: 2026-06-05
+date: 2026-06-16
 author: Benjamin Zaitlen
 slug: fancy-memory-for-etl-pt-2
 draft: true
@@ -29,7 +29,7 @@ As a reminder, I measured the same join workflow which requires more VRAM than a
 With these two images laid out together, we can visually see similarities and differences:
 
 1. Both have multiple cudf_polars streams (blue bars) though Fig 1. has 6 and Fig 2. has 5 -- let's come back to that
-1. With pageable memory (fig 1) we see a load of red and green bars and it starts near the 2s mark
+1. With pageable memory (fig 1) we see a load of red and green transfer bars and they start near the 2s mark
 1. With pinned memory (Fig. 2), the transfer bars are narrower than the pageable transfer bars in Fig. 1, meaning each transfer takes less time. The query work also starts near the 18s mark because the first ~18s are spent allocating the pinned memory pool.
 
 
@@ -66,8 +66,11 @@ Device->Host data movement is a lot faster: 24 GiB/s and Host->Device is 22GiB/s
 
 Why though is Host->Device faster for pinned memory compared with pageable memory? It's great fun getting an excuse to learn about how machines actually work. We aren't going to dive very deep, but just peer into the depths without falling too far in.   
 
-When the host allocates pageable memory, the operating system is still largely in control of that memory and still responsible for running the entire machine! The OS can move the memory to another physical location or even swap it to disk. This means the host, the OS, is responsible for moving the data and safeguarding the memory from corruption during the process. It’s safe but slow, and one of the primary reasons why [Direct Memory Access (DMA)](https://en.wikipedia.org/wiki/Direct_memory_access) was created to let devices transfer data directly to and from memory, reducing CPU involvement in the copy path. In a way, it’s one of the freedoms, or footguns, the OS gives back to the application developer. Interestingly, DMA dates back to [computing in the 50s](https://www.computerhistory.org/storageengine/storage-subsystems-emerge/), when many of these ideas around pipelining and overlapping execution were already taking shape.
+When the host allocates pageable memory, the operating system is still largely in control of that memory and still responsible for running the entire machine! The OS can move the memory to another physical location or even swap it to disk. This means the host, the OS, is responsible for moving the data and safeguarding the memory from corruption during the process. It’s safe but slow, and one of the primary reasons why [Direct Memory Access (DMA)](https://en.wikipedia.org/wiki/Direct_memory_access) was created to let devices transfer data directly to and from memory, reducing CPU involvement in the copy path. In a way, it’s one of the freedoms, or footguns, the OS gives back to the application developer. 
 
+*Interestingly, DMA dates back to [computing in the 50s](https://www.computerhistory.org/storageengine/storage-subsystems-emerge/), when many of these ideas around pipelining and overlapping execution were already taking shape.*
+
+So, Host->Device is faster with pinned memory because the host memory is [*pagelocked*](https://lifemath.wordpress.com/2024/09/09/pinned-memory-aka-page-locked-memory/) and the GPU DMA (copy the memory) and there is no OS/CPU involvement
 
 With nsys we can start to see why pinned memory and DMA can be so impactful. (We may explore RDMA/GPUDirect RDMA in a later post.)
 
