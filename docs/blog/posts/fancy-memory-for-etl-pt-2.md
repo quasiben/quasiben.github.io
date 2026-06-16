@@ -3,7 +3,6 @@ title: Fancy Memory for ETL pt. 2
 date: 2026-06-16
 author: Benjamin Zaitlen
 slug: fancy-memory-for-etl-pt-2
-draft: true
 ---
 
 # Fancy Memory for ETL pt. 2
