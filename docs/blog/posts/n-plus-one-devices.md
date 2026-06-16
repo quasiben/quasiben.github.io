@@ -213,4 +213,4 @@ shape: (5, 3)
 └────────────┴───────────────┴───────────────────┘
 ```
 
-Turns out it's mostly the Tugs which operate at 10x the average speed.  I suppose that makes some sense; [little toot](https://en.wikipedia.org/wiki/Little_Toot) likes the igure-eights in the harbor but can only go so fast when pulling in the big ocean liners.
+Turns out it's mostly the Tugs which operate at 10x the average speed.  I suppose that makes some sense; [little toot](https://en.wikipedia.org/wiki/Little_Toot) likes the figure-eights in the harbor but can only go so fast when pulling in the big ocean liners.
