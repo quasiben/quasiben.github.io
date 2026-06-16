@@ -16,9 +16,7 @@ With cuDF-Polars 26.06, we have a new execution backend: RapidsMPF. RapidsMPF ha
 
 In this post I want to start exploring the multi-GPU capabilities of cuDF-Polars. N+1 of anything is usually an advanced feature, or at least an intermediate one. It does not have to feel that way forever: NumPy gives users concurrency without making them think too much about the underlying hardware.   *That's probably the decades of labor in underlying libraries like LAPACK/BLAS but also thoughtful API design.*   The GPU analytics world is still a somewhat nascent adventure and we collectively are exploring how to deliver speed-of-light performance and ease of use without requiring extreme levels of expertise.  For these reasons, the multi-gpu experience is opt-in and the user should be more cognizant of what they are opting into, without having to deeply understand the underlying mechanics of GPU hardware or software.
 
-With that said, if you find yourself (or require being) on a single-node multi-GPU (SNMG) machine you **CAN** leverage all this hardware with just a few additional engine configurations to otherwise standard Polars code:
-
-Recall that the out-of-box experience for most cuDF-Polars users is as simple as possbile single parameter change: `collect(engine='gpu')`.  Now we are going to take that advanced step in defining the engine explicitly. 
+With that said, if you find yourself (or require being) on a single-node multi-GPU (SNMG) machine you **CAN** leverage all this hardware with just a few additional engine configurations to otherwise standard Polars code.  Recall that the out-of-box experience for most cuDF-Polars users is as simple as possible single parameter change: `collect(engine='gpu')`.  Now we are going to take that advanced step in defining a multi-GPU engine explicitly
 
 ```python
 from cudf_polars.engine.ray import RayEngine
@@ -33,7 +31,7 @@ result = (
     )
 ```
 
-Hmmm, actually, not too bad.  It's quite simple in fact.  The above will automatically start using all the GPUs.  It even comes in [ContextManager](https://docs.python.org/3/library/contextlib.html) form for easy cleanup:
+Hmmm, actually, not too bad.  It's quite simple in fact!  The above will automatically start using all the GPUs.  It even comes in [ContextManager](https://docs.python.org/3/library/contextlib.html) form for easy cleanup:
 
 ```python
 from cudf_polars.engine.ray import RayEngine
@@ -90,14 +88,15 @@ Tue Jun 16 16:59:53 2026
 
 Make sure you install cudf-polars with Ray:
 
-> python -m pip install cudf-polars-cu13[ray]
-
+```bash
+python -m pip install cudf-polars-cu13[ray]
+```
 
 ## Speed Demons of the High Seas
 
 We are going to play with vessel traffic data collected and maintained by the U.S. Coast Guard: [Automatic Identification System (AIS) Vessel Data](https://hub.marinecadastre.gov/pages/vesseltraffic). It has a nice mix of traits for GPU analytics: geospatial data, time-series, scale, skew, and some oddities to make the results fun without requiring deep maritime knowledge.
 
-> I downloaded all of 2025 and converted from CSV to Parquet with snappy compression.  The first quarter (Jan-Feb) ~19GBs on disk and uncompressed it's ~78GBs.  I'll limit myself to the first quarter.  We'll still need multiple GPUs, we'll need spilling, but workflows should also finish in a more reasonable amount of time
+I downloaded all of 2025 and converted from CSV to Parquet with snappy compression.  The first quarter (Jan-Feb) ~19GBs on disk and uncompressed it's ~78GBs.  I'll limit myself to the first quarter.  We'll still need multiple GPUs, we'll need spilling, but workflows should also finish in a more reasonable amount of time
 
 A more interesting analysis than simple scan-and-filter exploration is cohort analysis. Vessels are organized by group and type: Sailing, Fishing, Cargo, Passenger, Tug, and so on. The data also contains a velocity-like measurement, Speed over Ground (`SOG`). Let's find vessels whose speed is more than 10x their cohort average.
 
@@ -214,4 +213,4 @@ shape: (5, 3)
 └────────────┴───────────────┴───────────────────┘
 ```
 
-Turns out it's mostly the Tugs which operate at 10x the average speed.  I suppose that makes some sense; [little toot](https://en.wikipedia.org/wiki/Little_Toot) likes the igure-eights in the harbor but can only go so fast when pulling in the big ocean liners
+Turns out it's mostly the Tugs which operate at 10x the average speed.  I suppose that makes some sense; [little toot](https://en.wikipedia.org/wiki/Little_Toot) likes the igure-eights in the harbor but can only go so fast when pulling in the big ocean liners.
