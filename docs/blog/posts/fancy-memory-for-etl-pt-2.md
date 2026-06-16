@@ -70,7 +70,7 @@ When the host allocates pageable memory, the operating system is still largely i
 
 *Interestingly, DMA dates back to [computing in the 50s](https://www.computerhistory.org/storageengine/storage-subsystems-emerge/), when many of these ideas around pipelining and overlapping execution were already taking shape.*
 
-So, Host->Device is faster with pinned memory because the host memory is [*pagelocked*](https://lifemath.wordpress.com/2024/09/09/pinned-memory-aka-page-locked-memory/) and the GPU DMA (copy the memory) and there is no OS/CPU involvement
+So, Host->Device is faster with pinned memory because the host memory is [*pagelocked*](https://lifemath.wordpress.com/2024/09/09/pinned-memory-aka-page-locked-memory/). Since those pages cannot be moved or swapped out by the OS during the transfer, the GPU can use DMA to copy directly from host memory to device memory, avoiding the extra staging and CPU/OS overhead required for pageable memory.
 
 With nsys we can start to see why pinned memory and DMA can be so impactful. (We may explore RDMA/GPUDirect RDMA in a later post.)
 
