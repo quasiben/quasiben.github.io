@@ -23,6 +23,11 @@ theme:
 extra_css:
   - stylesheets/extra.css
 
+extra:
+  analytics:
+    provider: google
+    property: G-RPQE6FV6NP
+
 nav:
   - Index: index.md
   - Blog: blog/index.md
