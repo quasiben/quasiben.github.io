@@ -11,12 +11,17 @@ draft: true
 
 # N + 1 Devices
 
-With cuDF-Polars 26.06, we have a new execution backend: RapidsMPF. RapidsMPF handles both execution and the distributed collectives needed for multi-GPU, out-of-core algorithms. That's a lot of nouns -- more simply, RapidsMPF gives cuDF-Polars a way to coordinate work and move data across workers/devices/ranks/etc.
+With cuDF-Polars 26.06, we have a new execution backend: RapidsMPF. RapidsMPF handles both execution and the distributed collectives needed for multi-GPU, out-of-core algorithms. That's a lot of verbiage. More simply, RapidsMPF gives cuDF-Polars a way to coordinate work and move data across workers/devices/ranks/etc.
 
+In this post I want to start exploring the multi-GPU capabilities of cuDF-Polars.  
 
-In this post I want to start exploring the multi-GPU capabilities of cuDF-Polars. N+1 of anything is usually an advanced feature, or at least an intermediate one. It does not have to feel that way forever: NumPy gives users concurrency without making them think too much about the underlying hardware.   *That's probably the decades of labor in underlying libraries like LAPACK/BLAS but also thoughtful API design.*   The GPU analytics world is still a somewhat nascent adventure and we collectively are exploring how to deliver speed-of-light performance and ease of use without requiring extreme levels of expertise.  For these reasons, the multi-gpu experience is opt-in and the user should be more cognizant of what they are opting into, without having to deeply understand the underlying mechanics of GPU hardware or software.
+When searching for more performance, more memory, more of anything, we often go to plaid -- wait, not plaid -- *distributed.*  Well, sometimes distributed -- multiple GPUs, or multiple CPUs, or nodes, or clusters...but what we are really trying to get at is parallelism (not concurrency): how to run mulitple tasks at the same time.
 
-With that said, if you find yourself (or require being) on a single-node multi-GPU (SNMG) machine you **CAN** leverage all this hardware with just a few additional engine configurations to otherwise standard Polars code.  Recall that the out-of-box experience for most cuDF-Polars users is as simple as possible single parameter change: `collect(engine='gpu')`.  Now we are going to take that advanced step in defining a multi-GPU engine explicitly
+Learning to use multiple devices may seem intimidating. N+1 of anything is often perceived as an advanced feature, or at least an intermediate one.  But our hardware and software keep changing and we *can* find examples (perhaps even models) of excellence which offer parallelism wiht little to no visibility to the enduser.  NumPy is one such example where multi-threaded execution is now avaiable without any effort or input from user. *That's probably the decades of labor in underlying libraries like LAPACK/BLAS, a bunch of magic linking and packaging, and perhaps most importantly, thoughtful API design.* 
+
+The GPU analytics world is still a somewhat nascent adventure, and we collectively are exploring how to deliver speed-of-light performance and ease of use without requiring extreme levels of expertise. For these reasons, the multi-GPU experience is typically opt-in and the user should be more cognizant of what they are opting into.  Still, many libraries (PyTorch, XGBoost, HugginFace) including cuDF-Polars are actively exploring *and shipping• solutions which enable multi-GPU capabilities without requiring in-depth knowledge of GPU hardware or software.
+
+With that said, if you find yourself on a single-node multi-GPU (SNMG) machine, you **CAN** leverage all this hardware with just a few additional engine configurations to otherwise standard Polars code.  Recall that the out-of-box experience for most cuDF-Polars users is a single parameter change: `collect(engine='gpu')`.  Now we just need to take the advanced step and define a multi-GPU engine explicitly:
 
 ```python
 from cudf_polars.engine.ray import RayEngine
@@ -31,7 +36,7 @@ result = (
     )
 ```
 
-Hmmm, actually, not too bad.  It's quite simple in fact!  The above will automatically start using all the GPUs.  It even comes in [ContextManager](https://docs.python.org/3/library/contextlib.html) form for easy cleanup:
+Hmmm, actually, not too bad.  In fact, it's quite simple!  The above will automatically start using all the GPUs in the same box.  It even comes in [ContextManager](https://docs.python.org/3/library/contextlib.html) form for easy cleanup:
 
 ```python
 from cudf_polars.engine.ray import RayEngine
@@ -46,9 +51,9 @@ with RayEngine() as engine:
     )
 ```
 
-This will automatically, start one ray worker per GPU and cuDF-Polars (RapidsMPF) will execute all the work evenly across each GPU.  There is no scheduler here for those familiar with task based systems like Spark.  Instead, all workers will get the same execution graph (a physical plan) and operate independently.  Synchronization points are inserted into the physical plan where communication is required: groupby-aggregations, join/merges, etc.  These higher level operations are composed of RapidsMPF atomic collectives common in distributed computing: shuffle (all-to-all), allgather, allreduce, sparse-all-to-all, etc.  For now, we'll stay above these details and continue exploring what kind of options are exposed to us.
+This will automatically start one ray worker per GPU, and cuDF-Polars (RapidsMPF) will execute all the work evenly across each device.  There is no scheduler here, for those familiar with task-based systems like Spark.  Instead, all workers will get the same execution graph (a physical plan) and operate independently.  Synchronization points are inserted into the physical plan where communication is required: groupby-aggregations, join/merges, etc.  These higher level operations are composed of RapidsMPF atomic collectives common in distributed computing: shuffle (all-to-all), allgather, allreduce, sparse-all-to-all, etc.  For now, let's stay above these details and continue exploring what kind of options are available to us.
 
-I was able to get some time on a machine with 4 [T4s](https://www.nvidia.com/en-us/data-center/tesla-t4/). These are older and a bit smaller compared with more contemporary devices -- only 16GBs of VRAM/GPU but with four we have a whopping 64GBs!
+I was able to get some time on a machine with 4 [T4s](https://www.nvidia.com/en-us/data-center/tesla-t4/). These are older and a bit smaller compared to more contemporary devices -- only 16GBs of VRAM/GPU -- but with four we have a whopping 64GBs!
 
 ```bash
 $ nvidia-smi
@@ -86,7 +91,7 @@ Tue Jun 16 16:59:53 2026
 +-----------------------------------------------------------------------------------------+
 ```
 
-Make sure you install cudf-polars with Ray:
+Make sure you install cuDF-Polars with Ray:
 
 ```bash
 python -m pip install cudf-polars-cu13[ray]
@@ -94,16 +99,16 @@ python -m pip install cudf-polars-cu13[ray]
 
 ## Speed Demons of the High Seas
 
-We are going to play with vessel traffic data collected and maintained by the U.S. Coast Guard: [Automatic Identification System (AIS) Vessel Data](https://hub.marinecadastre.gov/pages/vesseltraffic). It has a nice mix of traits for GPU analytics: geospatial data, time-series, scale, skew, and some oddities to make the results fun without requiring deep maritime knowledge.
+We are going to play with vessel traffic data collected and maintained by the U.S. Coast Guard: [Automatic Identification System (AIS) Vessel Data](https://hub.marinecadastre.gov/pages/vesseltraffic). It has a nice mix of traits for analytics: geospatial data, time-series, scale, skew, and some oddities to make the results fun without requiring deep maritime knowledge.
 
-I downloaded all of 2025 and converted from CSV to Parquet with snappy compression.  The first quarter (Jan-Feb) ~19GBs on disk and uncompressed it's ~78GBs.  I'll limit myself to the first quarter.  We'll still need multiple GPUs, we'll need spilling, but workflows should also finish in a more reasonable amount of time
+I downloaded all of 2025 and converted from CSV to Parquet with snappy compression.  The first quarter (Jan-Feb) is ~19GBs on disk and uncompressed it's ~78GBs.  I'll limit myself to the first quarter to keep the overall execution time to less than a minute.  But we'll still need multiple GPUs, we'll need spilling, etc.
 
 A more interesting analysis than simple scan-and-filter exploration is cohort analysis. Vessels are organized by group and type: Sailing, Fishing, Cargo, Passenger, Tug, and so on. The data also contains a velocity-like measurement, Speed over Ground (`SOG`). Let's find vessels whose speed is more than 10x their cohort average.
 
 
 We could write this as an explicit `group_by`, join the cohort average back to the original table, and then filter:
 
-```
+```python
 cohort_avg = (
     df
     .group_by("VesselType", "Status")
@@ -146,7 +151,7 @@ with RayEngine.from_options() as engine:
     query.sink_parquet(OUTPUT_DIR, engine=engine)
 ```
 
-And this immediately fails with an OOM -- a not uncommon user experience :)
+And this immediately fails with an OOM -- a not uncommon user experience ;)
 
 ```bash
 (RankActor pid=699246) [2026-06-16 17:07:10,190 E 699246 701128] logging.cc:118: Unhandled exception: N3rmm13out_of_memoryE. what(): std::bad_alloc: out_of_memory: CUDA error (failed to allocate 368974272 bytes) at
@@ -154,10 +159,9 @@ And this immediately fails with an OOM -- a not uncommon user experience :)
 kages/ray/_raylet.so(+0x15d4368) [0x7bc9539d4368] ray::operator<<()
 ```
 
-Often though, we need to tune the system and may want to configure various parameters in cuDF-Polars, RapidsMPF, or even Ray.  Still, the defaults should be a good starting point and defaults for RayEngine are to use all devices on the system.  It's recommended to use the [StreamingOptions](https://docs.rapids.ai/api/cudf/stable/cudf_polars/options/#configuration-options) dataclass.  We can set everything related to the how the query is executed and tune...: `spill_device_limit`, `fallback_mode`, `target_partition_size` , etc.  We can also configure the Ray Actors:
+Often though, we need to tune the system and may want to configure various parameters in cuDF-Polars, RapidsMPF, or even Ray.  Still, the defaults should be a good starting point, and the defaults for RayEngine are to use all devices on the system.  It's recommended to use the [StreamingOptions](https://docs.rapids.ai/api/cudf/stable/cudf_polars/options/#configuration-options) dataclass.  We can set everything related to the how the query is executed: `spill_device_limit`, `fallback_mode`, `target_partition_size` , etc and we can also configure the Ray Actors as well.
 
-
-The default spill_device_limit is 80%.  Let's lower and learn how to configure the multi-gpu RayEngine. I'm also going to add some ray configurations so I can view [the dashboard](https://docs.ray.io/en/latest/ray-observability/getting-started.html) remotely:
+The default spill_device_limit is 80%.  Let's lower it to 70%, and while we are at it, having easy access to [the dashboard](https://docs.ray.io/en/latest/ray-observability/getting-started.html) remotely would be quite helpful:
 
 ```python
 opts = StreamingOptions(
@@ -177,9 +181,9 @@ with RayEngine.from_options(opts, ray_init_options=ray_init_options) as engine:
 
 This time the query runs cleanly. In the GIF below, all four T4s turn on and stay busy for most of the query. That is the main thing I wanted to see. Our cycle has been:
 1. Take a Polars query and naively run it on multiple GPUs.
-2. Hit an OOM.
-3. Tune the engine and re-run.
-4. Success!
+1. Hit an OOM.
+1. Tune the engine and re-run.
+1. Success!
 
 ![Speed anomaly query](n-plus-one-devices/speed_anomaly_query.gif)
 
@@ -213,4 +217,4 @@ shape: (5, 3)
 └────────────┴───────────────┴───────────────────┘
 ```
 
-Turns out it's mostly the Tugs which operate at 10x the average speed.  I suppose that makes some sense; [little toot](https://en.wikipedia.org/wiki/Little_Toot) likes the figure-eights in the harbor but can only go so fast when pulling in the big ocean liners.
+Turns out it's mostly the Tugs which operate at 10x the average speed.  I suppose that makes some sense; [Little Toot](https://en.wikipedia.org/wiki/Little_Toot) liked the figure-eights in the harbor but could only go so fast when pulling in the big ocean liners.
