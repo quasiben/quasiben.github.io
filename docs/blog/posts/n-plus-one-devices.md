@@ -1,9 +1,8 @@
 ---
 title: N + 1 Devices
-date: 2026-06-13
+date: 2026-06-23
 author: Benjamin Zaitlen
 slug: n-plus-one-devices
-draft: true
 ---
 
 
