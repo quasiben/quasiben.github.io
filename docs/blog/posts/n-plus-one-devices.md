@@ -8,8 +8,6 @@ slug: n-plus-one-devices
 
 **cuDF-Polars can scale a familiar Polars query across multiple GPUs with only a few configuration changes**
 
-# N + 1 Devices
-
 With cuDF-Polars 26.06, we have a new execution backend: RapidsMPF. RapidsMPF handles both execution and the distributed collectives needed for multi-GPU, out-of-core algorithms. That's a lot of verbiage. More simply, RapidsMPF gives cuDF-Polars a way to coordinate work and move data across workers/devices/ranks/etc.
 
 In this post I want to start exploring the multi-GPU capabilities of cuDF-Polars.  
