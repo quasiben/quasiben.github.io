@@ -5,7 +5,7 @@ author: Benjamin Zaitlen
 slug: efa-aws
 ---
 
-**Accelerated transport is always a win!  EFA's SRD transport ships CUDA buffers at ~45GB/s where plain TCP manages ~530MB/s between nodes. We can see the performance gains from basic testing to complex end-to-end workflows**
+**Accelerated transport is always a win!  EFA's SRD transport transfers CUDA buffers at ~45GB/s where plain TCP manages ~530MB/s between nodes. We can see the performance gains from basic testing to complex end-to-end workflows**
 
 My team and I have been evaluating cuDF-Polars in cloud deployments and we've been experimenting with EFA enabled nodes.  EFA is a high-performance network interface that allows for low-latency, high-bandwidth communication between nodes.  Importantly, EFA enables GPU-to-GPU communication across nodes which is a great fit for our use case.  Generally, this is referred to as GPUDirect RDMA (Remote Direct Memory Access) which is a key component of distributed high-performance computing.  Tools like NCCL, UCX, NIXL with cuda_copy or gdrcopy capabilities have built-in support for doing this kind of transfer.  In this blog post, I'll mostly be recording configuration and testing details for EFA enabled nodes.
 
@@ -21,7 +21,7 @@ I get a little confused with so much jargon and similar acronyms but this is wha
 1. EFA = RDMA with SRD and only some instances support GPUDirect RDMA 
 
 
-To launch with EFA enabled we need the following:
+I'm using an Ubuntu image, official AWS images may already have the modules baked in.  To launch with EFA enabled we need the following:  
 
 1. Launch a node with EFA enabled: `InterfaceType=efa`
 1. Setup EFA on the node:
@@ -108,7 +108,7 @@ Final:                    10      0.353  2202.916  2202.916    45394.37   45394.
 ### Example output without SRD
 
 ```bash
-UCX_TLS=tcp,cuda_copy,cuda_ipc,sm,self ucx_perftest -m cuda -t tag_bw -n 10 -s $((1024*1024*100)) IP_NODE_A
+UCX_TLS=^srd ucx_perftest -m cuda -t tag_bw -n 10 -s $((1024*1024*100)) IP_NODE_A
 
 +--------------+--------------+------------------------------+---------------------+-----------------------+
 |              |              |       overhead (usec)        |   bandwidth (MB/s)  |  message rate (msg/s) |
@@ -146,7 +146,7 @@ In these blogs I haven't gone into the underlying machinary of cuDF-Polars but a
 ${CONDA_PREFIX}/bin/libcudf_streaming_bench_shuffle -w 3 -r 10 -g -s -x -n 268435456 -p 20 -o 8
 
 # experiment without srd
-UCX_TLS=tcp,cuda_copy,cuda_ipc,sm,self ${CONDA_PREFIX}/bin/libcudf_streaming_bench_shuffle -w 3 -r 10 -g -s -x -n 268435456 -p 20 -o 8
+UCX_TLS=^srd ${CONDA_PREFIX}/bin/libcudf_streaming_bench_shuffle -w 3 -r 10 -g -s -x -n 268435456 -p 20 -o 8
 ```
 
 ### Example output with SRD
