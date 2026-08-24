@@ -1,6 +1,6 @@
 ---
 title: Faster Transport on Cloud Infra
-date: 2026-08-24
+date: 2026-08-25
 author: Benjamin Zaitlen
 slug: efa-aws
 ---
@@ -131,6 +131,9 @@ Final:                    10      0.568 87966.013 87966.013     1136.80    1136.
 | TCP, tuned (`srd` excluded) | 1.14 GB/s  | 11 msg/s       | 87.97 ms |
 
 With SRD/EFA, UCX can transfer CUDA buffers at `~45GB/s`, and without SRD (TCP only) bandwidth is severely degraded to `~1.1GB/s`, a ~40x performance difference. TCP being slow here is expected and conversely demonstrates why GPU RDMA is critical. With TCP, GPU data is moved from device to host (D->H), serialized, then sent across the wire, then deserialized, and finally moved back from host to device (H->D). GPU RDMA avoids the costly H->D / D->H movement and the serialization costs. (Hmm, it's the same NIC between TCP/SRD. Perhaps a question for later). Effectively, with GPU RDMA, the pipeline is: GPU->NIC->RemoteNIC->RemoteGPU. AWS states that on a g7e.12xlarge the transport is 400Gbps or ~50GB/s, very close to what we measure with `ucx_perftest`.
+
+![TCP versus GPUDirect RDMA data paths across two g7e.12xlarge nodes.](efa-aws/cluster-topology.jpg)
+*Fig 1. TCP and GPUDirect RDMA (SRD/EFA) data paths between two g7e.12xlarge nodes.*
 
 Let's increase complexity from simple perf testing...
 
