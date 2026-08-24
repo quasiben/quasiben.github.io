@@ -1,6 +1,6 @@
 # EFA / GPUDirect RDMA benchmark scripts
 
-Companion scripts for the [EFA Configuration and Testing](/blog/efa/)
+Companion scripts for the [Faster Transport on Cloud Infra](/blog/efa-aws/)
 post. These automate running the same three experiments described there —
 `ucx_perftest`, a raw shuffle benchmark, and an end-to-end cuDF-Polars
 TPC-H query — across a pair of EFA-enabled, multi-GPU EC2 nodes (e.g.

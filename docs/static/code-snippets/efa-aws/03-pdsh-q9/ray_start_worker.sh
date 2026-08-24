@@ -6,6 +6,8 @@
 #
 # UCX_TLS: export before calling to override transport (e.g. to exclude
 # srd/EFA and force tcp). Left unset, UCX auto-selects srd as normal.
+# UCX_TCP_TUNED=1: apply a tuned plain-TCP UCX config (see common.sh) for
+# a fair comparison against TCP's out-of-the-box defaults.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 source ./common.sh
@@ -20,7 +22,7 @@ echo "==> [worker:$WORKER_PUB] GPUs detected: $NGPU" >&2
 RAY="/home/${REMOTE_USER}/miniforge3/envs/${ENV_NAME}/bin/ray"
 
 echo "==> [worker:$WORKER_PUB] stopping any existing ray processes" >&2
-ssh_run "$WORKER_PUB" "$RAY stop --timeout 30" >&2 || ssh_run "$WORKER_PUB" "$RAY stop --force" >&2 || true
+ssh_run "$WORKER_PUB" "$RAY stop --grace-period 30" >&2 || ssh_run "$WORKER_PUB" "$RAY stop --force" >&2 || true
 sleep 2
 
 echo "==> [worker:$WORKER_PUB] ensuring efa_nv_peermem is loaded" >&2
@@ -31,11 +33,19 @@ if [[ -n "${UCX_TLS:-}" ]]; then
     UCX_TLS_EXPORT="export UCX_TLS=${UCX_TLS}"
 fi
 
-echo "==> [worker:$WORKER_PUB] joining head at ${HEAD_PRIV}:6379 (num-gpus=$NGPU, UCX_TLS=${UCX_TLS:-<unset>})" >&2
+UCX_TCP_TUNING_EXPORT=""
+if [[ "${UCX_TCP_TUNED:-0}" == "1" ]]; then
+    echo "==> [worker:$WORKER_PUB] raising net.core.rmem_max/wmem_max and applying tuned TCP UCX settings" >&2
+    ensure_tcp_sysctl "$WORKER_PUB" >&2
+    UCX_TCP_TUNING_EXPORT="$UCX_TCP_TUNING_SNIPPET"
+fi
+
+echo "==> [worker:$WORKER_PUB] joining head at ${HEAD_PRIV}:6379 (num-gpus=$NGPU, UCX_TLS=${UCX_TLS:-<unset>}, UCX_TCP_TUNED=${UCX_TCP_TUNED:-0})" >&2
 ssh_run "$WORKER_PUB" "
 $AWS_CREDS_SNIPPET
 $CUDF_POLARS_ENV_SNIPPET
 $UCX_TLS_EXPORT
+$UCX_TCP_TUNING_EXPORT
 rm -f ~/ray_worker.log
 setsid $RAY start --address=${HEAD_PRIV}:6379 --num-gpus=${NGPU} \
     > ~/ray_worker.log 2>&1 < /dev/null &

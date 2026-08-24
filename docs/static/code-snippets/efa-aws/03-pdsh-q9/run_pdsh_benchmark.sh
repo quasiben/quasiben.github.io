@@ -11,6 +11,8 @@
 #
 # UCX_TLS: export before calling to override transport (e.g. to exclude
 # srd/EFA and force tcp). Left unset, UCX auto-selects srd as normal.
+# UCX_TCP_TUNED=1: apply a tuned plain-TCP UCX config (see common.sh) for
+# a fair comparison against TCP's out-of-the-box defaults.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 source ./common.sh
@@ -36,6 +38,7 @@ cd ~
 $AWS_CREDS_SNIPPET
 $CUDF_POLARS_ENV_SNIPPET
 ${UCX_TLS:+export UCX_TLS=${UCX_TLS}}
+$([[ "${UCX_TCP_TUNED:-0}" == "1" ]] && echo "$UCX_TCP_TUNING_SNIPPET")
 
 $PY -m cudf_polars.streaming.benchmarks.pdsh ${QUERY} \
     --iterations 2 \

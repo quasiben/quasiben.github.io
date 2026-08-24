@@ -69,6 +69,31 @@ ensure_efa_peermem() {
     ssh_run "$host" "sudo modprobe efa_nv_peermem && cat /sys/module/efa_nv_peermem/version"
 }
 
+ensure_tcp_sysctl() {
+    # ensure_tcp_sysctl <host> — raise net.core.rmem_max/wmem_max to 128MB.
+    # Default on fresh Ubuntu AMIs is ~208KB, which silently clamps any
+    # UCX_TCP_SNDBUF/RCVBUF request above that ceiling — tuning UCX's TCP
+    # buffer sizes has no effect until this is raised too. Not persisted
+    # across reboot.
+    local host="$1"
+    ssh_run "$host" "sudo sysctl -w net.core.rmem_max=134217728 >/dev/null && sudo sysctl -w net.core.wmem_max=134217728 >/dev/null"
+}
+
+# Shell snippet exported alongside UCX_TLS to build a tuned plain-TCP UCX
+# config, for a fair SRD-vs-TCP comparison instead of TCP's out-of-the-box
+# defaults. Values confirmed via a `ucx_perftest -m cuda -t tag_bw` sweep:
+# default 8K TX segment size is the single biggest lever, MAX_BW=auto
+# removes UCX's own 2200MBps cap, and SNDBUF/RCVBUF=4M only takes effect
+# once ensure_tcp_sysctl has raised the OS ceiling above it. Pair with
+# UCX_TLS=tcp,cuda_copy,cuda_ipc,sm,self to force plain TCP.
+UCX_TCP_TUNING_SNIPPET='
+export UCX_TCP_TX_SEG_SIZE=256K
+export UCX_TCP_RX_SEG_SIZE=256K
+export UCX_TCP_MAX_BW=auto
+export UCX_TCP_SNDBUF=4M
+export UCX_TCP_RCVBUF=4M
+'
+
 # Shell snippet (to be embedded in a remote command string) that fetches
 # this node's IAM-role credentials via IMDSv2 and exports them as AWS_*
 # env vars. Some S3 client libraries (e.g. kvikio) don't pick up

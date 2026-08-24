@@ -14,5 +14,5 @@ RAY="/home/${REMOTE_USER}/miniforge3/envs/${ENV_NAME}/bin/ray"
 # "Failed to process command DEREG_MR ... err -22" bursts that accumulate
 # across runs and degrade subsequent benchmark performance. Only fall back
 # to --force if the graceful stop doesn't finish in time.
-ssh_run "$HOST" "$RAY stop --timeout 30" || ssh_run "$HOST" "$RAY stop --force"
+ssh_run "$HOST" "$RAY stop --grace-period 30" || ssh_run "$HOST" "$RAY stop --force"
 echo "==> [$HOST] ray stopped"

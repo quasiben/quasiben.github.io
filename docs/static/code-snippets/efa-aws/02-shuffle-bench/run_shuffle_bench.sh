@@ -13,6 +13,10 @@
 # srd/EFA and force tcp:
 #   UCX_TLS=tcp,cuda_copy,cuda_ipc,sm,self bash run_shuffle_bench.sh ...
 # Left unset, UCX auto-selects srd/EFA for inter-node traffic as normal.
+#
+# UCX_TCP_TUNED=1: apply a tuned plain-TCP UCX config (see common.sh) for
+# a fair comparison against TCP's out-of-the-box defaults:
+#   UCX_TLS=tcp,cuda_copy,cuda_ipc,sm,self UCX_TCP_TUNED=1 bash run_shuffle_bench.sh ...
 set -euo pipefail
 cd "$(dirname "$0")/.."
 source ./common.sh
@@ -62,8 +66,18 @@ UCX_TLS_FLAG=""
 if [[ -n "${UCX_TLS:-}" ]]; then
     UCX_TLS_FLAG="-x UCX_TLS=${UCX_TLS}"
 fi
+
+UCX_TCP_TUNING_FLAGS=""
+if [[ "${UCX_TCP_TUNED:-0}" == "1" ]]; then
+    echo "==> raising net.core.rmem_max/wmem_max and applying tuned TCP UCX settings"
+    ensure_tcp_sysctl "$NODE_A"
+    ensure_tcp_sysctl "$NODE_B"
+    UCX_TCP_TUNING_FLAGS="-x UCX_TCP_TX_SEG_SIZE=256K -x UCX_TCP_RX_SEG_SIZE=256K -x UCX_TCP_MAX_BW=auto -x UCX_TCP_SNDBUF=4M -x UCX_TCP_RCVBUF=4M"
+fi
+
 echo "==> bench args: -C ucxx ${EXTRA_ARGS[*]}"
 echo "==> UCX_TLS: ${UCX_TLS:-<unset, UCX auto-selects>}"
+echo "==> UCX_TCP_TUNED: ${UCX_TCP_TUNED:-0}"
 
 ssh_run "$NODE_A" "
 $MPIRUN --host ${PRIV_A}:${GPUS_A},${PRIV_B}:${GPUS_B} -np ${TOTAL_RANKS} \
@@ -71,5 +85,6 @@ $MPIRUN --host ${PRIV_A}:${GPUS_A},${PRIV_B}:${GPUS_B} -np ${TOTAL_RANKS} \
     --prtemca plm_rsh_agent 'ssh -i /home/${REMOTE_USER}/.ssh/mpi_ephemeral -o StrictHostKeyChecking=accept-new -o IdentitiesOnly=yes' \
     -x RAPIDSMPF_UCXX_PROGRESS_MODE=thread-polling \
     ${UCX_TLS_FLAG} \
+    ${UCX_TCP_TUNING_FLAGS} \
     ~/binder.sh $BIN -C ucxx ${EXTRA_ARGS[*]}
 "

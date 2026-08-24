@@ -184,10 +184,14 @@ sudo modprobe efa_nv_peermem
 echo "--- Enabling persistent loading of efa_nv_peermem kernel module ---"
 echo "efa_nv_peermem" | sudo tee /etc/modules-load.d/efa_nv_peermem.conf
 
+# librapidsmpf-tests / libcudf-streaming-tests ship libcudf_streaming_bench_shuffle
+# (used by run_shuffle_bench.sh) — not included in the base cudf-polars/rapidsmpf
+# packages.
 echo "--- Creating cudf-polars conda environment ---"
 "$HOME/miniforge3/bin/conda" create -y -n cudf-polars \
     -c rapidsai-nightly -c conda-forge \
-    cudf "cudf-polars=26.10" ray-data
+    cudf "cudf-polars=26.10" ray-data \
+    librapidsmpf-tests libcudf-streaming-tests
 
 echo "--- Cloning rapidsmpf ---"
 git clone https://github.com/rapidsai/rapidsmpf.git "$HOME/rapidsmpf"
