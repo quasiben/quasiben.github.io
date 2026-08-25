@@ -7,10 +7,10 @@ slug: scipy-setup
 
 # SciPy Tutorial Setup On Kubernetes
 
-*Written by Benjamin Zaitlen on 2016-09-30.*
-
 This past summer I had the opportunity to work with [Min Ragan-Kelley](https://github.com/minrk) and [Matthew Rocklin](http://matthewrocklin.com/) on delivering a tutorial at the scientific computing conference, [SciPy 2016](https://scipy2016.scipy.org/), in Austin, Texas.  We set out to teach folks generally about parallel computing in the context of data analysis and not necessarily about any one tool.  That is, focusing on core concepts rather than a specific framework.  There is something strangely visceral when you are first learning about distributed computation and different hostnames pop up when executing a simple map across the cluster; and to that end, we wanted to give students access to a cluster capable of doing significant work -- something more than a toy.  The tutorial was well received and all the content is publicly
 available:
+
+<!-- more -->
 
 - [Live Setup](http://bigfatintegral.net/)
 - [Tutorial Materials](https://github.com/mrocklin/scipy-2016-parallel)

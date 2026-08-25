@@ -7,9 +7,9 @@ slug: thanks
 
 # Thanks!
 
-*Written by Benjamin Zaitlen on 2016-04-06.*
-
 Things generally worked out
+
+<!-- more -->
 
 This blog is built with:
 - [MkDocs Material](https://squidfunk.github.io/mkdocs-material/)

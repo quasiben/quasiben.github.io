@@ -41,6 +41,9 @@ plugins:
       blog_dir: blog
       post_dir: "{blog}/posts"
       post_url_format: "{slug}"
+      post_excerpt: required
+      post_excerpt_separator: "<!-- more -->"
+      post_readtime: false
       archive: true
       categories: false
 

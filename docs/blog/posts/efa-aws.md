@@ -7,6 +7,8 @@ slug: efa-aws
 
 **EFA's SRD transport moves CUDA buffers ~40x faster than tuned TCP, ~13x faster through a shuffle, and ~2x faster using PDS-H Q9 as a benchmark. Why is there a performance difference between SRD and TCP, and why does that difference shrink as workload complexity grows?**
 
+<!-- more -->
+
 My team and I have been evaluating cuDF-Polars in cloud deployments and we've been experimenting with EFA enabled nodes. EFA is a high-performance network interface that allows for low-latency, high-bandwidth communication between nodes. Importantly, EFA enables GPU-to-GPU communication across nodes which is a great fit for our use case. Generally, this is referred to as GPUDirect RDMA (Remote Direct Memory Access) which is a key component of distributed high-performance computing. Tools like NCCL, UCX, NIXL with cuda_copy or gdrcopy capabilities have built-in support for doing this kind of transfer. In this blog post, I'll mostly be recording configuration and testing details for EFA enabled nodes.
 
 

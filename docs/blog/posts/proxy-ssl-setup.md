@@ -7,14 +7,14 @@ slug: proxy-ssl-setup
 
 # Integration Testing for the Enterprise
 
-*Written by Benjamin Zaitlen on 2016-11-21.*
-
 Building software for enterprises does not just mean more error checking
 (though it definitely does include that!), it means understanding a bit more
 about operations and IT.  Each enterprise/organization has their own idea
 on how networking, security, authentication, and authorization are implemented;
 the variety can throw a big wrench in the *reasonable assumptions* often made in software tools deployed in those environments.  It can be challenging to generalize these environments even with experiential knowledge
 (painful scars) and they can be even more challenging to test.
+
+<!-- more -->
 
 In this post, I want to
 tell you about a testing harness I made specifically for testing operational

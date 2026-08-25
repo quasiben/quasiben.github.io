@@ -7,12 +7,12 @@ slug: conda-spark
 
 # Conda + Spark
 
-*Written by Benjamin Zaitlen on 2016-04-15.*
-
 In my [previous post](/blog/dask-yarn/), I described different scenarios for bootstrapping
 Python on a multi-node cluster.  I offered a general solution using [Anaconda for
 cluster management](https://docs.continuum.io/anaconda-cluster/index) and solution using a [custom conda env](http://knit.readthedocs.org/en/latest/usage.html#zipped-conda-envs) deployed with
 [Knit](http://knit.readthedocs.org).
+
+<!-- more -->
 
 In a follow-up to that post, I was asked if the machinery in Knit would also work for Spark.
 Sure--of course! In fact, much of Knit's design comes from Spark's

@@ -9,6 +9,8 @@ slug: fancy-memory-for-etl-pt-1
 
 **Spilling makes larger-than-VRAM GPU analytics possible, but memory movement is not free. For longer-running workflows or repeated queries, using pinned host memory can materially reduce memory movement overhead and decrease overall execution time.**
 
+<!-- more -->
+
 My team recently released [cuDF-Polars 26.06](https://docs.rapids.ai/api/cudf/stable/cudf_polars/) which brings significant performance improvements over the previous versions, leveraging a new execution backend: [RapidsMPF](https://docs.rapids.ai/api/rapidsmpf/stable/).  Over the coming weeks and months I want to spend time highlighting some of the more advanced features and get into general ideas of how to build accelerated ETL engines. 
 
 Let’s start with a longstanding challenge for GPU analytics: running beyond available GPU memory.  In the following example, we generate data larger than the GPU memory available and force the engine into a spilling path. Spilling means moving data from device memory to host memory when the operations would otherwise exceed available VRAM and cause an OOM.

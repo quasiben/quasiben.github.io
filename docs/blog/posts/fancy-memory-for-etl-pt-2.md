@@ -9,6 +9,8 @@ slug: fancy-memory-for-etl-pt-2
 
 **Pinned memory changes both the cost of each transfer and the behavior of the pipeline. It pays an upfront allocation cost, but can reduce spill overhead, lower memory pressure, and improve end-to-end runtime**
 
+<!-- more -->
+
 In the previous post, I explored how spilling can enable larger-than-VRAM workloads to run on a GPU. Spilling comes with a cost, but pinned memory can reduce memory transfer bottlenecks. In this post, I want to dive a little deeper into what's happening with pinned and pageable memory. To do that exploration, we'll use [Nsight Systems](https://developer.nvidia.com/nsight-systems) (nsys) which can give us detailed profiling information on the workflow I developed in pt 1.  
 
 > nsys profile -o pageable-spill -f true  -t cuda,nvtx --stats=false python script.py

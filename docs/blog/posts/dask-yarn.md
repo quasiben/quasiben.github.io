@@ -7,8 +7,6 @@ slug: dask-yarn
 
 # Dask + Yarn
 
-*Written by Benjamin Zaitlen on 2016-04-08.*
-
 In the past few months we've seen a number of posts about Dask.  For those unfamiliar with it, Dask is an
 out-of-core parallel framework for data analysis.
 Some of the more recent examples ([1](http://matthewrocklin.com/blog/work/2016/02/17/dask-distributed-part1),
@@ -21,6 +19,8 @@ approach breaks down, especially when the cluster is simultaneously running many
 like Hadoop, Spark, Impala, etc.  In this case we typically use a cluster resource manager like
 YARN to start and stop jobs on the cluster and to manage their execution environments.
 In this post, I demonstrate a toy example using the YARN resource manager.
+
+<!-- more -->
 
 ## Knit
 
