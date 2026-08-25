@@ -130,7 +130,7 @@ Final:                    10      0.568 87966.013 87966.013     1136.80    1136.
 | SRD (EFA)          | **45.39 GB/s** | **454 msg/s** | **2.20 ms** |
 | TCP, tuned (`srd` excluded) | 1.14 GB/s  | 11 msg/s       | 87.97 ms |
 
-With SRD/EFA, UCX can transfer CUDA buffers at `~45GB/s`, and without SRD (TCP only) bandwidth is severely degraded to `~1.1GB/s`, a ~40x performance difference. TCP being slow here is expected and conversely demonstrates why GPU RDMA is critical. With TCP, GPU data is moved from device to host (D->H), serialized, then sent across the wire, then deserialized, and finally moved back from host to device (H->D). GPU RDMA avoids the costly H->D / D->H movement and the serialization costs. (Hmm, it's the same NIC between TCP/SRD. Perhaps a question for later). Effectively, with GPU RDMA, the pipeline is: GPU->NIC->RemoteNIC->RemoteGPU. AWS states that on a g7e.12xlarge the transport is 400Gbps or ~50GB/s, very close to what we measure with `ucx_perftest`.
+With SRD/EFA, UCX can transfer CUDA buffers at `~45GB/s`, and without SRD (TCP only) bandwidth is severely degraded to `~1.1GB/s`, a ~40x performance difference. TCP being slow here is expected and conversely demonstrates why GPU RDMA is critical. With TCP, GPU data is moved from device to host (D->H), serialized, then sent across the wire, then deserialized, and finally moved back from host to device (H->D). GPU RDMA avoids the costly H->D / D->H movement and the serialization costs. (Hmm, it's the same NIC between TCP/SRD. Perhaps a question for later). Effectively, with GPU RDMA, the pipeline is: GPU->NIC->RemoteNIC->RemoteGPU. AWS states that on a g7e.12xlarge the transport is 400Gbps or 50GB/s, very close to what we measure with `ucx_perftest`.
 
 ![TCP versus GPUDirect RDMA data paths across two g7e.12xlarge nodes.](efa-aws/cluster-topology.jpg)
 *Fig 1. TCP and GPUDirect RDMA (SRD/EFA) data paths between two g7e.12xlarge nodes.*
@@ -142,7 +142,8 @@ Let's increase complexity from simple perf testing...
 
 *[Scripts: 02-shuffle-bench](/static/code-snippets/efa-aws/02-shuffle-bench/run_shuffle_bench.sh)*
 
-In these blogs I haven't gone into much of the underlying machinery of cuDF-Polars but a lot of the performance comes from the [accelerated and out-of-core shuffle](https://docs.rapids.ai/api/rapidsmpf/stable/background/shuffle-architecture/) implemented in RAPIDSMPF. Let's do a similar experiment to `ucx_perftest` where, instead of just shoving bytes across the wire, we measure the bandwidth of a more complex workload, a shuffle, again with and without SRD/EFA. A shuffle is more revealing than point-to-point transfers, and it's more than just an all-to-all. Here every rank is sending and receiving at once and doing some hash calculations as well. In this experiment we configure a benchmark to shuffle 20 GiB of randomly generated data per rank (per GPU). Each 20 GiB is composed of 1 GiB input partitions and is redistributed into 8 output partitions of ~2.5 GiB per rank. The benchmark runs 3 warmups and then shuffles the same data 10 more times, and the number we care about is the local throughput. Below is a simplified example of what was executed:
+In these blogs I haven't gone into much of the underlying machinery of cuDF-Polars but a lot of the performance comes from the [accelerated and out-of-core shuffle](https://docs.rapids.ai/api/rapidsmpf/stable/background/shuffle-architecture/) implemented in RapidsMPF. Let's do a similar experiment to `ucx_perftest` where, instead of just shoving bytes across the wire, we measure the bandwidth of a more complex workload, a shuffle, again with and without SRD/EFA. A shuffle is more revealing than point-to-point transfers, and it's more than just an all-to-all. Here every rank is sending and receiving at once and doing some hash calculations as well. In this experiment we configure a benchmark to shuffle 20 GiB of randomly generated data per rank (per GPU). Each 20 GiB is composed of 1 GiB input partitions and is redistributed into 8 output partitions of ~2.5 GiB per rank. The benchmark runs 3 warmups and then shuffles the same data 10 more times, and the number we care about is the local throughput. Below is a simplified example of what was executed:
+
 
 ```bash
 # 20 GiB/rank at 1 GiB per input partition, c=1 (default, 4 bytes/row):
@@ -241,7 +242,7 @@ This time the gap is much smaller than the raw bandwidth and shuffle numbers abo
 
 Nice! We still observe a healthy performance gain: a 2x-2.7x perf difference comparing iterations.
 
-The gap between the iterations is a little bothersome. The OS isn't caching a file -- we're reading chunks of data from S3. I think there is some cost in spinning up the engine: kvikio threads have a small startup cost and maybe there is some caching of the data *within* S3. 
+The gap between the iterations is a little bothersome. The OS isn't caching a file -- we're reading chunks of data from S3. There are also costs to warmup the engine, such as launching threads, memory allocation, as well as possibly caching of the data *within* S3. All those costs contribute roughly equally to iteration 0 of both SRD and TCP, which we are not measuring in this experiment.
 
 ## Wrapping Up
 
@@ -275,4 +276,4 @@ A single TCP process seems to only be able to drive **~9.53 Gbit/s (~1.19 GB/s)*
 iperf3 -c <server_priv_ip> -t 8 -P 64
 ```
 
-Here, we are using 64 parallel TCP streams transferring 128MB buffers (the system default). For this experiment, I measured **381 Gbit/s (~47.6 GB/s)**, very close to the 400Gbps AWS advertises. So the full bandwidth is there for the taking, and ENA's raw capacity really is comparable to EFA's (ENA + GPU RDMA). But! The application: `ucx_perftest`, cuDF-Polars, etc, is now responsible for splitting up the data and driving dozens of concurrent transfers over the wire. Much easier said than done.
+Here, we are using 64 parallel TCP streams transferring 128MB buffers (the system default). For this experiment, I measured **381 Gbit/s (~47.6 GB/s)**, very close to the 400Gbps AWS advertises. So the full bandwidth is there for the taking, and ENA's raw capacity really is comparable to EFA's (ENA + GPU RDMA). Driving multiple parallel transfers is currently unsupported by `ucx_perftest` and we did not attempt to write an equivalent of `iperf3 -P <num_parallel_streams>` which we would need to saturate the bandwidth with ENA. So the lesson we learn about ENA here is that the application is responsible to drive enough parallel streams to properly saturate the ENA bandwidth.
