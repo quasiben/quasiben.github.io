@@ -7,7 +7,8 @@ draft: true
 ---
 
 
-**...**
+**Hand a RapidsMPF shuffle a 12 GiB device budget for 20 GiB/rank of data and it doesn't OOM -- it finishes at 16% of
+full speed. Spilling turns a memory cliff into a ramp you can plan around**
 
 Oof, yet another blog about shuffling: YABAS (I hope [Stephen Johnson](https://en.wikipedia.org/wiki/Stephen_C._Johnson)
 isn't too upset). Well, this will be a fun version at least. `Shuffling` can be used in a lot of contexts, let's start
@@ -96,7 +97,8 @@ multiprocess launch tool capable of binding processes to NUMA nodes, to launch t
 
 ### Simple Shuffling
 
-To start, let's take a single node (4 GPUs) of the NVL72, with 192GB of VRAM per GPU, or 768GB across the four.   
+To start, let's take a single node (4 GPUs) of the NVL72. These are GB200s, and the benchmark's hardware probe reports
+184 GiB of usable VRAM per GPU, so about 736 GiB across the four.   
 
 >  rrun -n 4 --bind-to cpu --bind-to memory -x UCX_MAX_RNDV_RAILS=1 -x UCX_PROTO_ENABLE=y -x UCX_WARN_UNUSED_ENV_VARS=n libcudf_streaming_bench_shuffle -C ucxx -w 3 -r 10 -m pool -g -s -x -p 1 -o 4 -c 10 -n 536870912
 
@@ -154,7 +156,7 @@ Ordered by: peak (descending)
 The program returns the average values per rank: local/global throughput, input/output partitions, etc, and aggregate
 statistics for the run per rank (for the statistics block I only list rank 0; ranks 1-3 are very similar): how much data
 was allocated on the device, how much data was sent through the shuffler, etc.  Ranks do finish at slightly different
-times and will also have small but measureable variations in throughput.  Given we have 768GB of VRAM across the four
+times and will also have small but measureable variations in throughput.  Given we have 768 GiB of VRAM across the four
 GPUs, RapidsMPF has plenty of room to shuffle without needing to spill. In the above configuration for the data,
 RapidsMPF drives roughly 1.6 TiB/s of global throughput.  We still aren't at the [theoretical
 ceiling](https://www.nvidia.com/en-us/data-center/gb200-nvl72/) of 7.8TiB/s but that's very fast!
@@ -170,6 +172,11 @@ types, and GPUs vary in the amount of VRAM. We therefore should expect throughpu
 data as well as the workflow overall changes.
 
 ## Oops, you spilled a little...
+
+We are going to still maintain the same initial data setup: each rank will initialize with 20 GiB of data and then shuffle.
+However, we are going to continually increase the memory pressure by lowering the device limit from no limit to 12GiBs.
+What are are going to observe is that not only does it not OOM, it doesn't thrash, and finishes the
+shuffle at on 16% of our baseline with 255 GiB/s of throughput, *while spilling!*
 
 Let's apply some memory pressure to the benchmark and limit the device to 32GB: `-l 32768` and see what happens:
 
@@ -226,14 +233,18 @@ Below is a table sweeping the same initial setup, ratcheting the device memory l
 | very-heavy-spill | 16 GiB | 20 GiB | 60.0 GiB | 78.5 GiB/s | 313.9 GiB/s | 5.0 GiB | 42.2 ms | 16.2 GiB | 203.5 ms |
 | extreme-spill | 12 GiB | 20 GiB | 60.0 GiB | 63.9 GiB/s | 255.5 GiB/s | 10.0 GiB | 88.8 ms | 17.5 GiB | 250.7 ms |
 
+A note on how to read the table: the throughput columns are rank 0, while the spill volumes and times are the
+worst-case rank of the four, since that's the one you actually wait for.  Raw logs for all seven runs are in
+[`blog-outputs-max-perf`](blog-outputs-max-perf) if you want to explore further.
+
 Reading down the table, a few things stand out:
 
-1. **The degradation is smooth.** Global throughput falls from 1.60 TiB/s to 255 GiB/s as the limit tightens from
-   unlimited down to 12 GiB.  There's no cliff, and more importantly, no OOM. Every one of these runs *finished*.
+1. **The degradation is smooth and monotonic.** Every step down in budget costs throughput, but it costs it 
+   gradually and more importantly, it does not OOM, from 1.60 TiB/s -> 255 GiB/s
 
 1. **Receive-side mechanics can avoid pointless thrashing** `copy-device-to-pinned_host` sits at exactly 0 GiB for the
    first three spill levels. All the way down to a 24 GiB limit, RapidsMPF never evicts anything and receives incoming
-   buffers on the device. Only at a 20 GiB limit, where the limit equals the input size, does real device-to-host
+   buffers on the host. Only at a 20 GiB limit, where the limit equals the input size, does real device-to-host
    eviction kick in, and by 12 GiB it's pushing 10 GiB per rank back to the host.
 
 1. **Spilling is the expensive part.** `copy-pinned_host-to-device` climbs from 3.8 GiB to 17.5 GiB, and the time to
