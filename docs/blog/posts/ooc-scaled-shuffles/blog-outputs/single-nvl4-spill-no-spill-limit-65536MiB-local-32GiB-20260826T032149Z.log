@@ -1,0 +1,254 @@
+============================================================
+experiment=single-nvl4-spill-no-spill-limit-65536MiB-local-32GiB-20260826T032149Z
+run=1/8
+start_utc=2026-08-26T03:21:49+00:00
+spill_label=no-spill device_limit_mib=65536
+ranks=4 local_input_gib=32
+rows_per_partition=536870912 columns=4 input_partitions=4 output_partitions=8
+command= rrun -n 4 --bind-to cpu --bind-to memory -x UCX_TLS=\^ib\,ud:aux -x UCX_MAX_RNDV_RAILS=1 -x UCX_PROTO_ENABLE=y -x UCX_WARN_UNUSED_ENV_VARS=n libcudf_streaming_bench_shuffle -w 3 -r 10 -g -s -x -m pool -l 65536 -n 536870912 -c 4 -p 4 -o 8 -C ucxx
+============================================================
+
+[rrun] All ranks launched. Waiting for completion...
+
+[2:PRINT:0:2026-08-26 03:21:55.076921837] Hardware setup: 
+  GPU (NVIDIA GB200): 
+    Device number: 0
+    PCI Bus ID: 0019:01:00.0
+[3:PRINT:0:2026-08-26 03:21:55.076921933] Hardware setup: 
+  GPU (NVIDIA GB200): 
+    Device number: 0
+    PCI Bus ID: 0018:01:00.0
+    Total Memory: 184 GiB
+  Comm: UCXX(rank=2, nranks=4, ucx-version=1.23.0)
+
+    Total Memory: 184 GiB
+  Comm: UCXX(rank=3, nranks=4, ucx-version=1.23.0)
+
+[1:PRINT:0:2026-08-26 03:21:55.076943213] Hardware setup: 
+  GPU (NVIDIA GB200): 
+    Device number: 0
+    PCI Bus ID: 0009:01:00.0
+    Total Memory: 184 GiB
+  Comm: UCXX(rank=1, nranks=4, ucx-version=1.23.0)
+
+[0:PRINT:0:2026-08-26 03:21:55.177136001] Arguments:
+  -c ucxx (communicator)
+  -r 10 (number of runs)
+  -w 3 (number of warmup runs)
+  -c 4 (number of columns)
+  -n 536870912 (number of rows per rank)
+  -p 4 (number of input partitions per rank)
+  -o 8 (number of output partitions per rank)
+  -m pool (RMM memory resource)
+  -l 65536 (device memory limit in MiB)
+  -s (enable output discard to simulate streaming)
+  -x (enable memory profiling)
+  -g (use pre-partitioned input tables)
+Local size: 32 GiB
+Total size: 128 GiB
+
+[0:PRINT:0:2026-08-26 03:21:55.177184641] Hardware setup: 
+  GPU (NVIDIA GB200): 
+    Device number: 0
+    PCI Bus ID: 0008:01:00.0
+    Total Memory: 184 GiB
+  Comm: UCXX(rank=0, nranks=4, ucx-version=1.23.0)
+
+[3:PRINT:0:2026-08-26 03:22:01.500018428] elapsed: 6.23 s | local throughput: 5.14 GiB/s | global throughput: 20.54 GiB/s (warmup run)
+[2:PRINT:0:2026-08-26 03:22:01.500018396] elapsed: 6.23 s | local throughput: 5.13 GiB/s | global throughput: 20.54 GiB/s (warmup run)
+[1:PRINT:0:2026-08-26 03:22:01.500019196] elapsed: 6.23 s | local throughput: 5.13 GiB/s | global throughput: 20.54 GiB/s (warmup run)
+[0:PRINT:0:2026-08-26 03:22:01.500009404] elapsed: 6.23 s | local throughput: 5.13 GiB/s | global throughput: 20.54 GiB/s (warmup run)
+[3:PRINT:0:2026-08-26 03:22:01.694304132] elapsed: 125.48 ms | local throughput: 255.01 GiB/s | global throughput: 1020.05 GiB/s (warmup run)
+[2:PRINT:0:2026-08-26 03:22:01.694316420] elapsed: 124.75 ms | local throughput: 256.50 GiB/s | global throughput: 1 TiB/s (warmup run)
+[0:PRINT:0:2026-08-26 03:22:01.694309796] elapsed: 125.22 ms | local throughput: 255.55 GiB/s | global throughput: 1022.20 GiB/s (warmup run)
+[1:PRINT:0:2026-08-26 03:22:01.694314308] elapsed: 126.08 ms | local throughput: 253.80 GiB/s | global throughput: 1015.20 GiB/s (warmup run)
+[3:PRINT:0:2026-08-26 03:22:01.883381677] elapsed: 119.84 ms | local throughput: 267.03 GiB/s | global throughput: 1.04 TiB/s (warmup run)
+[2:PRINT:0:2026-08-26 03:22:01.883381197] elapsed: 120.09 ms | local throughput: 266.47 GiB/s | global throughput: 1.04 TiB/s (warmup run)
+[0:PRINT:0:2026-08-26 03:22:01.883384717] elapsed: 120.11 ms | local throughput: 266.42 GiB/s | global throughput: 1.04 TiB/s (warmup run)
+[1:PRINT:0:2026-08-26 03:22:01.883396045] elapsed: 120.97 ms | local throughput: 264.53 GiB/s | global throughput: 1.03 TiB/s (warmup run)
+[3:PRINT:0:2026-08-26 03:22:02.075836565] elapsed: 121.66 ms | local throughput: 263.04 GiB/s | global throughput: 1.03 TiB/s
+[0:PRINT:0:2026-08-26 03:22:02.075832917] elapsed: 124.31 ms | local throughput: 257.42 GiB/s | global throughput: 1.01 TiB/s
+[1:PRINT:0:2026-08-26 03:22:02.075845493] elapsed: 122.77 ms | local throughput: 260.65 GiB/s | global throughput: 1.02 TiB/s
+[2:PRINT:0:2026-08-26 03:22:02.075848181] elapsed: 124.27 ms | local throughput: 257.51 GiB/s | global throughput: 1.01 TiB/s
+[3:PRINT:0:2026-08-26 03:22:02.266960030] elapsed: 122.97 ms | local throughput: 260.22 GiB/s | global throughput: 1.02 TiB/s
+[0:PRINT:0:2026-08-26 03:22:02.266959774] elapsed: 123.03 ms | local throughput: 260.09 GiB/s | global throughput: 1.02 TiB/s
+[2:PRINT:0:2026-08-26 03:22:02.266968126] elapsed: 120.85 ms | local throughput: 264.79 GiB/s | global throughput: 1.03 TiB/s
+[1:PRINT:0:2026-08-26 03:22:02.266969758] elapsed: 121.64 ms | local throughput: 263.07 GiB/s | global throughput: 1.03 TiB/s
+[0:PRINT:0:2026-08-26 03:22:02.456684615] elapsed: 121.60 ms | local throughput: 263.16 GiB/s | global throughput: 1.03 TiB/s
+[2:PRINT:0:2026-08-26 03:22:02.456693351] elapsed: 121.52 ms | local throughput: 263.34 GiB/s | global throughput: 1.03 TiB/s
+[3:PRINT:0:2026-08-26 03:22:02.456686727] elapsed: 119.70 ms | local throughput: 267.33 GiB/s | global throughput: 1.04 TiB/s
+[1:PRINT:0:2026-08-26 03:22:02.456697959] elapsed: 120.69 ms | local throughput: 265.14 GiB/s | global throughput: 1.04 TiB/s
+[3:PRINT:0:2026-08-26 03:22:02.646951183] elapsed: 119.82 ms | local throughput: 267.07 GiB/s | global throughput: 1.04 TiB/s
+[0:PRINT:0:2026-08-26 03:22:02.646957167] elapsed: 122.15 ms | local throughput: 261.98 GiB/s | global throughput: 1.02 TiB/s
+[2:PRINT:0:2026-08-26 03:22:02.646963535] elapsed: 122.13 ms | local throughput: 262.01 GiB/s | global throughput: 1.02 TiB/s
+[1:PRINT:0:2026-08-26 03:22:02.646970575] elapsed: 120.19 ms | local throughput: 266.24 GiB/s | global throughput: 1.04 TiB/s
+[3:PRINT:0:2026-08-26 03:22:02.836857624] elapsed: 120.80 ms | local throughput: 264.90 GiB/s | global throughput: 1.03 TiB/s
+[0:PRINT:0:2026-08-26 03:22:02.836860248] elapsed: 121.37 ms | local throughput: 263.67 GiB/s | global throughput: 1.03 TiB/s
+[1:PRINT:0:2026-08-26 03:22:02.836865752] elapsed: 121.83 ms | local throughput: 262.66 GiB/s | global throughput: 1.03 TiB/s
+[2:PRINT:0:2026-08-26 03:22:02.836873400] elapsed: 121.80 ms | local throughput: 262.73 GiB/s | global throughput: 1.03 TiB/s
+[3:PRINT:0:2026-08-26 03:22:03.028763585] elapsed: 121.03 ms | local throughput: 264.40 GiB/s | global throughput: 1.03 TiB/s
+[0:PRINT:0:2026-08-26 03:22:03.028764545] elapsed: 123.80 ms | local throughput: 258.47 GiB/s | global throughput: 1.01 TiB/s
+[2:PRINT:0:2026-08-26 03:22:03.028773985] elapsed: 122.19 ms | local throughput: 261.88 GiB/s | global throughput: 1.02 TiB/s
+[1:PRINT:0:2026-08-26 03:22:03.028776417] elapsed: 123.80 ms | local throughput: 258.47 GiB/s | global throughput: 1.01 TiB/s
+[0:PRINT:0:2026-08-26 03:22:03.216072330] elapsed: 119.24 ms | local throughput: 268.37 GiB/s | global throughput: 1.05 TiB/s
+[3:PRINT:0:2026-08-26 03:22:03.216081098] elapsed: 119.17 ms | local throughput: 268.52 GiB/s | global throughput: 1.05 TiB/s
+[2:PRINT:0:2026-08-26 03:22:03.216082122] elapsed: 119.16 ms | local throughput: 268.55 GiB/s | global throughput: 1.05 TiB/s
+[1:PRINT:0:2026-08-26 03:22:03.216077674] elapsed: 119.10 ms | local throughput: 268.69 GiB/s | global throughput: 1.05 TiB/s
+[3:PRINT:0:2026-08-26 03:22:03.408301266] elapsed: 122.49 ms | local throughput: 261.24 GiB/s | global throughput: 1.02 TiB/s
+[0:PRINT:0:2026-08-26 03:22:03.408299538] elapsed: 124.12 ms | local throughput: 257.81 GiB/s | global throughput: 1.01 TiB/s
+[2:PRINT:0:2026-08-26 03:22:03.408318354] elapsed: 118.58 ms | local throughput: 269.86 GiB/s | global throughput: 1.05 TiB/s
+[1:PRINT:0:2026-08-26 03:22:03.408314642] elapsed: 124.10 ms | local throughput: 257.85 GiB/s | global throughput: 1.01 TiB/s
+[3:PRINT:0:2026-08-26 03:22:03.597358139] elapsed: 118.87 ms | local throughput: 269.21 GiB/s | global throughput: 1.05 TiB/s
+[0:PRINT:0:2026-08-26 03:22:03.597362651] elapsed: 120.93 ms | local throughput: 264.61 GiB/s | global throughput: 1.03 TiB/s
+[2:PRINT:0:2026-08-26 03:22:03.597373499] elapsed: 120.74 ms | local throughput: 265.02 GiB/s | global throughput: 1.04 TiB/s
+[1:PRINT:0:2026-08-26 03:22:03.597369019] elapsed: 120.96 ms | local throughput: 264.54 GiB/s | global throughput: 1.03 TiB/s
+[3:PRINT:0:2026-08-26 03:22:03.793808131] elapsed: 122.52 ms | local throughput: 261.17 GiB/s | global throughput: 1.02 TiB/s
+[3:PRINT:0:2026-08-26 03:22:03.793822915] means: 120.89 ms | local throughput: 264.71 GiB/s | global throughput: 1.03 TiB/s | in_parts: 4 | out_parts: 8 | nranks: 4 | device memory peak: 55.99 GiB | device memory total: 168.11 GiB (avg)
+[0:PRINT:0:2026-08-26 03:22:03.793808771] elapsed: 128.28 ms | local throughput: 249.45 GiB/s | global throughput: 997.81 GiB/s
+[0:PRINT:0:2026-08-26 03:22:03.793827939] means: 122.84 ms | local throughput: 260.50 GiB/s | global throughput: 1.02 TiB/s | in_parts: 4 | out_parts: 8 | nranks: 4 | device memory peak: 56 GiB | device memory total: 168.13 GiB (avg)
+[2:PRINT:0:2026-08-26 03:22:03.793817699] elapsed: 128.17 ms | local throughput: 249.66 GiB/s | global throughput: 998.66 GiB/s
+[2:PRINT:0:2026-08-26 03:22:03.793832099] means: 121.89 ms | local throughput: 262.54 GiB/s | global throughput: 1.03 TiB/s | in_parts: 4 | out_parts: 8 | nranks: 4 | device memory peak: 56 GiB | device memory total: 168.14 GiB (avg)
+[1:PRINT:0:2026-08-26 03:22:03.793823203] elapsed: 127.48 ms | local throughput: 251.02 GiB/s | global throughput: 1004.06 GiB/s
+[1:PRINT:0:2026-08-26 03:22:03.793841795] means: 122.21 ms | local throughput: 261.83 GiB/s | global throughput: 1.02 TiB/s | in_parts: 4 | out_parts: 8 | nranks: 4 | device memory peak: 56 GiB | device memory total: 168.13 GiB (avg)
+[3:PRINT:0:2026-08-26 03:22:03.793880419] Statistics (of the last run):
+[2:PRINT:0:2026-08-26 03:22:03.793880739] Statistics (of the last run):
+ - alloc-device:                                       24 GiB | 414.13 us | 56.60 TiB/s | avg-stream-delay 12.32 us
+ - alloc-device:                                       23.99 GiB | 390.05 us | 60.07 TiB/s | avg-stream-delay 11.87 us
+ - event-loop-total:                                   7.20 ms | avg 3.50 us
+ - metadata-payload-exchange-complete-data-transfers:  1.08 ms | avg 522.80 ns
+ - metadata-payload-exchange-progress:                 4.97 ms | avg 2.42 us
+ - metadata-payload-exchange-receive-metadata:         1.51 ms | avg 732.81 ns
+ - event-loop-total:                                   7.68 ms | avg 3.58 us
+ - metadata-payload-exchange-complete-data-transfers:  1.28 ms | avg 597.82 ns
+ - metadata-payload-exchange-progress:                 5.34 ms | avg 2.49 us
+[0:PRINT:0:2026-08-26 03:22:03.793886979] Statistics (of the last run):
+ - metadata-payload-exchange-receive-metadata:         1.58 ms | avg 736.46 ns
+ - metadata-payload-exchange-send-messages:            1.34 ms | avg 670.85 us
+ - metadata-payload-exchange-setup-data-receives:      1.15 ms | avg 536.77 ns
+ - shuffle-payload-recv:                               24 GiB | avg 256.04 MiB
+ - shuffle-payload-send:                               24 GiB | avg 255.99 MiB
+
+Memory Profiling
+----------------
+Legends:
+ - metadata-payload-exchange-send-messages:            1.31 ms | avg 656.27 us
+ - metadata-payload-exchange-setup-data-receives:      1.09 ms | avg 530.43 ns
+ - shuffle-payload-recv:                               23.99 GiB | avg 255.93 MiB
+ - shuffle-payload-send:                               24 GiB | avg 256.02 MiB
+
+Memory Profiling
+----------------
+ - alloc-device:                                       24 GiB | 636.82 us | 36.80 TiB/s | avg-stream-delay 16.62 us
+ - event-loop-total:                                   7.74 ms | avg 3.61 us
+ - metadata-payload-exchange-complete-data-transfers:  1.28 ms | avg 600.15 ns
+ - metadata-payload-exchange-progress:                 5.42 ms | avg 2.53 us
+ - metadata-payload-exchange-receive-metadata:         1.63 ms | avg 762.50 ns
+ - metadata-payload-exchange-send-messages:            1.35 ms | avg 676.21 us
+ - metadata-payload-exchange-setup-data-receives:      1.14 ms | avg 531.83 ns
+ - shuffle-payload-recv:                               24 GiB | avg 256 MiB
+ - shuffle-payload-send:                               24 GiB | avg 256 MiB
+
+Memory Profiling
+----------------
+Legends:
+  ncalls - number of times the scope was executed.
+  peak   - peak memory usage by the scope.
+  g-peak - global peak memory usage during the scope's execution.
+  accum  - total accumulated memory allocations by the scope.
+[1:PRINT:0:2026-08-26 03:22:03.793894275] Statistics (of the last run):
+  max    - largest single allocation by the scope.
+ - alloc-device:                                       24 GiB | 364.78 us | 64.26 TiB/s | avg-stream-delay 12.75 us
+  ncalls - number of times the scope was executed.
+  peak   - peak memory usage by the scope.
+  g-peak - global peak memory usage during the scope's execution.
+  accum  - total accumulated memory allocations by the scope.
+Legends:
+ - event-loop-total:                                   7.74 ms | avg 3.63 us
+ - metadata-payload-exchange-complete-data-transfers:  1.37 ms | avg 642.37 ns
+ - metadata-payload-exchange-progress:                 5.36 ms | avg 2.51 us
+  ncalls - number of times the scope was executed.
+
+ - metadata-payload-exchange-receive-metadata:         1.52 ms | avg 715.05 ns
+Ordered by: peak (descending)
+  max    - largest single allocation by the scope.
+
+ - metadata-payload-exchange-send-messages:            1.41 ms | avg 703.02 us
+ - metadata-payload-exchange-setup-data-receives:      1.12 ms | avg 526.18 ns
+ - shuffle-payload-recv:                               24 GiB | avg 256.03 MiB
+  ncalls        peak      g-peak       accum         max  filename:lineno(name)
+
+ - shuffle-payload-send:                               24 GiB | avg 255.99 MiB
+
+Memory Profiling
+  peak   - peak memory usage by the scope.
+       1      56 GiB      56 GiB    2.13 TiB       2 GiB  main (all allocations using RmmResourceAdaptor)
+----------------
+Legends:
+Ordered by: peak (descending)
+
+  ncalls        peak      g-peak       accum         max  filename:lineno(name)
+       1      56 GiB      56 GiB    2.13 TiB       2 GiB  main (all allocations using RmmResourceAdaptor)
+  g-peak - global peak memory usage during the scope's execution.
+  accum  - total accumulated memory allocations by the scope.
+  ncalls - number of times the scope was executed.
+       4      16 GiB      16 GiB   80.13 GiB       2 GiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:83(partition_and_pack)
+  peak   - peak memory usage by the scope.
+  g-peak - global peak memory usage during the scope's execution.
+  accum  - total accumulated memory allocations by the scope.
+       4       8 GiB       8 GiB      32 GiB  256.17 MiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:110(split_and_pack)
+       8       4 GiB       4 GiB   32.01 GiB       1 GiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:136(unpack_and_concat)
+       1         0 B         0 B         0 B         0 B  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/benchmarks/bench_shuffle.cpp:276(shuffling)
+
+Limitation:
+  - A scope only tracks allocations made by the thread that entered it.
+
+       4      16 GiB      16 GiB   80.13 GiB       2 GiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:83(partition_and_pack)
+       4       8 GiB       8 GiB      32 GiB  256.17 MiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:110(split_and_pack)
+       8       4 GiB       4 GiB      32 GiB       1 GiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:136(unpack_and_concat)
+       1         0 B         0 B         0 B         0 B  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/benchmarks/bench_shuffle.cpp:276(shuffling)
+  max    - largest single allocation by the scope.
+
+Ordered by: peak (descending)
+
+  ncalls        peak      g-peak       accum         max  filename:lineno(name)
+  max    - largest single allocation by the scope.
+
+Ordered by: peak (descending)
+
+       1   55.99 GiB   55.99 GiB    2.13 TiB       2 GiB  main (all allocations using RmmResourceAdaptor)
+       4      16 GiB      16 GiB   80.13 GiB       2 GiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:83(partition_and_pack)
+       4       8 GiB       8 GiB      32 GiB  256.17 MiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:110(split_and_pack)
+       8       4 GiB       4 GiB   31.99 GiB       1 GiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:136(unpack_and_concat)
+       1         0 B         0 B         0 B         0 B  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/benchmarks/bench_shuffle.cpp:276(shuffling)
+
+Limitation:
+  - A scope only tracks allocations made by the thread that entered it.
+
+  ncalls        peak      g-peak       accum         max  filename:lineno(name)
+       1      56 GiB      56 GiB    2.13 TiB       2 GiB  main (all allocations using RmmResourceAdaptor)
+       4      16 GiB      16 GiB   80.13 GiB       2 GiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:83(partition_and_pack)
+       4       8 GiB       8 GiB      32 GiB  256.17 MiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:110(split_and_pack)
+       8       4 GiB       4 GiB      32 GiB       1 GiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:136(unpack_and_concat)
+       1         0 B         0 B         0 B         0 B  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/benchmarks/bench_shuffle.cpp:276(shuffling)
+
+Limitation:
+  - A scope only tracks allocations made by the thread that entered it.
+
+
+Limitation:
+  - A scope only tracks allocations made by the thread that entered it.
+
+[1787714523.799178] [presto-gb200-gcn-04:3448398:0]        cuda_ctx.c:23   UCX  ERROR cuDevicePrimaryCtxGetState(cuda_device, &flags, &active) failed: unrecognized error code 4
+[1787714523.799191] [presto-gb200-gcn-04:3448398:0]        cuda_ctx.c:23   UCX  ERROR cuDevicePrimaryCtxGetState(cuda_device, &flags, &active) failed: unrecognized error code 4
+[1787714523.799195] [presto-gb200-gcn-04:3448398:0]        cuda_ctx.c:23   UCX  ERROR cuDevicePrimaryCtxGetState(cuda_device, &flags, &active) failed: unrecognized error code 4
+[1787714523.799354] [presto-gb200-gcn-04:3448401:0]        cuda_ctx.c:23   UCX  ERROR cuDevicePrimaryCtxGetState(cuda_device, &flags, &active) failed: unrecognized error code 4
+[1787714523.799365] [presto-gb200-gcn-04:3448401:0]        cuda_ctx.c:23   UCX  ERROR cuDevicePrimaryCtxGetState(cuda_device, &flags, &active) failed: unrecognized error code 4
+[1787714523.799369] [presto-gb200-gcn-04:3448401:0]        cuda_ctx.c:23   UCX  ERROR cuDevicePrimaryCtxGetState(cuda_device, &flags, &active) failed: unrecognized error code 4
+[1787714523.799747] [presto-gb200-gcn-04:3448395:0]        cuda_ctx.c:23   UCX  ERROR cuDevicePrimaryCtxGetState(cuda_device, &flags, &active) failed: unrecognized error code 4
+[1787714523.799763] [presto-gb200-gcn-04:3448395:0]        cuda_ctx.c:23   UCX  ERROR cuDevicePrimaryCtxGetState(cuda_device, &flags, &active) failed: unrecognized error code 4
+[1787714523.799768] [presto-gb200-gcn-04:3448395:0]        cuda_ctx.c:23   UCX  ERROR cuDevicePrimaryCtxGetState(cuda_device, &flags, &active) failed: unrecognized error code 4
+[1787714523.799747] [presto-gb200-gcn-04:3448392:0]        cuda_ctx.c:23   UCX  ERROR cuDevicePrimaryCtxGetState(cuda_device, &flags, &active) failed: unrecognized error code 4
+[1787714523.799763] [presto-gb200-gcn-04:3448392:0]        cuda_ctx.c:23   UCX  ERROR cuDevicePrimaryCtxGetState(cuda_device, &flags, &active) failed: unrecognized error code 4
+[1787714523.799768] [presto-gb200-gcn-04:3448392:0]        cuda_ctx.c:23   UCX  ERROR cuDevicePrimaryCtxGetState(cuda_device, &flags, &active) failed: unrecognized error code 4
+end_utc=2026-08-26T03:22:06+00:00
+exit_code=0

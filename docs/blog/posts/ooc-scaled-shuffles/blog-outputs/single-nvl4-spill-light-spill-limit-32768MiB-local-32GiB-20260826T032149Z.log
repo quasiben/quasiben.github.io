@@ -1,0 +1,815 @@
+============================================================
+experiment=single-nvl4-spill-light-spill-limit-32768MiB-local-32GiB-20260826T032149Z
+run=3/8
+start_utc=2026-08-26T03:22:23+00:00
+spill_label=light-spill device_limit_mib=32768
+ranks=4 local_input_gib=32
+rows_per_partition=536870912 columns=4 input_partitions=4 output_partitions=8
+command= rrun -n 4 --bind-to cpu --bind-to memory -x UCX_TLS=\^ib\,ud:aux -x UCX_MAX_RNDV_RAILS=1 -x UCX_PROTO_ENABLE=y -x UCX_WARN_UNUSED_ENV_VARS=n libcudf_streaming_bench_shuffle -w 3 -r 10 -g -s -x -m pool -l 32768 -n 536870912 -c 4 -p 4 -o 8 -C ucxx
+============================================================
+
+[rrun] All ranks launched. Waiting for completion...
+
+[2:PRINT:0:2026-08-26 03:22:29.796754232] Hardware setup: 
+  GPU (NVIDIA GB200): 
+    Device number: 0
+    PCI Bus ID: 0018:01:00.0
+    Total Memory: 184 GiB
+  Comm: UCXX(rank=2, nranks=4, ucx-version=1.23.0)
+
+[3:PRINT:0:2026-08-26 03:22:29.796751096] Hardware setup: 
+  GPU (NVIDIA GB200): 
+    Device number: 0
+    PCI Bus ID: 0009:01:00.0
+    Total Memory: 184 GiB
+  Comm: UCXX(rank=3, nranks=4, ucx-version=1.23.0)
+
+[1:PRINT:0:2026-08-26 03:22:29.796753880] Hardware setup: 
+  GPU (NVIDIA GB200): 
+    Device number: 0
+    PCI Bus ID: 0019:01:00.0
+    Total Memory: 184 GiB
+  Comm: UCXX(rank=1, nranks=4, ucx-version=1.23.0)
+
+[0:PRINT:0:2026-08-26 03:22:29.796894648] Arguments:
+  -c ucxx (communicator)
+  -r 10 (number of runs)
+  -w 3 (number of warmup runs)
+  -c 4 (number of columns)
+  -n 536870912 (number of rows per rank)
+  -p 4 (number of input partitions per rank)
+  -o 8 (number of output partitions per rank)
+  -m pool (RMM memory resource)
+  -l 32768 (device memory limit in MiB)
+  -s (enable output discard to simulate streaming)
+  -x (enable memory profiling)
+  -g (use pre-partitioned input tables)
+Local size: 32 GiB
+Total size: 128 GiB
+
+[0:PRINT:0:2026-08-26 03:22:29.796944504] Hardware setup: 
+  GPU (NVIDIA GB200): 
+    Device number: 0
+    PCI Bus ID: 0008:01:00.0
+    Total Memory: 184 GiB
+  Comm: UCXX(rank=0, nranks=4, ucx-version=1.23.0)
+
+[2:PRINT:0:2026-08-26 03:22:38.428755608] elapsed: 8.54 s | local throughput: 3.75 GiB/s | global throughput: 14.99 GiB/s (warmup run)
+[3:PRINT:0:2026-08-26 03:22:38.428747032] elapsed: 8.54 s | local throughput: 3.75 GiB/s | global throughput: 14.99 GiB/s (warmup run)
+[0:PRINT:0:2026-08-26 03:22:38.428756856] elapsed: 8.53 s | local throughput: 3.75 GiB/s | global throughput: 15.01 GiB/s (warmup run)
+[1:PRINT:0:2026-08-26 03:22:38.428775352] elapsed: 8.55 s | local throughput: 3.74 GiB/s | global throughput: 14.96 GiB/s (warmup run)
+[0:PRINT:0:2026-08-26 03:22:38.901275551] elapsed: 378.01 ms | local throughput: 84.65 GiB/s | global throughput: 338.62 GiB/s (warmup run)
+[1:PRINT:0:2026-08-26 03:22:38.901282175] elapsed: 404.16 ms | local throughput: 79.18 GiB/s | global throughput: 316.71 GiB/s (warmup run)
+[3:PRINT:0:2026-08-26 03:22:38.901269247] elapsed: 384.71 ms | local throughput: 83.18 GiB/s | global throughput: 332.72 GiB/s (warmup run)
+[2:PRINT:0:2026-08-26 03:22:38.901280895] elapsed: 372.22 ms | local throughput: 85.97 GiB/s | global throughput: 343.88 GiB/s (warmup run)
+[3:PRINT:0:2026-08-26 03:22:39.374303397] elapsed: 385.37 ms | local throughput: 83.04 GiB/s | global throughput: 332.15 GiB/s (warmup run)
+[0:PRINT:0:2026-08-26 03:22:39.374316613] elapsed: 379.16 ms | local throughput: 84.40 GiB/s | global throughput: 337.59 GiB/s (warmup run)
+[2:PRINT:0:2026-08-26 03:22:39.374327557] elapsed: 370.11 ms | local throughput: 86.46 GiB/s | global throughput: 345.85 GiB/s (warmup run)
+[1:PRINT:0:2026-08-26 03:22:39.374333829] elapsed: 404.41 ms | local throughput: 79.13 GiB/s | global throughput: 316.51 GiB/s (warmup run)
+[3:PRINT:0:2026-08-26 03:22:39.861607913] elapsed: 376.16 ms | local throughput: 85.07 GiB/s | global throughput: 340.28 GiB/s
+[2:PRINT:0:2026-08-26 03:22:39.861614793] elapsed: 419 ms | local throughput: 76.37 GiB/s | global throughput: 305.49 GiB/s
+[0:PRINT:0:2026-08-26 03:22:39.861616585] elapsed: 392.36 ms | local throughput: 81.56 GiB/s | global throughput: 326.23 GiB/s
+[1:PRINT:0:2026-08-26 03:22:39.861632809] elapsed: 382.90 ms | local throughput: 83.57 GiB/s | global throughput: 334.29 GiB/s
+[3:PRINT:0:2026-08-26 03:22:40.345009038] elapsed: 392.61 ms | local throughput: 81.51 GiB/s | global throughput: 326.02 GiB/s
+[0:PRINT:0:2026-08-26 03:22:40.345022062] elapsed: 391.82 ms | local throughput: 81.67 GiB/s | global throughput: 326.68 GiB/s
+[2:PRINT:0:2026-08-26 03:22:40.345033230] elapsed: 415.08 ms | local throughput: 77.09 GiB/s | global throughput: 308.38 GiB/s
+[1:PRINT:0:2026-08-26 03:22:40.345037198] elapsed: 374.87 ms | local throughput: 85.36 GiB/s | global throughput: 341.45 GiB/s
+[3:PRINT:0:2026-08-26 03:22:40.826309587] elapsed: 399.86 ms | local throughput: 80.03 GiB/s | global throughput: 320.11 GiB/s
+[2:PRINT:0:2026-08-26 03:22:40.826326643] elapsed: 390.72 ms | local throughput: 81.90 GiB/s | global throughput: 327.60 GiB/s
+[0:PRINT:0:2026-08-26 03:22:40.826325363] elapsed: 380.40 ms | local throughput: 84.12 GiB/s | global throughput: 336.49 GiB/s
+[1:PRINT:0:2026-08-26 03:22:40.826333779] elapsed: 413.04 ms | local throughput: 77.47 GiB/s | global throughput: 309.90 GiB/s
+[2:PRINT:0:2026-08-26 03:22:41.304163385] elapsed: 382.29 ms | local throughput: 83.71 GiB/s | global throughput: 334.82 GiB/s
+[0:PRINT:0:2026-08-26 03:22:41.304164185] elapsed: 409.54 ms | local throughput: 78.14 GiB/s | global throughput: 312.54 GiB/s
+[1:PRINT:0:2026-08-26 03:22:41.304174041] elapsed: 405.39 ms | local throughput: 78.94 GiB/s | global throughput: 315.75 GiB/s
+[3:PRINT:0:2026-08-26 03:22:41.304154489] elapsed: 379.97 ms | local throughput: 84.22 GiB/s | global throughput: 336.87 GiB/s
+[3:PRINT:0:2026-08-26 03:22:41.798150940] elapsed: 393.97 ms | local throughput: 81.22 GiB/s | global throughput: 324.90 GiB/s
+[2:PRINT:0:2026-08-26 03:22:41.798162812] elapsed: 398.88 ms | local throughput: 80.23 GiB/s | global throughput: 320.90 GiB/s
+[0:PRINT:0:2026-08-26 03:22:41.798161084] elapsed: 385.25 ms | local throughput: 83.06 GiB/s | global throughput: 332.25 GiB/s
+[1:PRINT:0:2026-08-26 03:22:41.798165468] elapsed: 425.55 ms | local throughput: 75.20 GiB/s | global throughput: 300.79 GiB/s
+[3:PRINT:0:2026-08-26 03:22:42.290165216] elapsed: 393.09 ms | local throughput: 81.41 GiB/s | global throughput: 325.63 GiB/s
+[0:PRINT:0:2026-08-26 03:22:42.290169664] elapsed: 376.07 ms | local throughput: 85.09 GiB/s | global throughput: 340.36 GiB/s
+[2:PRINT:0:2026-08-26 03:22:42.290172480] elapsed: 423.66 ms | local throughput: 75.53 GiB/s | global throughput: 302.13 GiB/s
+[1:PRINT:0:2026-08-26 03:22:42.290191456] elapsed: 414.19 ms | local throughput: 77.26 GiB/s | global throughput: 309.03 GiB/s
+[3:PRINT:0:2026-08-26 03:22:42.759143239] elapsed: 372.16 ms | local throughput: 85.98 GiB/s | global throughput: 343.93 GiB/s
+[2:PRINT:0:2026-08-26 03:22:42.759153319] elapsed: 400.73 ms | local throughput: 79.85 GiB/s | global throughput: 319.42 GiB/s
+[0:PRINT:0:2026-08-26 03:22:42.759154887] elapsed: 385.33 ms | local throughput: 83.04 GiB/s | global throughput: 332.18 GiB/s
+[1:PRINT:0:2026-08-26 03:22:42.759164743] elapsed: 370.04 ms | local throughput: 86.48 GiB/s | global throughput: 345.91 GiB/s
+[2:PRINT:0:2026-08-26 03:22:43.230745645] elapsed: 381.48 ms | local throughput: 83.88 GiB/s | global throughput: 335.54 GiB/s
+[0:PRINT:0:2026-08-26 03:22:43.230745197] elapsed: 403.26 ms | local throughput: 79.35 GiB/s | global throughput: 317.41 GiB/s
+[3:PRINT:0:2026-08-26 03:22:43.230741133] elapsed: 374.30 ms | local throughput: 85.49 GiB/s | global throughput: 341.97 GiB/s
+[1:PRINT:0:2026-08-26 03:22:43.230760173] elapsed: 386.54 ms | local throughput: 82.79 GiB/s | global throughput: 331.14 GiB/s
+[2:PRINT:0:2026-08-26 03:22:43.716734386] elapsed: 417.76 ms | local throughput: 76.60 GiB/s | global throughput: 306.40 GiB/s
+[3:PRINT:0:2026-08-26 03:22:43.716735954] elapsed: 387.86 ms | local throughput: 82.51 GiB/s | global throughput: 330.02 GiB/s
+[0:PRINT:0:2026-08-26 03:22:43.716739666] elapsed: 375.52 ms | local throughput: 85.22 GiB/s | global throughput: 340.86 GiB/s
+[1:PRINT:0:2026-08-26 03:22:43.716734066] elapsed: 389.41 ms | local throughput: 82.18 GiB/s | global throughput: 328.70 GiB/s
+[0:PRINT:0:2026-08-26 03:22:44.182001785] elapsed: 369.44 ms | local throughput: 86.62 GiB/s | global throughput: 346.47 GiB/s
+[0:PRINT:0:2026-08-26 03:22:44.182020985] means: 386.53 ms | local throughput: 82.79 GiB/s | global throughput: 331.15 GiB/s | in_parts: 4 | out_parts: 8 | nranks: 4 | device memory peak: 48 GiB | device memory total: 168.13 GiB (avg)
+[2:PRINT:0:2026-08-26 03:22:44.182013081] elapsed: 386.42 ms | local throughput: 82.81 GiB/s | global throughput: 331.25 GiB/s
+[3:PRINT:0:2026-08-26 03:22:44.182012281] elapsed: 376.09 ms | local throughput: 85.09 GiB/s | global throughput: 340.35 GiB/s
+[1:PRINT:0:2026-08-26 03:22:44.182020345] elapsed: 396.90 ms | local throughput: 80.62 GiB/s | global throughput: 322.50 GiB/s
+[1:PRINT:0:2026-08-26 03:22:44.182035065] means: 395.13 ms | local throughput: 80.99 GiB/s | global throughput: 323.95 GiB/s | in_parts: 4 | out_parts: 8 | nranks: 4 | device memory peak: 48 GiB | device memory total: 168.13 GiB (avg)
+[3:PRINT:0:2026-08-26 03:22:44.182031609] means: 384.38 ms | local throughput: 83.25 GiB/s | global throughput: 333.01 GiB/s | in_parts: 4 | out_parts: 8 | nranks: 4 | device memory peak: 48 GiB | device memory total: 168.36 GiB (avg)
+[2:PRINT:0:2026-08-26 03:22:44.182030905] means: 401.01 ms | local throughput: 79.80 GiB/s | global throughput: 319.19 GiB/s | in_parts: 4 | out_parts: 8 | nranks: 4 | device memory peak: 48 GiB | device memory total: 168.14 GiB (avg)
+[2:PRINT:0:2026-08-26 03:22:44.182099993] Statistics (of the last run):
+[1:PRINT:0:2026-08-26 03:22:44.182099993] Statistics (of the last run):
+[0:PRINT:0:2026-08-26 03:22:44.182096761] Statistics (of the last run):
+ - alloc-device:                                       24 GiB | 24.85 ms | 965.79 GiB/s | avg-stream-delay 7.49 ms
+ - alloc-pinned_host:                                  24.25 GiB | 5.76 ms | 4.11 TiB/s | avg-stream-delay 15.32 us
+ - copy-device-to-pinned_host:                         255.86 MiB | 1.51 ms | 165.43 GiB/s | avg-stream-delay 24.32 us
+ - copy-pinned_host-to-device:                         24 GiB | 251.71 ms | 95.36 GiB/s | avg-stream-delay 7.75 ms
+ - event-loop-total:                                   52.60 ms | avg 8.60 us
+ - alloc-device:                                       24 GiB | 25.29 ms | 949.26 GiB/s | avg-stream-delay 7.66 ms
+ - alloc-pinned_host:                                  24.25 GiB | 5.80 ms | 4.08 TiB/s | avg-stream-delay 15.87 us
+ - copy-device-to-pinned_host:                         255.86 MiB | 1.51 ms | 165.40 GiB/s | avg-stream-delay 27.89 us
+ - copy-pinned_host-to-device:                         24 GiB | 250.95 ms | 95.65 GiB/s | avg-stream-delay 7.92 ms
+ - event-loop-total:                                   69.37 ms | avg 11.55 us
+ - metadata-payload-exchange-complete-data-transfers:  2.61 ms | avg 433.97 ns
+ - metadata-payload-exchange-progress:                 65.90 ms | avg 10.98 us
+ - metadata-payload-exchange-receive-metadata:         7.80 ms | avg 1.30 us
+ - metadata-payload-exchange-send-messages:            1.45 ms
+[3:PRINT:0:2026-08-26 03:22:44.182100217] Statistics (of the last run):
+ - alloc-device:                                       24 GiB | 24.74 ms | 969.91 GiB/s | avg-stream-delay 7.41 ms
+ - metadata-payload-exchange-complete-data-transfers:  2.83 ms | avg 463.09 ns
+ - metadata-payload-exchange-progress:                 49.29 ms | avg 8.06 us
+ - metadata-payload-exchange-receive-metadata:         6.90 ms | avg 1.13 us
+ - metadata-payload-exchange-send-messages:            1.38 ms
+ - alloc-pinned_host:                                  24.25 GiB | 6.11 ms | 3.88 TiB/s | avg-stream-delay 14.80 us
+ - metadata-payload-exchange-setup-data-receives:      51.89 ms | avg 8.64 us
+ - metadata-payload-exchange-setup-data-receives:      36.05 ms | avg 5.90 us
+ - shuffle-payload-recv:                               24 GiB | avg 256.04 MiB
+ - shuffle-payload-send:                               24 GiB | avg 255.99 MiB
+
+ - shuffle-payload-recv:                               24 GiB | avg 256.03 MiB
+ - shuffle-payload-send:                               24 GiB | avg 255.99 MiB
+
+Memory Profiling
+----------------
+Legends:
+  ncalls - number of times the scope was executed.
+  peak   - peak memory usage by the scope.
+  g-peak - global peak memory usage during the scope's execution.
+ - alloc-device:                                       24.24 GiB | 25.46 ms | 952.41 GiB/s | avg-stream-delay 7.90 ms
+ - copy-device-to-pinned_host:                         255.86 MiB | 1.51 ms | 165.90 GiB/s | avg-stream-delay 24.08 us
+ - copy-pinned_host-to-device:                         24 GiB | 257.37 ms | 93.25 GiB/s | avg-stream-delay 7.67 ms
+  accum  - total accumulated memory allocations by the scope.
+Memory Profiling
+ - alloc-pinned_host:                                  23.99 GiB | 6.04 ms | 3.88 TiB/s | avg-stream-delay 14.64 us
+ - event-loop-total:                                   35.91 ms | avg 5.84 us
+  max    - largest single allocation by the scope.
+ - metadata-payload-exchange-complete-data-transfers:  2.93 ms | avg 476.34 ns
+ - copy-device-to-pinned_host:                         255.86 MiB | 1.50 ms | 166.98 GiB/s | avg-stream-delay 23.37 us
+ - copy-pinned_host-to-device:                         23.99 GiB | 261.48 ms | 91.76 GiB/s | avg-stream-delay 8.25 ms
+
+ - metadata-payload-exchange-progress:                 33.02 ms | avg 5.37 us
+----------------
+ - event-loop-total:                                   102.54 ms | avg 20.42 us
+ - metadata-payload-exchange-receive-metadata:         8.04 ms | avg 1.31 us
+ - metadata-payload-exchange-send-messages:            890.30 us
+ - metadata-payload-exchange-setup-data-receives:      18.69 ms | avg 3.04 us
+ - shuffle-payload-recv:                               24 GiB | avg 256 MiB
+ - shuffle-payload-send:                               24 GiB | avg 256 MiB
+
+Memory Profiling
+Ordered by: peak (descending)
+
+  ncalls        peak      g-peak       accum         max  filename:lineno(name)
+       1      48 GiB      48 GiB    2.13 TiB       2 GiB  main (all allocations using RmmResourceAdaptor)
+       4      16 GiB      16 GiB   80.13 GiB       2 GiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:83(partition_and_pack)
+       4       8 GiB       8 GiB      32 GiB  256.17 MiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:110(split_and_pack)
+       8       4 GiB       4 GiB      32 GiB       1 GiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:136(unpack_and_concat)
+       1         0 B         0 B         0 B         0 B  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/benchmarks/bench_shuffle.cpp:276(shuffling)
+
+Limitation:
+  - A scope only tracks allocations made by the thread that entered it.
+Legends:
+
+ - metadata-payload-exchange-complete-data-transfers:  1.27 ms | avg 253.83 ns
+----------------
+  ncalls - number of times the scope was executed.
+Legends:
+ - metadata-payload-exchange-progress:                 99.46 ms | avg 19.81 us
+ - metadata-payload-exchange-receive-metadata:         12.04 ms | avg 2.40 us
+ - metadata-payload-exchange-send-messages:            1.26 ms
+ - metadata-payload-exchange-setup-data-receives:      83.41 ms | avg 16.61 us
+  peak   - peak memory usage by the scope.
+  g-peak - global peak memory usage during the scope's execution.
+  accum  - total accumulated memory allocations by the scope.
+  max    - largest single allocation by the scope.
+
+Ordered by: peak (descending)
+
+  ncalls - number of times the scope was executed.
+  peak   - peak memory usage by the scope.
+ - shuffle-payload-recv:                               23.99 GiB | avg 255.93 MiB
+  ncalls        peak      g-peak       accum         max  filename:lineno(name)
+       1      48 GiB      48 GiB    2.13 TiB       2 GiB  main (all allocations using RmmResourceAdaptor)
+       4      16 GiB      16 GiB   80.13 GiB       2 GiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:83(partition_and_pack)
+       4       8 GiB       8 GiB      32 GiB  256.17 MiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:110(split_and_pack)
+  g-peak - global peak memory usage during the scope's execution.
+ - shuffle-payload-send:                               24 GiB | avg 256.02 MiB
+       8       4 GiB       4 GiB   32.01 GiB       1 GiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:136(unpack_and_concat)
+  accum  - total accumulated memory allocations by the scope.
+
+       1         0 B         0 B         0 B         0 B  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/benchmarks/bench_shuffle.cpp:276(shuffling)
+  max    - largest single allocation by the scope.
+
+Memory Profiling
+----------------
+Legends:
+  ncalls - number of times the scope was executed.
+Ordered by: peak (descending)
+
+  ncalls        peak      g-peak       accum         max  filename:lineno(name)
+       1      48 GiB      48 GiB    2.13 TiB       2 GiB  main (all allocations using RmmResourceAdaptor)
+       4      16 GiB      16 GiB   80.13 GiB       2 GiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:83(partition_and_pack)
+
+Limitation:
+  - A scope only tracks allocations made by the thread that entered it.
+  peak   - peak memory usage by the scope.
+       4       8 GiB       8 GiB      32 GiB  256.17 MiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:110(split_and_pack)
+       8       4 GiB       4 GiB      32 GiB       1 GiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:136(unpack_and_concat)
+       1         0 B         0 B         0 B         0 B  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/benchmarks/bench_shuffle.cpp:276(shuffling)
+
+  g-peak - global peak memory usage during the scope's execution.
+  accum  - total accumulated memory allocations by the scope.
+  max    - largest single allocation by the scope.
+
+Ordered by: peak (descending)
+
+  ncalls        peak      g-peak       accum         max  filename:lineno(name)
+       1      48 GiB      48 GiB    2.14 TiB       2 GiB  main (all allocations using RmmResourceAdaptor)
+       4      16 GiB      16 GiB   80.13 GiB       2 GiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:83(partition_and_pack)
+
+Limitation:
+  - A scope only tracks allocations made by the thread that entered it.
+
+       4       8 GiB       8 GiB      32 GiB  256.17 MiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:110(split_and_pack)
+       8       4 GiB       4 GiB   31.99 GiB       1 GiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:136(unpack_and_concat)
+       1         0 B         0 B         0 B         0 B  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/benchmarks/bench_shuffle.cpp:276(shuffling)
+
+Limitation:
+  - A scope only tracks allocations made by the thread that entered it.
+
+[1787714564.543154] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543160] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543162] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543164] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543165] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543166] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543168] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543169] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543170] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543171] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543173] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543174] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543175] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543177] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543178] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543180] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543181] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543183] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543184] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543186] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543187] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543188] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543190] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543191] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543192] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543194] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543195] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543197] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543198] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543200] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543201] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543203] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543204] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543206] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543207] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543208] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543209] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543211] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543213] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543214] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543215] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543217] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543218] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543219] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543220] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543237] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543238] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543239] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543241] [presto-gb200-gcn-04:3449250:0]        cuda_ctx.c:23   UCX  ERROR cuDevicePrimaryCtxGetState(cuda_device, &flags, &active) failed: unrecognized error code 4
+[1787714564.543360] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543362] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543363] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543364] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543365] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543367] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543367] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543368] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543370] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543371] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543371] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543372] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543373] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543375] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543376] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543377] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543378] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543379] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543380] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543381] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543382] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543383] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543384] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543385] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543386] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543387] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543388] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543389] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543390] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543391] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543392] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543393] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543395] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543397] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543398] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543399] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543400] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543401] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543401] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543402] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543403] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543404] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543405] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543406] [presto-gb200-gcn-04:3449250:0]        cuda_ctx.c:23   UCX  ERROR cuDevicePrimaryCtxGetState(cuda_device, &flags, &active) failed: unrecognized error code 4
+[1787714564.543444] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543446] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543447] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543448] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543449] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543450] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543451] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543452] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543453] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543454] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543455] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543456] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543457] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543458] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543459] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543460] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543461] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543462] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543463] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543464] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543465] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543466] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543467] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543468] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543470] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543471] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543472] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543473] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543474] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543475] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543476] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543477] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543478] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543480] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543481] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543482] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543483] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543484] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543485] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543486] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543487] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543487] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543488] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543489] [presto-gb200-gcn-04:3449250:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.543490] [presto-gb200-gcn-04:3449250:0]        cuda_ctx.c:23   UCX  ERROR cuDevicePrimaryCtxGetState(cuda_device, &flags, &active) failed: unrecognized error code 4
+[1787714564.545463] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545468] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545470] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545472] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545473] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545474] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545476] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545477] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545478] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545480] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545481] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545483] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545484] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545485] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545486] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545487] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545489] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545490] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545491] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545493] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545494] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545495] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545497] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545498] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545499] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545501] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545502] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545503] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545504] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545506] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545507] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545509] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545511] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545512] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545513] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545515] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545517] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545518] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545519] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545521] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545522] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545523] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545525] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545526] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545527] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545541] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545542] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545543] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545545] [presto-gb200-gcn-04:3449253:0]        cuda_ctx.c:23   UCX  ERROR cuDevicePrimaryCtxGetState(cuda_device, &flags, &active) failed: unrecognized error code 4
+[1787714564.545563] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545564] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545565] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545567] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545568] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545569] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545570] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545572] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545573] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545574] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545576] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545577] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545578] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545579] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545580] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545581] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545582] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545584] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545585] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545586] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545587] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545588] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545589] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545590] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545591] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545592] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545593] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545594] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545596] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545597] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545598] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545599] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545600] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545601] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545602] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545603] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545604] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545605] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545606] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545608] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545609] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545610] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545611] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545612] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545613] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545617] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545618] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545619] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545620] [presto-gb200-gcn-04:3449253:0]        cuda_ctx.c:23   UCX  ERROR cuDevicePrimaryCtxGetState(cuda_device, &flags, &active) failed: unrecognized error code 4
+[1787714564.545639] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545641] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545642] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545643] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545644] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545645] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545646] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545648] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545649] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545650] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545651] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545652] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545654] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545655] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545656] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545657] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545658] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545659] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545660] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545661] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545662] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545663] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545664] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545665] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545666] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545667] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545668] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545669] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545670] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545671] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545672] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545673] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545674] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545675] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545676] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545678] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545679] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545680] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545681] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545682] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545684] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545685] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545686] [presto-gb200-gcn-04:3449253:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545687] [presto-gb200-gcn-04:3449253:0]        cuda_ctx.c:23   UCX  ERROR cuDevicePrimaryCtxGetState(cuda_device, &flags, &active) failed: unrecognized error code 4
+[1787714564.545685] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545689] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545691] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545692] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545693] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545694] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545695] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545696] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545698] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545699] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545700] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545701] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545702] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545703] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545704] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545706] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545707] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545708] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545709] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545710] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545712] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545713] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545714] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545716] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545717] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545718] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545719] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545721] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545722] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545723] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545724] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545725] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545727] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545728] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545730] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545731] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545732] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545734] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545735] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545737] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545738] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545739] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545740] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545741] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545742] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545757] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545758] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545759] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545760] [presto-gb200-gcn-04:3449247:0]        cuda_ctx.c:23   UCX  ERROR cuDevicePrimaryCtxGetState(cuda_device, &flags, &active) failed: unrecognized error code 4
+[1787714564.545781] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545782] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545783] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545784] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545785] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545786] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545787] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545789] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545790] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545791] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545792] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545792] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545793] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545794] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545795] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545796] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545797] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545798] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545799] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545800] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545801] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545802] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545803] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545804] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545805] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545806] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545807] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545808] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545809] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545810] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545810] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545812] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545812] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545814] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545814] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545816] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545816] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545818] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545819] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545820] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545821] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545823] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545824] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545825] [presto-gb200-gcn-04:3449247:0]        cuda_ctx.c:23   UCX  ERROR cuDevicePrimaryCtxGetState(cuda_device, &flags, &active) failed: unrecognized error code 4
+[1787714564.545847] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545849] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545849] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545851] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545852] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545853] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545853] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545854] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545856] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545856] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545858] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545859] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545860] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545861] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545862] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545863] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545864] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545865] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545866] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545867] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545868] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545869] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545870] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545871] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545872] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545873] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545874] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545874] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545875] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545876] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545877] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545878] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545879] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545880] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545880] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545881] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545883] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545884] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545885] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545885] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545887] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545888] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545889] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545890] [presto-gb200-gcn-04:3449247:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.545891] [presto-gb200-gcn-04:3449247:0]        cuda_ctx.c:23   UCX  ERROR cuDevicePrimaryCtxGetState(cuda_device, &flags, &active) failed: unrecognized error code 4
+[1787714564.546160] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546165] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546167] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546169] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546171] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546172] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546173] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546174] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546176] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546177] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546179] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546180] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546181] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546183] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546184] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546185] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546186] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546187] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546188] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546189] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546191] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546192] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546193] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546194] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546195] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546196] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546197] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546199] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546200] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546201] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546203] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546204] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546205] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546206] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546208] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546209] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546210] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546211] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546213] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546214] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546215] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546217] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546218] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546219] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546221] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546233] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546235] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546236] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546237] [presto-gb200-gcn-04:3449256:0]        cuda_ctx.c:23   UCX  ERROR cuDevicePrimaryCtxGetState(cuda_device, &flags, &active) failed: unrecognized error code 4
+[1787714564.546271] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546272] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546273] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546274] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546276] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546277] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546278] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546279] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546279] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546281] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546282] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546283] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546284] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546285] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546286] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546287] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546288] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546289] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546290] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546292] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546293] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546294] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546295] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546296] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546297] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546299] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546300] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546301] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546303] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546304] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546305] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546306] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546308] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546309] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546310] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546311] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546313] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546314] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546315] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546317] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546318] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546319] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546320] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546321] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546322] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546327] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546328] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546329] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546330] [presto-gb200-gcn-04:3449256:0]        cuda_ctx.c:23   UCX  ERROR cuDevicePrimaryCtxGetState(cuda_device, &flags, &active) failed: unrecognized error code 4
+[1787714564.546348] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546350] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546351] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546352] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546353] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546354] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546355] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546356] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546358] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546359] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546360] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546361] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546362] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546363] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546364] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546365] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546367] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546368] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546369] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546370] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546371] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546372] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546373] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546375] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546376] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546377] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546378] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546379] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546380] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546381] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546382] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546383] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546385] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546386] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546387] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546388] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546388] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546389] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546391] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546392] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546393] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546394] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546395] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546397] [presto-gb200-gcn-04:3449256:0]  cuda_ipc_cache.c:181  UCX  WARN  cuMemUnmap( (CUdeviceptr)region->mapped_addr, region->key.b_len) failed: unrecognized error code 4
+[1787714564.546397] [presto-gb200-gcn-04:3449256:0]        cuda_ctx.c:23   UCX  ERROR cuDevicePrimaryCtxGetState(cuda_device, &flags, &active) failed: unrecognized error code 4
+end_utc=2026-08-26T03:22:47+00:00
+exit_code=0
