@@ -6,7 +6,8 @@ slug: ooc-scaled-shuffles
 draft: true
 ---
 
-*...*
+**Shuffles are the memory bottleneck in distributed analytics, often failing outright with an OOM. RapidsMPF is a
+reusable, out-of-core library that avoids those failures while still delievering accelerated shuffling**
 
 
 <!-- more -->
@@ -188,9 +189,17 @@ Here we are *warming* up the benchmark 3 times, then *running* the benchmark 10 
 ```
 
 Each rank posts how much time it spent shuffling, and the local and global throughput.  Already we can observe that
-warming up has some cost as it runs slower than the "official" run.  At the end, the program return a returns the
-average values per rank of local/global throughput and summary statistics per rank for where time was spent: time in
-shuffle, time allocating memory, spilling (if any), etc.
+warming up has some cost as it runs slower than the "official" run.  At the end, the program returns the average values
+per rank of local/global throughput and summary statistics per rank for where time was spent: time in shuffle, time
+allocating memory, spilling (if any), etc.
+
+
+!!! note
+
+    The global throughput varies from rank to rank, which is technically wrong and is a reporting bug.  Rather than
+    summing the local throughputs across ranks, the benchmark multiplies each rank's own local throughput by the number
+    of ranks, so the printed value is really that rank's local figure scaled by eight.  But it will suffice for now
+    while the bug is resolved.
 
 ```bash
 [0:PRINT:0:2026-09-16 02:09:55.476576210] means: 87.06 ms | local throughput: 229.74 GiB/s | global throughput: 1.79 TiB/s | in_parts: 1 | out_parts: 8 | nranks: 8 | device memory peak: 60 GiB | device memory total
@@ -347,3 +356,14 @@ Reading down the table, a few things stand out:
    move it grows from 191 ms to 1170ms.  The transfer rate between host and device though is mitigated with pinnned
    memory buffers (as we've discussed before). If we changed the hardware and used C2C with 900 GB/s of bandwidth, we
    would be much better off
+
+## Wrapping Up
+
+I think we've sufficiently demonstrated how challenging and memory intensive shuffles (and the implied joins, sorts,
+etc) can be. Unconstrained, RapidsMPF drives roughly 1.8 TiB/s of global throughput on a DGX B200. Perhaps more
+importantly RapidsMPF can successfuly shuffle without needless thrashing and OOMing while leveraging accelerated
+transport when shuffling. And not only that, we have hardware solutions already in place to alleviate the
+choke points of bandwidth between host and device transfers.
+
+We set out wanting a shuffle that is fast, scales, handles larger-than-VRAM data, and is reusable.  We have that with
+RapidsMPF. In a later post we'll return to studying scaling on an NVL72.
