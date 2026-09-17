@@ -197,8 +197,8 @@ allocating memory, spilling (if any), etc.
 !!! note
 
     The global throughput varies from rank to rank, which is technically wrong and is a reporting bug.  Rather than
-    summing the local throughputs across ranks, the benchmark multiplies each rank's own local throughput by the number
-    of ranks, so the printed value is really that rank's local figure scaled by eight.  But it will suffice for now
+    summing the local throughputs across ranks, the benchmark reports the global throughput as  each rank's own local throughput 
+    multiplied by the number of ranks.  On a DGXB200 it's 8 x local-througphput.  But it will suffice for now
     while the bug is resolved.
 
 ```bash
@@ -344,18 +344,19 @@ if you want to explore further.
 
 Reading down the table, a few things stand out:
 
-1. **The degradation is smooth and monotonic.** Every step up in memory device limit costs throughput butimportantly, it
-   does not OOM. Moving from 1.80 TiB/s -> 55.5 GiB/s
+1. **The degradation is smooth and monotonic.** As we increase the memory device limit we are going to be spending more
+   time moving data back and forth between host and device at PCIe Gen 5 speed, but importantly it
+   does not OOM.
 
-1. **Receive-side mechanics can avoid pointless thrashing** `copy-device-to-pinned_host` sits at exactly 0 GiB for the
-   first four spill levels.  All the way down to a 24 GiB limit, RapidsMPF never evicts anything and receives incoming
-   buffers on the host.  Only at a 20 GiB limit, where the limit equals the input size, does real device-to-host
-   spilling kick in, and by 12 GiB it's pushing 8 GiB per rank back to the host.
+1. **Receive-side mechanics can avoid pointless thrashing** `copy-device-to-pinned_host` is 0 for the
+   first four spill levels and RapidsMPF never evicts anything, receiving incoming
+   buffers on the host to mitigate the device memory limit we imposed.  Only at a 20 GiB limit, where the limit equals the 
+   input size, does real device-to-host spilling kick in.
 
 1. **Spilling is the expensive part.** `copy-pinned_host-to-device` climbs from 5.6 GiB to 18.8 GiB, and the time to
    move it grows from 191 ms to 1170ms.  The transfer rate between host and device though is mitigated with pinnned
    memory buffers (as we've discussed before). If we changed the hardware and used C2C with 900 GB/s of bandwidth, we
-   would be much better off
+   would be much better off.
 
 ## Wrapping Up
 
