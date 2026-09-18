@@ -1,0 +1,91 @@
+============================================================
+experiment=single-dgxb200-spill-study-no-spill-20260916T020918Z (1/7)
+start_utc=2026-09-16T02:09:18+00:00
+hostname=umb-b200-220
+spill_label=no-spill
+device_limit_mib=unlimited
+local_input_gib=20
+ranks=8
+warmups=3 runs=10
+command= rrun -n 8 --bind-to cpu --bind-to memory -x UCX_MAX_RNDV_RAILS=1 -x UCX_PROTO_ENABLE=y -x UCX_WARN_UNUSED_ENV_VARS=n libcudf_streaming_bench_shuffle -C ucxx -w 3 -r 10 -m pool -g -s -x -p 1 -o 8 -c 10 -n 536870912
+============================================================
+
+[no-spill] exit_code=0 -> /datasets/bzaitlen/GitRepos/quasiben.github.io/docs/blog/posts/yabas/blog-outputs-nvl8-b200/single-dgxb200-spill-study-no-spill-20260916T020918Z.log
+============================================================
+experiment=single-dgxb200-spill-study-onset-spill-20260916T021001Z (2/7)
+start_utc=2026-09-16T02:10:01+00:00
+hostname=umb-b200-220
+spill_label=onset-spill
+device_limit_mib=32768
+local_input_gib=20
+ranks=8
+warmups=3 runs=10
+command= rrun -n 8 --bind-to cpu --bind-to memory -x UCX_MAX_RNDV_RAILS=1 -x UCX_PROTO_ENABLE=y -x UCX_WARN_UNUSED_ENV_VARS=n libcudf_streaming_bench_shuffle -C ucxx -w 3 -r 10 -m pool -g -s -x -p 1 -o 8 -c 10 -n 536870912 -l 32768
+============================================================
+
+[onset-spill] exit_code=0 -> /datasets/bzaitlen/GitRepos/quasiben.github.io/docs/blog/posts/yabas/blog-outputs-nvl8-b200/single-dgxb200-spill-study-onset-spill-20260916T021001Z.log
+============================================================
+experiment=single-dgxb200-spill-study-light-spill-20260916T021106Z (3/7)
+start_utc=2026-09-16T02:11:06+00:00
+hostname=umb-b200-220
+spill_label=light-spill
+device_limit_mib=28672
+local_input_gib=20
+ranks=8
+warmups=3 runs=10
+command= rrun -n 8 --bind-to cpu --bind-to memory -x UCX_MAX_RNDV_RAILS=1 -x UCX_PROTO_ENABLE=y -x UCX_WARN_UNUSED_ENV_VARS=n libcudf_streaming_bench_shuffle -C ucxx -w 3 -r 10 -m pool -g -s -x -p 1 -o 8 -c 10 -n 536870912 -l 28672
+============================================================
+
+[light-spill] exit_code=0 -> /datasets/bzaitlen/GitRepos/quasiben.github.io/docs/blog/posts/yabas/blog-outputs-nvl8-b200/single-dgxb200-spill-study-light-spill-20260916T021106Z.log
+============================================================
+experiment=single-dgxb200-spill-study-moderate-spill-20260916T021223Z (4/7)
+start_utc=2026-09-16T02:12:23+00:00
+hostname=umb-b200-220
+spill_label=moderate-spill
+device_limit_mib=24576
+local_input_gib=20
+ranks=8
+warmups=3 runs=10
+command= rrun -n 8 --bind-to cpu --bind-to memory -x UCX_MAX_RNDV_RAILS=1 -x UCX_PROTO_ENABLE=y -x UCX_WARN_UNUSED_ENV_VARS=n libcudf_streaming_bench_shuffle -C ucxx -w 3 -r 10 -m pool -g -s -x -p 1 -o 8 -c 10 -n 536870912 -l 24576
+============================================================
+
+[moderate-spill] exit_code=0 -> /datasets/bzaitlen/GitRepos/quasiben.github.io/docs/blog/posts/yabas/blog-outputs-nvl8-b200/single-dgxb200-spill-study-moderate-spill-20260916T021223Z.log
+============================================================
+experiment=single-dgxb200-spill-study-heavy-spill-20260916T021340Z (5/7)
+start_utc=2026-09-16T02:13:40+00:00
+hostname=umb-b200-220
+spill_label=heavy-spill
+device_limit_mib=20480
+local_input_gib=20
+ranks=8
+warmups=3 runs=10
+command= rrun -n 8 --bind-to cpu --bind-to memory -x UCX_MAX_RNDV_RAILS=1 -x UCX_PROTO_ENABLE=y -x UCX_WARN_UNUSED_ENV_VARS=n libcudf_streaming_bench_shuffle -C ucxx -w 3 -r 10 -m pool -g -s -x -p 1 -o 8 -c 10 -n 536870912 -l 20480
+============================================================
+
+[heavy-spill] exit_code=0 -> /datasets/bzaitlen/GitRepos/quasiben.github.io/docs/blog/posts/yabas/blog-outputs-nvl8-b200/single-dgxb200-spill-study-heavy-spill-20260916T021340Z.log
+============================================================
+experiment=single-dgxb200-spill-study-very-heavy-spill-20260916T021511Z (6/7)
+start_utc=2026-09-16T02:15:11+00:00
+hostname=umb-b200-220
+spill_label=very-heavy-spill
+device_limit_mib=16384
+local_input_gib=20
+ranks=8
+warmups=3 runs=10
+command= rrun -n 8 --bind-to cpu --bind-to memory -x UCX_MAX_RNDV_RAILS=1 -x UCX_PROTO_ENABLE=y -x UCX_WARN_UNUSED_ENV_VARS=n libcudf_streaming_bench_shuffle -C ucxx -w 3 -r 10 -m pool -g -s -x -p 1 -o 8 -c 10 -n 536870912 -l 16384
+============================================================
+
+[very-heavy-spill] exit_code=0 -> /datasets/bzaitlen/GitRepos/quasiben.github.io/docs/blog/posts/yabas/blog-outputs-nvl8-b200/single-dgxb200-spill-study-very-heavy-spill-20260916T021511Z.log
+============================================================
+experiment=single-dgxb200-spill-study-extreme-spill-20260916T021657Z (7/7)
+start_utc=2026-09-16T02:16:57+00:00
+hostname=umb-b200-220
+spill_label=extreme-spill
+device_limit_mib=12288
+local_input_gib=20
+ranks=8
+warmups=3 runs=10
+command= rrun -n 8 --bind-to cpu --bind-to memory -x UCX_MAX_RNDV_RAILS=1 -x UCX_PROTO_ENABLE=y -x UCX_WARN_UNUSED_ENV_VARS=n libcudf_streaming_bench_shuffle -C ucxx -w 3 -r 10 -m pool -g -s -x -p 1 -o 8 -c 10 -n 536870912 -l 12288
+============================================================
+
+[extreme-spill] exit_code=0 -> /datasets/bzaitlen/GitRepos/quasiben.github.io/docs/blog/posts/yabas/blog-outputs-nvl8-b200/single-dgxb200-spill-study-extreme-spill-20260916T021657Z.log
