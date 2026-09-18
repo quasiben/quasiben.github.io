@@ -7,7 +7,7 @@ draft: true
 ---
 
 **Shuffles are the memory bottleneck in distributed analytics, often failing outright with an OOM. RapidsMPF is a
-reusable, out-of-core library that avoids those failures while still delievering accelerated shuffling**
+reusable, out-of-core library that avoids those failures while still delivering accelerated shuffling.**
 
 
 <!-- more -->
@@ -15,16 +15,16 @@ reusable, out-of-core library that avoids those failures while still delievering
 Shuffling is the crux of structured data analytics distributed or otherwise. It's a core component of key data
 operations like: join, groupby, merge, sort, etc. A full distributed shuffle can move all the data from every process
 to every other process, an all-to-all. This is very costly and many sophisticated techniques have been developed to
-*avoid* this operation as much as possible. Shuffles aren't p articularly computationally challenging: calculating the
+*avoid* this operation as much as possible. Shuffles aren't particularly computationally challenging: calculating the
 hashes to route data is fairly cheap. They are nonetheless expensive in a workflow, for a variety of reasons:
 
 
 1. Memory intensive: shuffles can require holding onto a full copy of all the data or, in streaming cases, memory
-  pressure can build and cause OOMs.
+   pressure can build and cause OOMs.
 1. Transport: The data physically has to be moved from Process A->Process B or Node A->Node B so it can only move at
    speed of the transport layer.
-1. Pipelining: if your application isn't properly pipelined, shuffles can force a barrier / stop the
-   world->shuffle->restart the world scenario which is very costly.
+1. Synchronization: Output data cannot be consumed until all producers have finished contributing data. In a
+   bulk-synchronous engine, this barrier can stall the entire execution plan.
 
 Because shuffling is hard, slow, memory-intensive, and critical, it's historically where RapidsMPF started.
 
@@ -71,8 +71,8 @@ hash table built over the build side.
 
 In the in-memory case, all the data is already colocated within the same memory space. That's no longer true once the
 tables are spread across many processes/nodes/ranks, and a rank can only join rows it can actually see. Eventually, an
-in-memory join will occur, but first we'll need to handle getting all the matching keys for the build and probe tables
-on the same rank.
+in-memory join will occur, but first we'll need to get all the matching keys for the build and probe tables on the same
+rank.
 
 The cartoon graphic below represents how various rows of the same color are shuffled into the same output partition, and
 those partitions live on different ranks.
@@ -109,12 +109,18 @@ pressure. For these reasons, we started RapidsMPF with the original goal of buil
 
 ## RapidsMPF
 
-RapidsMPF has expnaded since its original conception. It is now a library composed of two large pieces:
+RapidsMPF has expanded since its original conception. It is now a library composed of two large pieces:
 1. A shuffle library designed for spilling / out-of-core memory handling, with accelerated transport
 1. An actor network for constructing streaming data pipelines
 
-In a follow up post we can dive into the actor network or if you're curious now I'd recommend reading the section on the
-[streaming engine](https://docs.nvidia.com/rapidsmpf/latest/background/streaming-engine/)
+Users today can still adopt *just* the shuffling component of RapidsMPF (C++ or Python interfaces). We've seen this
+adoption in
+[NeMo-Curator](https://github.com/NVIDIA-NeMo/Curator/blob/15bcdef495246dc98da41954f3a6fb4cc0030a8c/nemo_curator/stages/deduplication/shuffle_utils/rapidsmpf_shuffler.py#L65)
+and [experimentally in Ray
+Data](https://github.com/ray-project/ray/blob/90b5e6b993b3fd96f89fd8a2cacf9f3230f4dd7c/python/ray/data/_internal/gpu_shuffle/hash_aggregate.py#L1484).
+
+In a follow-up post we can dive into the actor network or if you're curious now I'd recommend reading the section on the
+[streaming engine](https://docs.nvidia.com/rapidsmpf/latest/background/streaming-engine/).
 
 Our shuffle implementation needs to:
 
@@ -123,13 +129,7 @@ Our shuffle implementation needs to:
 1. Work with larger than VRAM (GPU) data (out-of-core)
 1. Be reusable
 
-Users today can still adopt *just* the shuffling component of RapidsMPF (C++ or Python interfaces). We've seen this
-adoption in
-[NeMo-Curator](https://github.com/NVIDIA-NeMo/Curator/blob/15bcdef495246dc98da41954f3a6fb4cc0030a8c/nemo_curator/stages/deduplication/shuffle_utils/rapidsmpf_shuffler.py#L65)
-and [experimentally in Ray
-Data](https://github.com/ray-project/ray/blob/90b5e6b993b3fd96f89fd8a2cacf9f3230f4dd7c/python/ray/data/_internal/gpu_shuffle/hash_aggregate.py#L1484)
-
-In this blog we'll focus our attention on shuffling under memory pressure.
+and in the rest of this blog we'll focus our attention on shuffling under memory pressure.
 
 ### Benchmarking Setup
 
@@ -150,7 +150,7 @@ rank (per GPU), shuffles all the data, and completes (there is no join here, jus
 | `-w <n>` | Number of warmup runs | `3` |
 | `-n <n>` | Number of rows per rank | `536870912` (2 GiB per column at 4 bytes/row) |
 | `-p <n>` | Number of input partitions per rank | `1` |
-| `-o <n>` | Number of output partitions per rank | `4` (one per rank) |
+| `-o <n>` | Number of output partitions per rank | `8` (one per rank) |
 | `-m <name>` | RMM memory resource | `pool` |
 | `-l <n>` | Device memory limit in MiB | omitted = unlimited (binary default `-1`); `32768` down to `12288` in the spill sweep |
 | `-s` | Enable output discard (simulate streaming) | flag, always set |
@@ -163,14 +163,19 @@ multiprocess launch tool capable of binding processes to NUMA nodes, to launch t
 
 ### Simple Shuffling
 
-A [DGXB200](https://www.nvidia.com/en-us/data-center/dgx-b200/) has 8 Blackwell GPUs, each with 180GBs of vRAM, and 2
+A [DGXB200](https://www.nvidia.com/en-us/data-center/dgx-b200/) has 8 Blackwell GPUs, each with 180GBs of VRAM, and 2
 Intel® Xeon® Platinum 8570 Processors. To get a baseline, we'll start by shuffling data which comfortably fits across
-all GPUs
+all GPUs.
 
 > rrun -n 8 --bind-to cpu --bind-to memory -x UCX_MAX_RNDV_RAILS=1 -x UCX_PROTO_ENABLE=y -x UCX_WARN_UNUSED_ENV_VARS=n libcudf_streaming_bench_shuffle -C ucxx -w 3 -r 10 -m pool -g -s -x -p 1 -o 8 -c 10 -n 536870912
 
 Here we are *warming* up the benchmark 3 times, then *running* the benchmark 10 times. There are 536_870_912 rows (-n),
-10 columns (-c), 1 input partition per rank (-p), and the data will be shuffled into 8 output partitions (-o)
+10 columns (-c), 1 input partition per rank (-p), and the data will be shuffled into 8 output partitions (-o). We are
+also using [UCXX](https://github.com/rapidsai/ucxx)/[UCX](https://openucx.org/) to enable accelerated
+transport/GPUDirect RDMA.
+
+!!!
+
 
 > 536_870_912 rows * 4 bytes (32-bit ints) = 2 GiB per column
 > 10 columns * 2 GiB = 20 GiB / rank
@@ -198,8 +203,8 @@ allocating memory, spilling (if any), etc.
 !!! note
 
     The global throughput varies from rank to rank, which is technically wrong and is a reporting bug. Rather than
-    summing the local throughputs across ranks, the benchmark reports the global throughput as  each rank's own local throughput 
-    multiplied by the number of ranks. On a DGXB200 it's 8 x local-througphput. But it will suffice for now
+    summing the local throughputs across ranks, the benchmark reports the global throughput as each rank's own local
+    throughput multiplied by the number of ranks. On a DGXB200 it's 8 x local throughput. But it will suffice for now
     while the bug is resolved.
 
 ```bash
@@ -238,7 +243,7 @@ Ordered by: peak (descending)
 ```
 
 In the above only rank 0 is provided, however, ranks 1-7 are very similar. Ranks do finish at slightly different times
-and will also have small but measureable variations in throughput. Given we have 1,440 GB vRAM across the eight GPUs,
+and will also have small but measurable variations in throughput. Given we have 1,440 GB VRAM across the eight GPUs,
 RapidsMPF has plenty of room to shuffle without needing to spill. In the above configuration, RapidsMPF drives roughly
 1.8 TiB/s of global throughput. We still aren't at the [theoretical
 ceiling](https://resources.nvidia.com/en-us-dgx-systems/dgx-b200-datasheet?ncid=no-ncid&_gl=1*1r7pck2*_gcl_au*MzY0MTM5NDA2LjE3ODQxNjcwODIuLS4tLjE3ODQ5MTg2MjQuNjkyNDk3MzIuMTc4OTUyNjczNS4xNzg5NTYwMjk4)
@@ -253,15 +258,17 @@ motivation for why we need to think deeply about memory management in all stages
 When shuffles are a required piece of the workflow, data comes in a variety of different partition sizes, shapes, and
 types, and GPUs vary in the amount of VRAM. We therefore should expect throughput to change as the shape and size of the
 data as well as the workflow overall changes. For now, we'll continue using the same setup of single 20GiB input
-partitions
+partitions.
 
 ## Oops, you spilled a little...
 
 Each rank will initialize with 20 GiB of data and then shuffle. However, we are going to continually *increase* the
 memory pressure by *lowering* the device limit from no limit to 12GiBs. What we are going to observe is that not only
-does it not OOM, RapidsMPF doesn't thrash with unnecessary data movement back and forth between device and host
+does it not OOM, RapidsMPF doesn't thrash with unnecessary data movement back and forth between device and host. 
+Note, we aren't putting this particular system at risk of OOMing. Instead, we are limiting the setup to 20 GiB 
+of data/rank because we want to quickly simulate and interrogate what happens when the system *is at risk* of OOM-ing.
 
-Let's apply some memory pressure to the benchmark and limit the device to 32GB: `-l 32768` and see what happens:
+Let's apply some artifical memory pressure to the benchmark and limit the device to 32GB: `-l 32768` and see what happens:
 
 ```bash
 [7:PRINT:0:2026-09-16 02:10:59.613588706] means: 335.15 ms | local throughput: 59.67 GiB/s | global throughput: 477.39 GiB/s | in_parts: 1 | out_parts: 8 | nranks: 8 | device memory peak: 60 GiB | device memory tot
@@ -299,32 +306,32 @@ Ordered by: peak (descending)
        1         0 B         0 B         0 B         0 B  /libcudf_streaming/benchmarks/bench_shuffle.cpp:277(shuffling)
 ```
 
-Global throughput has degraded substantially, to `~480 GiB/s`and we have two new lines in the statistics:
-`alloc-pinned_host` and `copy-pinned_host-to-device` -- but we *don't* see any line like `copy-device-to-host`. That
-absence is the interesting part. We are still shuffling the same amount of data: each rank has 20GiBs, they receive
-15GiBs from the other 3 ranks; at a limit of 32GBs, each rank is now over the limit. However!  As RapidsMPF is moving
-data around, the receive side can observe the memory pressure and knows about the configured device limit. Instead of
-thrashing and moving data back and forth several times D->H/H->D/and back again, the receive side can accept buffers on
-the host instead of the device to avoid the thrashing -- thanks UCXX!
+Interesting! Global throughput has degraded substantially, to `~480 GiB/s` and we have two new lines in the statistics:
+`alloc-pinned_host` and `copy-pinned_host-to-device` -- but we *don't* see any line like `copy-device-to-pinned_host`.
+That absence is the interesting part. We are still shuffling the same amount of data: each rank has 20GiBs, they
+receive 17.5GiBs from the other 7 ranks; at a limit of 32GBs, each rank is now over the limit. However!  As RapidsMPF
+is moving data around, the receive side can observe the memory pressure and knows about the configured device limit.
+Instead of thrashing and moving data back and forth several times D->H/H->D/and back again, the receive side can accept
+buffers on the host instead of the device to avoid the thrashing -- thanks UCXX!
 
 In other words, nothing was *evicted* from the device; the data simply never landed there in the first place. Spilling
 that never has to spill is the cheapest kind.
 
 <p><center><img src="shuffle-pipeline.png" alt="rapidsmpf shuffle pipeline"></center></p>
 
-*Why such a big performace hit ?*  Of the reported 335.15 ms, RapidsMPF is spending 171.8 ms moving data back to the
+*Why such a big performance hit?*  Of the reported 335.15 ms, RapidsMPF is spending 171.8 ms moving data back to the
 device.
 
 > - copy-pinned_host-to-device: 5.62 GiB | 171.80 ms | 32.74 GiB/s | avg-stream-delay 1.78 ms
 
-The DGXB200 has PCIe Gen 5 which has a transfer rate of 64 GB/s for all 16-lanes. RapidsMPF is moving data across this
-bus at an average rate of 32 GiB/s per GPU. These shuffles are using pinned memory and still, it's a bottle neck for
+The DGXB200 has PCIe Gen 5 which has a transfer rate of 64 GB/s for all 16 lanes. RapidsMPF is moving data across this
+bus at an average rate of 32 GiB/s per GPU. These shuffles are using pinned memory and still, it's a bottleneck for
 spilling. If we swapped out the x86 chips and used a [Grace-Blackwell configuration with
 C2C](https://www.nvidia.com/en-us/data-center/nvlink-c2c/) we could easily 5x-10x the bandwidth between host and device.
-C2C can transfer at upto 900 GB/s.
+C2C can transfer at up to 900 GB/s.
 
-Below is a table sweeping the same initial setup while ratcheting the device memory limit up and correspondingly, the
-memory pressure also increases forcing more spilling it occur:
+Below is a table sweeping the same initial setup while ratcheting the device memory limit down and correspondingly, the
+memory pressure also increases forcing more spilling to occur:
 
 ### Scaled Spilling DGXB200
 
@@ -345,17 +352,16 @@ if you want to explore further.
 
 Reading down the table, a few things stand out:
 
-1. **The degradation is smooth and monotonic.** As we increase the memory device limit we are going to be spending more
-   time moving data back and forth between host and device at PCIe Gen 5 speed, but importantly it
-   does not OOM.
+1. **The degradation is smooth and monotonic.** As we lower the device memory limit we are going to be spending more
+   time moving data back and forth between host and device at PCIe Gen 5 speed, but importantly it does not OOM.
 
-1. **Receive-side mechanics can avoid pointless thrashing** `copy-device-to-pinned_host` is 0 for the
-   first four spill levels and RapidsMPF never evicts anything, receiving incoming
-   buffers on the host to mitigate the device memory limit we imposed. Only at a 20 GiB limit, where the limit equals the 
-   input size, does real device-to-host spilling kick in.
+1. **Receive-side mechanics can avoid pointless thrashing** `copy-device-to-pinned_host` is 0 for the first four spill
+   levels and RapidsMPF never evicts anything, receiving incoming buffers on the host to mitigate the device memory
+   limit we imposed. Only at a 20 GiB limit, where the limit equals the input size, does real device-to-host spilling
+   kick in.
 
 1. **Spilling is the expensive part.** `copy-pinned_host-to-device` climbs from 5.6 GiB to 18.8 GiB, and the time to
-   move it grows from 191 ms to 1170ms. The transfer rate between host and device though is mitigated with pinnned
+   move it grows from 191 ms to 1170 ms. The transfer rate between host and device though is mitigated with pinned
    memory buffers (as we've discussed before). If we changed the hardware and used C2C with 900 GB/s of bandwidth, we
    would be much better off.
 
@@ -363,9 +369,20 @@ Reading down the table, a few things stand out:
 
 I think we've sufficiently demonstrated how challenging and memory intensive shuffles (and the implied joins, sorts,
 etc) can be. Unconstrained, RapidsMPF drives roughly 1.8 TiB/s of global throughput on a DGX B200. Perhaps more
-importantly RapidsMPF can successfuly shuffle without needless thrashing and OOMing while leveraging accelerated
-transport when shuffling. And not only that, we have hardware solutions already in place to alleviate the
-choke points of bandwidth between host and device transfers.
+importantly RapidsMPF can successfully shuffle without needless thrashing and OOMing while leveraging accelerated
+transport when shuffling. And not only that, we have hardware solutions already in place to alleviate the choke points
+of bandwidth between host and device transfers.
 
-We set out wanting a shuffle that is fast, scales, handles larger-than-VRAM data, and is reusable. We have that with
-RapidsMPF. In a later post we'll return to studying scaling on an NVL72.
+Recall the challenges of shuffles: `Memory Intensive`, `Transport`, `Synchronization`. RapidsMPF mitigates these
+problems:
+
+1. Memory intensive: RapidsMPF can spill/evict buffers from the device at tunable limits AND can receive bytes on the
+   host to prevent unnecessary thrashing.
+1. Transport: RapidsMPF utilizes UCXX which enables transport across NVLink, InfiniBand, EFA, TCP, etc.
+1. Synchronization: RapidsMPF addresses this challenge with an asynchronous/streaming execution model that overlaps the
+   shuffle with other ready work. In a follow-up post we'll get into these details.
+
+We set out wanting a shuffle that is fast, scales, and handles larger-than-VRAM data and we have that with RapidsMPF.
+Users can reuse this library directly, or implement these ideas in their own projects.
+
+In a later post we'll return to studying scaling on an NVL72 -- get ready for some weak and strong plots!
