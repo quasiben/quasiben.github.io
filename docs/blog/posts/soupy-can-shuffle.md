@@ -70,9 +70,9 @@ hash table built over the build side.
 ### Distributed Join
 
 In the in-memory case, all the data is already colocated within the same memory space. That's no longer true once the
-tables are spread across many processes/nodes/ranks, and a rank can only join rows it can actually see. Eventually, an
-in-memory join will occur, but first we'll need to get all the matching keys for the build and probe tables on the same
-rank.
+tables are spread across many processes/nodes/ranks or tables are batched for "streaming" joins. A rank/process can only join rows 
+in resident memory. Eventually, an in-memory join will occur, but first we'll need to get all the matching keys for the 
+build and probe tables on the samerank.
 
 The cartoon graphic below represents how various rows of the same color are shuffled into the same output partition, and
 those partitions live on different ranks.
