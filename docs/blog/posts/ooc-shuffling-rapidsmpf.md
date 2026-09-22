@@ -3,7 +3,6 @@ title: Out-Of-Core Shuffling w/ RapidsMPF
 date: 2026-09-22
 author: Benjamin Zaitlen
 slug: ooc-shuffling-rapidsmpf
-draft: true
 ---
 
 **Shuffling data at 1.8 TiB/s!  RapidsMPF is a reusable, out-of-core shuffler that turns shuffling OOM headaches into a
