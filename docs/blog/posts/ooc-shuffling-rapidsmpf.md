@@ -113,10 +113,10 @@ RapidsMPF has expanded since its original conception.  It is now a library compo
 1. An actor network for constructing streaming data pipelines
 
 Users today can still adopt *just* the shuffling component of RapidsMPF (C++ or Python interfaces). We've seen this
-adoption in
-[NeMo-Curator](https://github.com/NVIDIA-NeMo/Curator/blob/15bcdef495246dc98da41954f3a6fb4cc0030a8c/nemo_curator/stages/deduplication/shuffle_utils/rapidsmpf_shuffler.py#L65)
-and [experimentally in Ray
-Data](https://github.com/ray-project/ray/blob/90b5e6b993b3fd96f89fd8a2cacf9f3230f4dd7c/python/ray/data/_internal/gpu_shuffle/hash_aggregate.py#L1484).
+adoption in [NeMo-Curator](https://github.com/NVIDIA-NeMo/Curator/blob/15bcdef495246dc98da41954f3a6fb4cc0030a8c/nemo_curator/stages/deduplication/shuffle_utils/rapidsmpf_shuffler.py#L65)
+and, experimentally, in [Ray Data](https://github.com/ray-project/ray/blob/90b5e6b993b3fd96f89fd8a2cacf9f3230f4dd7c/python/ray/data/_internal/gpu_shuffle/hash_aggregate.py#L1484).
+Most importantly, [cuDF Polars](https://docs.nvidia.com/cudf/latest/cudf_polars/) uses RapidsMPF for both shuffles *and* the actor network.
+
 
 In a follow-up post we can dive into the actor network or if you're curious now I'd recommend reading the section on the
 [streaming engine](https://docs.nvidia.com/rapidsmpf/latest/background/streaming-engine/).
