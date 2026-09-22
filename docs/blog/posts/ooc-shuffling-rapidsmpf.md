@@ -1,6 +1,6 @@
 ---
 title: Out-Of-Core Shuffling w/ RapidsMPF
-date: 2026-09-21
+date: 2026-09-22
 author: Benjamin Zaitlen
 slug: ooc-shuffling-rapidsmpf
 draft: true

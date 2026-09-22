@@ -1,7 +1,7 @@
 ============================================================
 experiment=single-dgxb200-spill-study-moderate-spill-20260916T021223Z (4/7)
 start_utc=2026-09-16T02:12:23+00:00
-hostname=umb-b200-220
+hostname=dgx-b200
 spill_label=moderate-spill
 device_limit_mib=24576
 local_input_gib=20
@@ -223,10 +223,10 @@ Ordered by: peak (descending)
 
   ncalls        peak      g-peak       accum         max  filename:lineno(name)
        1      60 GiB      60 GiB    1.29 TiB       2 GiB  main (all allocations using RmmResourceAdaptor)
-       1      40 GiB      40 GiB   44.06 GiB       2 GiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:183(partition_and_pack)
-       1      20 GiB      20 GiB      20 GiB  320.39 MiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:242(split_and_pack)
-       8    2.50 GiB    2.50 GiB   20.01 GiB  256.19 MiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:298(unpack_and_concat)
-       1         0 B         0 B         0 B         0 B  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/benchmarks/bench_shuffle.cpp:277(shuffling)
+       1      40 GiB      40 GiB   44.06 GiB       2 GiB  /libcudf_streaming/src/partition_utils.cpp:183(partition_and_pack)
+       1      20 GiB      20 GiB      20 GiB  320.39 MiB  /libcudf_streaming/src/partition_utils.cpp:242(split_and_pack)
+       8    2.50 GiB    2.50 GiB   20.01 GiB  256.19 MiB  /libcudf_streaming/src/partition_utils.cpp:298(unpack_and_concat)
+       1         0 B         0 B         0 B         0 B  /libcudf_streaming/benchmarks/bench_shuffle.cpp:277(shuffling)
  - shuffle-payload-recv:                               17.49 GiB | avg 319.89 MiB
  - shuffle-payload-send:                               17.50 GiB | avg 320.02 MiB
 
@@ -280,10 +280,10 @@ Ordered by: peak (descending)
 
   ncalls        peak      g-peak       accum         max  filename:lineno(name)
        1      60 GiB      60 GiB    1.29 TiB       2 GiB  main (all allocations using RmmResourceAdaptor)
-       1      40 GiB      40 GiB   44.06 GiB       2 GiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:183(partition_and_pack)
-       1      20 GiB      20 GiB      20 GiB  320.39 MiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:242(split_and_pack)
-       8    2.50 GiB    2.50 GiB      20 GiB  256.12 MiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:298(unpack_and_concat)
-       1         0 B         0 B         0 B         0 B  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/benchmarks/bench_shuffle.cpp:277(shuffling)
+       1      40 GiB      40 GiB   44.06 GiB       2 GiB  /libcudf_streaming/src/partition_utils.cpp:183(partition_and_pack)
+       1      20 GiB      20 GiB      20 GiB  320.39 MiB  /libcudf_streaming/src/partition_utils.cpp:242(split_and_pack)
+       8    2.50 GiB    2.50 GiB      20 GiB  256.12 MiB  /libcudf_streaming/src/partition_utils.cpp:298(unpack_and_concat)
+       1         0 B         0 B         0 B         0 B  /libcudf_streaming/benchmarks/bench_shuffle.cpp:277(shuffling)
 
 Limitation:
   - A scope only tracks allocations made by the thread that entered it.
@@ -316,10 +316,10 @@ Ordered by: peak (descending)
 
   ncalls        peak      g-peak       accum         max  filename:lineno(name)
        1      60 GiB      60 GiB    1.29 TiB       2 GiB  main (all allocations using RmmResourceAdaptor)
-       1      40 GiB      40 GiB   44.06 GiB       2 GiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:183(partition_and_pack)
-       1      20 GiB      20 GiB      20 GiB  320.39 MiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:242(split_and_pack)
-       8    2.50 GiB    2.50 GiB      20 GiB  256.16 MiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:298(unpack_and_concat)
-       1         0 B         0 B         0 B         0 B  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/benchmarks/bench_shuffle.cpp:277(shuffling)
+       1      40 GiB      40 GiB   44.06 GiB       2 GiB  /libcudf_streaming/src/partition_utils.cpp:183(partition_and_pack)
+       1      20 GiB      20 GiB      20 GiB  320.39 MiB  /libcudf_streaming/src/partition_utils.cpp:242(split_and_pack)
+       8    2.50 GiB    2.50 GiB      20 GiB  256.16 MiB  /libcudf_streaming/src/partition_utils.cpp:298(unpack_and_concat)
+       1         0 B         0 B         0 B         0 B  /libcudf_streaming/benchmarks/bench_shuffle.cpp:277(shuffling)
 
 Limitation:
   - A scope only tracks allocations made by the thread that entered it.
@@ -352,7 +352,7 @@ Ordered by: peak (descending)
 
   ncalls        peak      g-peak       accum         max  filename:lineno(name)
        1      60 GiB      60 GiB    1.29 TiB       2 GiB  main (all allocations using RmmResourceAdaptor)
-       1      40 GiB      40 GiB   44.06 GiB       2 GiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:183(partition_and_pack)
+       1      40 GiB      40 GiB   44.06 GiB       2 GiB  /libcudf_streaming/src/partition_utils.cpp:183(partition_and_pack)
  - shuffle-payload-send:                               17.50 GiB | avg 319.99 MiB
 
 Memory Profiling
@@ -367,23 +367,23 @@ Legends:
 Ordered by: peak (descending)
   peak   - peak memory usage by the scope.
   g-peak - global peak memory usage during the scope's execution.
-       1      20 GiB      20 GiB      20 GiB  320.39 MiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:242(split_and_pack)
-       8    2.50 GiB    2.50 GiB      20 GiB  256.31 MiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:298(unpack_and_concat)
-       1         0 B         0 B         0 B         0 B  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/benchmarks/bench_shuffle.cpp:277(shuffling)
+       1      20 GiB      20 GiB      20 GiB  320.39 MiB  /libcudf_streaming/src/partition_utils.cpp:242(split_and_pack)
+       8    2.50 GiB    2.50 GiB      20 GiB  256.31 MiB  /libcudf_streaming/src/partition_utils.cpp:298(unpack_and_concat)
+       1         0 B         0 B         0 B         0 B  /libcudf_streaming/benchmarks/bench_shuffle.cpp:277(shuffling)
 
 Limitation:
   - A scope only tracks allocations made by the thread that entered it.
 
   ncalls        peak      g-peak       accum         max  filename:lineno(name)
        1      60 GiB      60 GiB    1.29 TiB       2 GiB  main (all allocations using RmmResourceAdaptor)
-       1      40 GiB      40 GiB   44.06 GiB       2 GiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:183(partition_and_pack)
-       1      20 GiB      20 GiB      20 GiB  320.39 MiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:242(split_and_pack)
-       8    2.50 GiB    2.50 GiB      20 GiB  256.27 MiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:298(unpack_and_concat)
+       1      40 GiB      40 GiB   44.06 GiB       2 GiB  /libcudf_streaming/src/partition_utils.cpp:183(partition_and_pack)
+       1      20 GiB      20 GiB      20 GiB  320.39 MiB  /libcudf_streaming/src/partition_utils.cpp:242(split_and_pack)
+       8    2.50 GiB    2.50 GiB      20 GiB  256.27 MiB  /libcudf_streaming/src/partition_utils.cpp:298(unpack_and_concat)
 
   accum  - total accumulated memory allocations by the scope.
   max    - largest single allocation by the scope.
 
-       1         0 B         0 B         0 B         0 B  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/benchmarks/bench_shuffle.cpp:277(shuffling)
+       1         0 B         0 B         0 B         0 B  /libcudf_streaming/benchmarks/bench_shuffle.cpp:277(shuffling)
 
 Limitation:
   - A scope only tracks allocations made by the thread that entered it.
@@ -392,10 +392,10 @@ Ordered by: peak (descending)
 
   ncalls        peak      g-peak       accum         max  filename:lineno(name)
        1      60 GiB      60 GiB    1.29 TiB       2 GiB  main (all allocations using RmmResourceAdaptor)
-       1      40 GiB      40 GiB   44.06 GiB       2 GiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:183(partition_and_pack)
-       1      20 GiB      20 GiB      20 GiB  320.39 MiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:242(split_and_pack)
-       8    2.50 GiB    2.50 GiB   19.99 GiB  256.15 MiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:298(unpack_and_concat)
-       1         0 B         0 B         0 B         0 B  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/benchmarks/bench_shuffle.cpp:277(shuffling)
+       1      40 GiB      40 GiB   44.06 GiB       2 GiB  /libcudf_streaming/src/partition_utils.cpp:183(partition_and_pack)
+       1      20 GiB      20 GiB      20 GiB  320.39 MiB  /libcudf_streaming/src/partition_utils.cpp:242(split_and_pack)
+       8    2.50 GiB    2.50 GiB   19.99 GiB  256.15 MiB  /libcudf_streaming/src/partition_utils.cpp:298(unpack_and_concat)
+       1         0 B         0 B         0 B         0 B  /libcudf_streaming/benchmarks/bench_shuffle.cpp:277(shuffling)
 
 Limitation:
   - A scope only tracks allocations made by the thread that entered it.
@@ -426,10 +426,10 @@ Ordered by: peak (descending)
 
   ncalls        peak      g-peak       accum         max  filename:lineno(name)
        1      60 GiB      60 GiB    1.29 TiB       2 GiB  main (all allocations using RmmResourceAdaptor)
-       1      40 GiB      40 GiB   44.06 GiB       2 GiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:183(partition_and_pack)
-       1      20 GiB      20 GiB      20 GiB  320.39 MiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:242(split_and_pack)
-       8    2.50 GiB    2.50 GiB      20 GiB  256.11 MiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:298(unpack_and_concat)
-       1         0 B         0 B         0 B         0 B  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/benchmarks/bench_shuffle.cpp:277(shuffling)
+       1      40 GiB      40 GiB   44.06 GiB       2 GiB  /libcudf_streaming/src/partition_utils.cpp:183(partition_and_pack)
+       1      20 GiB      20 GiB      20 GiB  320.39 MiB  /libcudf_streaming/src/partition_utils.cpp:242(split_and_pack)
+       8    2.50 GiB    2.50 GiB      20 GiB  256.11 MiB  /libcudf_streaming/src/partition_utils.cpp:298(unpack_and_concat)
+       1         0 B         0 B         0 B         0 B  /libcudf_streaming/benchmarks/bench_shuffle.cpp:277(shuffling)
 
 Limitation:
   - A scope only tracks allocations made by the thread that entered it.
@@ -461,10 +461,10 @@ Ordered by: peak (descending)
 
   ncalls        peak      g-peak       accum         max  filename:lineno(name)
        1      60 GiB      60 GiB    1.29 TiB       2 GiB  main (all allocations using RmmResourceAdaptor)
-       1      40 GiB      40 GiB   44.06 GiB       2 GiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:183(partition_and_pack)
-       1      20 GiB      20 GiB      20 GiB  320.39 MiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:242(split_and_pack)
-       8    2.50 GiB    2.50 GiB      20 GiB  256.26 MiB  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/src/partition_utils.cpp:298(unpack_and_concat)
-       1         0 B         0 B         0 B         0 B  /tmp/conda-bld-output/bld/rattler-build_libcudf/work/cpp/libcudf_streaming/benchmarks/bench_shuffle.cpp:277(shuffling)
+       1      40 GiB      40 GiB   44.06 GiB       2 GiB  /libcudf_streaming/src/partition_utils.cpp:183(partition_and_pack)
+       1      20 GiB      20 GiB      20 GiB  320.39 MiB  /libcudf_streaming/src/partition_utils.cpp:242(split_and_pack)
+       8    2.50 GiB    2.50 GiB      20 GiB  256.26 MiB  /libcudf_streaming/src/partition_utils.cpp:298(unpack_and_concat)
+       1         0 B         0 B         0 B         0 B  /libcudf_streaming/benchmarks/bench_shuffle.cpp:277(shuffling)
 
 Limitation:
   - A scope only tracks allocations made by the thread that entered it.

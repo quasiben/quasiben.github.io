@@ -12,6 +12,8 @@ ROWS=536870912
 LOCAL_INPUT_GIB=20
 WARMUPS=3
 RUNS=10
+# label recorded in the logs instead of the real hostname
+HOST_LABEL="dgx-b200"
 
 set +u
 source "$(conda info --base)/etc/profile.d/conda.sh"
@@ -54,7 +56,7 @@ for entry in "${EXPERIMENTS[@]}"; do
     echo "============================================================"
     echo "experiment=${experiment} (${i}/${total})"
     echo "start_utc=$(date -u +%Y-%m-%dT%H:%M:%S+00:00)"
-    echo "hostname=$(hostname)"
+    echo "hostname=${HOST_LABEL}"
     echo "spill_label=${label}"
     echo "device_limit_mib=${limit_mib:-unlimited}"
     echo "local_input_gib=${LOCAL_INPUT_GIB}"
@@ -73,7 +75,7 @@ for entry in "${EXPERIMENTS[@]}"; do
     echo "exit_code=${exit_code}"
   } >>"${logfile}"
 
-  echo "[${label}] exit_code=${exit_code} -> ${logfile}"
+  echo "[${label}] exit_code=${exit_code} -> ${experiment}.log"
 
   if [[ "${exit_code}" -ne 0 ]]; then
     echo "Run '${label}' failed with exit_code=${exit_code}; stopping sweep." >&2
